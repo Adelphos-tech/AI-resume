@@ -25,6 +25,18 @@ pnpm lint
 
 pnpm build
 
+## Quality
+
+- `pnpm format` — format all files with Prettier
+- `pnpm format:check` — verify formatting without changes
+- `pnpm lint` — ESLint
+- `pnpm typecheck` — TypeScript (generates route types first)
+- `pnpm build` — production build
+- `pnpm check` — runs format:check, lint, typecheck, and build
+
+GitHub Actions runs the same non-mutating checks on pushes to `main` and on
+pull requests (`.github/workflows/ci.yml`).
+
 ## UI
 
 Styling uses Tailwind CSS 4 and shadcn/ui components (`src/components/ui`) with
