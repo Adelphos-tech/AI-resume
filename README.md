@@ -64,6 +64,13 @@ Requires the database running (`pnpm db:up`) and `DATABASE_URL` set in `.env`.
 
 No application models exist yet; migrations start with the first real model.
 
+## Health Check
+
+`GET /api/health` — returns `200` with
+`{"status":"ok","database":"connected"}` when the app and PostgreSQL are
+available, or `503` with `{"status":"degraded","database":"unavailable"}`
+when the database check fails. Responses are never cached.
+
 ## Quality
 
 - `pnpm format` — format all files with Prettier
