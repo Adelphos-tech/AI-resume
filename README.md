@@ -2,7 +2,8 @@
 
 ## Requirements
 
-- Node.js >= 20.9 (developed on Node 22)
+- Node.js 20.19+ (Node 20 LTS) or 22.12+ (Node 22 LTS); newer supported LTS
+  versions also work. Developed on Node 22.18. Required by Prisma 7.
 - pnpm 10 (managed via Corepack: `corepack enable`)
 
 ## Install
@@ -39,6 +40,22 @@ Requires Docker with Docker Compose.
 Data is stored in the `rolerace_postgres_data` Docker volume and survives
 `pnpm db:down` / restarts. Deleting that volume
 (`docker compose down -v`) permanently destroys local development data.
+
+## Prisma
+
+The project uses Prisma ORM 7 with the `@prisma/adapter-pg` PostgreSQL
+driver adapter. The shared server-only client lives in `src/server/db.ts`;
+generated client output goes to `src/generated/` (not committed).
+
+Requires the database running (`pnpm db:up`) and `DATABASE_URL` set in `.env`.
+
+- `pnpm db:generate` — generate Prisma Client (runs automatically before
+  `dev`/`build`/`typecheck`)
+- `pnpm db:validate` — validate `prisma/schema.prisma`
+- `pnpm db:migrate` — create/apply a development migration
+- `pnpm db:studio` — open Prisma Studio
+
+No application models exist yet; migrations start with the first real model.
 
 ## Quality
 

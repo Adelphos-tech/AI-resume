@@ -9,6 +9,10 @@ jobs:
   quality:
     name: Quality gates
     runs-on: ubuntu-latest
+    env:
+      # Placeholder only: Prisma config requires DATABASE_URL to be present
+      # for client generation/build. No database is provisioned in CI.
+      DATABASE_URL: postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder
 
     steps:
       - name: Checkout
