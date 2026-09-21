@@ -64,6 +64,14 @@ Requires the database running (`pnpm db:up`) and `DATABASE_URL` set in `.env`.
 
 No application models exist yet; migrations start with the first real model.
 
+## Production Docker Image
+
+`docker build -t rolerace .` builds a multi-stage production image
+(Node 22, Next.js standalone output, non-root `node` user). The image
+requires `DATABASE_URL` at runtime and listens on port 3000 internally.
+Local development should still use `pnpm dev`; reverse proxy and VPS
+deployment are handled separately.
+
 ## Health Check
 
 `GET /api/health` — returns `200` with

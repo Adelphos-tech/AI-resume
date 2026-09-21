@@ -1,0 +1,29 @@
+# version control / CI
+.git
+.github
+
+# dependencies & build output (rebuilt inside image)
+node_modules
+.next
+src/generated
+
+# local environment & secrets
+.env
+.env.*
+!.env.example
+
+# local agent config
+.devin
+
+# misc junk
+coverage
+dist
+build
+out
+*.log
+.DS_Store
+
+# docker files themselves are not needed in context
+docker-compose.yml
+Dockerfile
+.dockerignore
