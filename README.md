@@ -25,6 +25,21 @@ pnpm lint
 
 pnpm build
 
+## Database (local development)
+
+Requires Docker with Docker Compose.
+
+1. `cp .env.example .env` and set a local `POSTGRES_PASSWORD`
+   (change `POSTGRES_PORT` if 5432 is already in use on your machine).
+2. `pnpm db:up` — start PostgreSQL 18 in the background
+3. `pnpm db:status` — show container status/health
+4. `pnpm db:logs` — follow database logs
+5. `pnpm db:down` — stop the database
+
+Data is stored in the `rolerace_postgres_data` Docker volume and survives
+`pnpm db:down` / restarts. Deleting that volume
+(`docker compose down -v`) permanently destroys local development data.
+
 ## Quality
 
 - `pnpm format` — format all files with Prettier
