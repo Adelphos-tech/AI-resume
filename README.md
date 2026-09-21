@@ -26,6 +26,13 @@ pnpm lint
 
 pnpm build
 
+## Environment
+
+Copy `.env.example` to `.env` and set real values — `.env` is gitignored
+and must never be committed. `DATABASE_URL` is required and validated at
+runtime in server code; the app fails fast with a clear error (without
+printing the value) when it is missing or malformed.
+
 ## Database (local development)
 
 Requires Docker with Docker Compose.
