@@ -27,3 +27,6 @@ out
 docker-compose.yml
 Dockerfile
 .dockerignore
+
+# runtime upload storage
+.data/

@@ -109,3 +109,18 @@ pull requests (`.github/workflows/ci.yml`).
 
 Styling uses Tailwind CSS 4 and shadcn/ui components (`src/components/ui`) with
 design tokens defined as CSS variables in `src/app/globals.css`.
+
+## Resume source storage
+
+Candidate source resumes are stored on the local filesystem under
+`.data/resumes/` (never under `public/`). The directory is git-ignored
+and excluded from the Docker build context.
+
+- Accepted types: PDF and DOCX, verified by binary content detection
+  (`file-type`), max 10 MB.
+- Only metadata lives in PostgreSQL (`candidate_resume_source`); files
+  use server-generated storage keys.
+- **Production Docker deployments must mount persistent storage at
+  `/app/.data`** — container-local storage is ephemeral.
+- Note: deleting a Candidate cascades DB metadata only; a future
+  deletion workflow must also remove the physical file.

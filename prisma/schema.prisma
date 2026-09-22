@@ -102,6 +102,7 @@ model Candidate {
   updatedAt    DateTime               @updatedAt
   intakeAccess CandidateIntakeAccess?
   intake       CandidateIntake?
+  resumeSource CandidateResumeSource?
 
   @@index([status])
   @@index([createdAt])
@@ -143,6 +144,21 @@ model CandidateIntake {
   candidate             Candidate              @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@map("candidate_intake")
+}
+
+model CandidateResumeSource {
+  id               String   @id @default(cuid())
+  candidateId      String   @unique
+  originalFileName String
+  storageKey       String   @unique
+  mimeType         String
+  sizeBytes        Int
+  sha256           String
+  uploadedAt       DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  candidate        Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@map("candidate_resume_source")
 }
 
 model CandidateIntakeAccess {

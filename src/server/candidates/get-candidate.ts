@@ -32,6 +32,14 @@ const candidateDetailSelect = {
       updatedAt: true,
     },
   },
+  resumeSource: {
+    select: {
+      originalFileName: true,
+      sizeBytes: true,
+      mimeType: true,
+      uploadedAt: true,
+    },
+  },
 } satisfies Prisma.CandidateSelect;
 
 export type CandidateDetail = Prisma.CandidateGetPayload<{

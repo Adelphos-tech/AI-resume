@@ -155,6 +155,32 @@ export default async function CandidateDetailPage({
           access={candidate.intakeAccess}
         />
       </section>
+
+      <section className="space-y-3 border-t pt-6">
+        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+          Resume
+        </h3>
+        {candidate.resumeSource ? (
+          <div className="text-sm">
+            <p className="font-medium break-words">
+              {candidate.resumeSource.originalFileName}
+            </p>
+            <p className="mt-1 text-muted-foreground">
+              {formatBytes(candidate.resumeSource.sizeBytes)} · Uploaded{" "}
+              {dateFormatter.format(candidate.resumeSource.uploadedAt)}
+            </p>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">Not uploaded</p>
+        )}
+      </section>
     </div>
   );
+}
+
+function formatBytes(bytes: number) {
+  if (bytes >= 1024 * 1024) {
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }

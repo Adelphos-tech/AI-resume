@@ -46,3 +46,6 @@ next-env.d.ts
 
 # local agent config
 .devin/config.local.json
+
+# uploaded resume storage (runtime, private)
+.data/

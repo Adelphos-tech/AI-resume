@@ -321,13 +321,18 @@ export function IntakeForm({
             Thank you. Your information has been received by the RoleRace team.
           </p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setReviewing(true)}
-        >
-          Review answers
-        </Button>
+        <div className="flex flex-wrap gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setReviewing(true)}
+          >
+            Review answers
+          </Button>
+          <Button asChild>
+            <a href={`/intake/${token}/resume`}>Continue to resume upload</a>
+          </Button>
+        </div>
       </div>
     );
   }
@@ -593,6 +598,17 @@ export function IntakeForm({
               : "Submit intake"}
         </Button>
       </div>
+
+      <p className="text-sm text-muted-foreground">
+        You can also{" "}
+        <a
+          href={`/intake/${token}/resume`}
+          className="underline underline-offset-4 hover:text-foreground"
+        >
+          upload your resume
+        </a>{" "}
+        using this secure link.
+      </p>
     </form>
   );
 }
