@@ -81,7 +81,8 @@ pinned to the same version as the `better-auth` package).
 
 `docker build -t rolerace .` builds a multi-stage production image
 (Node 22, Next.js standalone output, non-root `node` user). The image
-requires `DATABASE_URL` at runtime and listens on port 3000 internally.
+requires `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL` at
+runtime and listens on port 3000 internally.
 Local development should still use `pnpm dev`; reverse proxy and VPS
 deployment are handled separately.
 

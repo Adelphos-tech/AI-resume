@@ -15,9 +15,15 @@ export function SignOutButton() {
     setError(null);
     setIsPending(true);
 
-    const { error: signOutError } = await authClient.signOut();
+    try {
+      const { error: signOutError } = await authClient.signOut();
 
-    if (signOutError) {
+      if (signOutError) {
+        setError("Unable to sign out. Please try again.");
+        setIsPending(false);
+        return;
+      }
+    } catch {
       setError("Unable to sign out. Please try again.");
       setIsPending(false);
       return;

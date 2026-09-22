@@ -15,13 +15,16 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Build: generate Prisma client and compile Next.js standalone output.
-# DATABASE_URL here is a non-secret placeholder required by prisma config
-# loading only; no database connection is made during the build.
+# These ENVs are non-secret placeholders required by prisma config loading
+# and build-time env validation only; no database connection is made and
+# they never reach the runtime image.
 FROM base AS builder
 RUN corepack enable
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build
+ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build \
+    BETTER_AUTH_SECRET=build-placeholder-not-a-real-secret-00 \
+    BETTER_AUTH_URL=http://localhost:3000
 RUN pnpm build
 
 # Runtime: standalone server only, non-root

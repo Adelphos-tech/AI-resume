@@ -35,13 +35,19 @@ export function LoginForm() {
 
   async function onSubmit(values: LoginValues) {
     setAuthError(null);
-    const { error } = await authClient.signIn.email({
-      email: values.email,
-      password: values.password,
-    });
 
-    if (error) {
-      setAuthError("Invalid email or password.");
+    try {
+      const { error } = await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) {
+        setAuthError("Invalid email or password.");
+        return;
+      }
+    } catch {
+      setAuthError("Unable to sign in. Please try again.");
       return;
     }
 
