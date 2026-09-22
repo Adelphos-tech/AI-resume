@@ -142,6 +142,14 @@ export default async function CandidateDetailPage({
         <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
           Intake access
         </h3>
+        <p className="text-sm text-muted-foreground">
+          Intake:{" "}
+          {candidate.intake === null
+            ? "Not started"
+            : candidate.intake.submittedAt
+              ? `Submitted · ${dateFormatter.format(candidate.intake.submittedAt)}`
+              : `Draft saved · Updated ${dateFormatter.format(candidate.intake.updatedAt)}`}
+        </p>
         <IntakeAccessControl
           candidateId={candidate.id}
           access={candidate.intakeAccess}

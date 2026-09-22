@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { CANDIDATE_PACKAGE_LABELS } from "@/lib/candidate-labels";
+import { IntakeForm } from "@/components/intake/intake-form";
 import { resolveCandidateIntakeToken } from "@/server/candidates/intake-access";
+import { getCandidateIntake } from "@/server/candidates/intake";
 
 export const dynamic = "force-dynamic";
 
@@ -17,28 +18,33 @@ export default async function IntakePage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const intake = await resolveCandidateIntakeToken(token);
+  const resolved = await resolveCandidateIntakeToken(token);
 
-  if (!intake) {
+  if (!resolved) {
     notFound();
   }
 
+  const intake = await getCandidateIntake(token);
+
   return (
-    <main className="mx-auto flex min-h-svh w-full max-w-xl flex-col justify-center px-6 py-16">
-      <p className="text-sm font-semibold tracking-wide text-primary">
-        RoleRace
-      </p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-        Career Intake
-      </h1>
-      <p className="mt-6 text-muted-foreground">Hi {intake.firstName},</p>
-      <p className="mt-3 text-muted-foreground">
-        Your RoleRace career intake is ready. The secure intake questionnaire
-        will be completed in the next module.
-      </p>
-      <p className="mt-3 text-sm text-muted-foreground">
-        Package: {CANDIDATE_PACKAGE_LABELS[intake.package]}
-      </p>
+    <main className="mx-auto w-full max-w-2xl px-6 py-12 sm:py-16">
+      <header className="space-y-4">
+        <p className="text-sm font-semibold tracking-wide text-primary">
+          RoleRace
+        </p>
+        <h1 className="text-3xl font-semibold tracking-tight">Career Intake</h1>
+        <div className="space-y-2 text-muted-foreground">
+          <p>Hi {resolved.firstName},</p>
+          <p>
+            Tell us where you want your career to go. You can save your progress
+            and return using this secure link until it expires.
+          </p>
+        </div>
+      </header>
+
+      <div className="mt-10">
+        <IntakeForm token={token} initial={intake} />
+      </div>
     </main>
   );
 }

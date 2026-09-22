@@ -101,10 +101,48 @@ model Candidate {
   createdAt    DateTime               @default(now())
   updatedAt    DateTime               @updatedAt
   intakeAccess CandidateIntakeAccess?
+  intake       CandidateIntake?
 
   @@index([status])
   @@index([createdAt])
   @@map("candidate")
+}
+
+enum WorkplacePreference {
+  REMOTE
+  HYBRID
+  ONSITE
+  FLEXIBLE
+}
+
+enum EmploymentPreference {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+model CandidateIntake {
+  id                    String                 @id @default(cuid())
+  candidateId           String                 @unique
+  currentRole           String?
+  targetRoles           String[]
+  preferredLocations    String[]
+  workplacePreferences  WorkplacePreference[]
+  employmentPreferences EmploymentPreference[]
+  salaryExpectation     Int?
+  salaryCurrency        String?
+  workAuthorization     String?
+  requiresSponsorship   Boolean?
+  preferredIndustries   String[]
+  careerGoals           String?
+  additionalNotes       String?
+  submittedAt           DateTime?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  candidate             Candidate              @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@map("candidate_intake")
 }
 
 model CandidateIntakeAccess {

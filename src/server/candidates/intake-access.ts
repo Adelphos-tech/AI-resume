@@ -90,6 +90,7 @@ export async function revokeCandidateIntakeAccess(
 }
 
 export type ResolvedIntakeToken = {
+  candidateId: string;
   firstName: string;
   package: CandidatePackage;
 };
@@ -107,7 +108,9 @@ export async function resolveCandidateIntakeToken(
     select: {
       expiresAt: true,
       revokedAt: true,
-      candidate: { select: { firstName: true, package: true } },
+      candidate: {
+        select: { id: true, firstName: true, package: true },
+      },
     },
   });
 
@@ -116,6 +119,7 @@ export async function resolveCandidateIntakeToken(
   }
 
   return {
+    candidateId: access.candidate.id,
     firstName: access.candidate.firstName,
     package: access.candidate.package,
   };
