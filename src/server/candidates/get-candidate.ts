@@ -32,6 +32,12 @@ const candidateDetailSelect = {
       updatedAt: true,
     },
   },
+  careerProfile: {
+    select: {
+      schemaVersion: true,
+      updatedAt: true,
+    },
+  },
   resumeSource: {
     select: {
       originalFileName: true,

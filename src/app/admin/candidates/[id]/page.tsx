@@ -159,6 +159,17 @@ export default async function CandidateDetailPage({
 
       <section className="space-y-3 border-t pt-6">
         <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+          Career profile
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          {candidate.careerProfile
+            ? `Draft profile exists · Updated ${dateFormatter.format(candidate.careerProfile.updatedAt)}`
+            : "Not created"}
+        </p>
+      </section>
+
+      <section className="space-y-3 border-t pt-6">
+        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
           Resume
         </h3>
         {candidate.resumeSource ? (

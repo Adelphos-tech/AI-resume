@@ -103,6 +103,7 @@ model Candidate {
   intakeAccess CandidateIntakeAccess?
   intake       CandidateIntake?
   resumeSource CandidateResumeSource?
+  careerProfile MasterCareerProfile?
 
   @@index([status])
   @@index([createdAt])
@@ -184,6 +185,18 @@ model CandidateResumeExtraction {
   resumeSource   CandidateResumeSource  @relation(fields: [resumeSourceId], references: [id], onDelete: Cascade)
 
   @@map("candidate_resume_extraction")
+}
+
+model MasterCareerProfile {
+  id            String   @id @default(cuid())
+  candidateId   String   @unique
+  schemaVersion Int
+  profileData   Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  candidate     Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@map("master_career_profile")
 }
 
 model CandidateIntakeAccess {
