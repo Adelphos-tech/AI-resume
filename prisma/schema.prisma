@@ -71,3 +71,37 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+
+enum CandidatePackage {
+  STARTER_LAP
+  CAREER_GRID
+  POLE_POSITION
+}
+
+enum CandidateStatus {
+  NEW
+  INTAKE_PENDING
+  IN_REVIEW
+  IN_PROGRESS
+  READY_FOR_DELIVERY
+  DELIVERED
+  ARCHIVED
+}
+
+model Candidate {
+  id          String           @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  location    String?
+  linkedinUrl String?
+  package     CandidatePackage
+  status      CandidateStatus  @default(NEW)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("candidate")
+}
