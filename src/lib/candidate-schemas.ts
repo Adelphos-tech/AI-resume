@@ -35,6 +35,14 @@ export const createCandidateSchema = z.strictObject({
 export type CreateCandidateInput = z.output<typeof createCandidateSchema>;
 export type CreateCandidateFormValues = z.input<typeof createCandidateSchema>;
 
+export const updateCandidateStatusSchema = z.strictObject({
+  status: z.enum(CandidateStatus, { error: "Select a valid status." }),
+});
+
+export type UpdateCandidateStatusInput = z.infer<
+  typeof updateCandidateStatusSchema
+>;
+
 export const candidateListQuerySchema = z.object({
   q: z.string().trim().max(100).optional().catch(undefined),
   status: z.enum(CandidateStatus).optional().catch(undefined),

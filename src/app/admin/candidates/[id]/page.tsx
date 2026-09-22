@@ -2,6 +2,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { CandidateStatusControl } from "@/components/admin/candidate-status-control";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -129,6 +130,10 @@ export default async function CandidateDetailPage({
               {dateFormatter.format(candidate.updatedAt)}
             </Field>
           </dl>
+          <CandidateStatusControl
+            candidateId={candidate.id}
+            currentStatus={candidate.status}
+          />
         </section>
       </div>
     </div>
