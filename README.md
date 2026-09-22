@@ -124,3 +124,12 @@ and excluded from the Docker build context.
   `/app/.data`** — container-local storage is ephemeral.
 - Note: deleting a Candidate cascades DB metadata only; a future
   deletion workflow must also remove the physical file.
+
+## Resume text extraction
+
+Uploaded source resumes can be text-extracted internally from the admin
+Candidate Detail page (PDF via `unpdf`/PDF.js, DOCX via `mammoth`).
+Normalized text is stored in `candidate_resume_extraction`; extraction
+is bounded (30 PDF pages, 200k characters) and invalidated whenever the
+source file is replaced. Image-only/scanned PDFs produce a `NO_TEXT`
+result — OCR is not implemented.

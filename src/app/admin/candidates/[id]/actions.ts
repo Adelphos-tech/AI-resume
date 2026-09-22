@@ -8,6 +8,7 @@ import {
   revokeCandidateIntakeAccess,
 } from "@/server/candidates/intake-access";
 import { updateCandidateStatus } from "@/server/candidates/update-candidate-status";
+import { extractCandidateResume } from "@/server/resume-extraction/extract-resume";
 
 export async function updateCandidateStatusAction(
   candidateId: string,
@@ -29,6 +30,14 @@ export async function generateIntakeLinkAction(candidateId: string) {
   if (result.success) {
     revalidatePath(`/admin/candidates/${candidateId}`);
   }
+
+  return result;
+}
+
+export async function extractResumeTextAction(candidateId: string) {
+  const result = await extractCandidateResume(candidateId);
+
+  revalidatePath(`/admin/candidates/${candidateId}`);
 
   return result;
 }

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
-import { mkdir, rename, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const RESUME_STORAGE_ROOT = path.join(process.cwd(), ".data", "resumes");
@@ -40,6 +40,10 @@ export async function writeResumeFile(
     await rm(tempPath, { force: true });
     throw error;
   }
+}
+
+export async function readResumeFile(storageKey: string): Promise<Buffer> {
+  return readFile(resolveStoragePath(storageKey));
 }
 
 export async function deleteResumeFile(storageKey: string): Promise<void> {

@@ -157,8 +157,33 @@ model CandidateResumeSource {
   uploadedAt       DateTime @default(now())
   updatedAt        DateTime @updatedAt
   candidate        Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  extraction       CandidateResumeExtraction?
 
   @@map("candidate_resume_source")
+}
+
+enum ResumeExtractionStatus {
+  SUCCEEDED
+  NO_TEXT
+  FAILED
+}
+
+model CandidateResumeExtraction {
+  id             String                 @id @default(cuid())
+  resumeSourceId String                 @unique
+  sourceSha256   String
+  status         ResumeExtractionStatus
+  extractedText  String?
+  pageCount      Int?
+  characterCount Int?
+  parser         String?
+  errorCode      String?
+  extractedAt    DateTime?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  resumeSource   CandidateResumeSource  @relation(fields: [resumeSourceId], references: [id], onDelete: Cascade)
+
+  @@map("candidate_resume_extraction")
 }
 
 model CandidateIntakeAccess {

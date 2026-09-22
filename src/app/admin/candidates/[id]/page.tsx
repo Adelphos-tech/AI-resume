@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CandidateStatusControl } from "@/components/admin/candidate-status-control";
+import { ExtractResumeButton } from "@/components/admin/extract-resume-button";
 import { IntakeAccessControl } from "@/components/admin/intake-access-control";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -161,20 +162,69 @@ export default async function CandidateDetailPage({
           Resume
         </h3>
         {candidate.resumeSource ? (
-          <div className="text-sm">
-            <p className="font-medium break-words">
-              {candidate.resumeSource.originalFileName}
-            </p>
-            <p className="mt-1 text-muted-foreground">
-              {formatBytes(candidate.resumeSource.sizeBytes)} · Uploaded{" "}
-              {dateFormatter.format(candidate.resumeSource.uploadedAt)}
-            </p>
+          <div className="space-y-4">
+            <div className="text-sm">
+              <p className="font-medium break-words">
+                {candidate.resumeSource.originalFileName}
+              </p>
+              <p className="mt-1 text-muted-foreground">
+                {formatBytes(candidate.resumeSource.sizeBytes)} · Uploaded{" "}
+                {dateFormatter.format(candidate.resumeSource.uploadedAt)}
+              </p>
+            </div>
+            <div className="space-y-2 text-sm">
+              <p className="font-medium">Text extraction</p>
+              <ExtractionSummary
+                extraction={candidate.resumeSource.extraction}
+              />
+              <ExtractResumeButton
+                candidateId={candidate.id}
+                hasExtraction={candidate.resumeSource.extraction !== null}
+                failed={candidate.resumeSource.extraction?.status === "FAILED"}
+              />
+            </div>
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">Not uploaded</p>
         )}
       </section>
     </div>
+  );
+}
+
+function ExtractionSummary({
+  extraction,
+}: {
+  extraction: {
+    status: "SUCCEEDED" | "NO_TEXT" | "FAILED";
+    pageCount: number | null;
+    characterCount: number | null;
+  } | null;
+}) {
+  if (!extraction) {
+    return <p className="text-muted-foreground">Not processed</p>;
+  }
+  if (extraction.status === "NO_TEXT") {
+    return (
+      <p className="text-muted-foreground">No machine-readable text found.</p>
+    );
+  }
+  if (extraction.status === "FAILED") {
+    return (
+      <p className="text-muted-foreground">
+        Unable to extract text from this resume.
+      </p>
+    );
+  }
+  const chars = (extraction.characterCount ?? 0).toLocaleString("en-GB");
+  return (
+    <p className="text-muted-foreground">
+      Extracted ·{" "}
+      {extraction.pageCount !== null
+        ? `${extraction.pageCount} ${extraction.pageCount === 1 ? "page" : "pages"} · `
+        : ""}
+      {chars} characters
+    </p>
   );
 }
 

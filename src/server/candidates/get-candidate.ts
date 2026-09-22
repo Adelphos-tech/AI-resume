@@ -38,6 +38,13 @@ const candidateDetailSelect = {
       sizeBytes: true,
       mimeType: true,
       uploadedAt: true,
+      extraction: {
+        select: {
+          status: true,
+          pageCount: true,
+          characterCount: true,
+        },
+      },
     },
   },
 } satisfies Prisma.CandidateSelect;

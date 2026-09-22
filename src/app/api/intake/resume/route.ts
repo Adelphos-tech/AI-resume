@@ -205,30 +205,37 @@ export async function POST(request: Request) {
   });
 
   try {
-    const record = await prisma.candidateResumeSource.upsert({
-      where: { candidateId: resolved.candidateId },
-      create: {
-        candidateId: resolved.candidateId,
-        originalFileName,
-        storageKey,
-        mimeType: DETECTED_TYPES[detectedKey].mime,
-        sizeBytes: bytes.length,
-        sha256,
-      },
-      update: {
-        originalFileName,
-        storageKey,
-        mimeType: DETECTED_TYPES[detectedKey].mime,
-        sizeBytes: bytes.length,
-        sha256,
-        uploadedAt: new Date(),
-      },
-      select: {
-        originalFileName: true,
-        sizeBytes: true,
-        mimeType: true,
-        uploadedAt: true,
-      },
+    const record = await prisma.$transaction(async (tx) => {
+      // Replacing the source file invalidates any prior extraction, so the
+      // stale text can never remain attached to new source metadata.
+      await tx.candidateResumeExtraction.deleteMany({
+        where: { resumeSource: { candidateId: resolved.candidateId } },
+      });
+      return tx.candidateResumeSource.upsert({
+        where: { candidateId: resolved.candidateId },
+        create: {
+          candidateId: resolved.candidateId,
+          originalFileName,
+          storageKey,
+          mimeType: DETECTED_TYPES[detectedKey].mime,
+          sizeBytes: bytes.length,
+          sha256,
+        },
+        update: {
+          originalFileName,
+          storageKey,
+          mimeType: DETECTED_TYPES[detectedKey].mime,
+          sizeBytes: bytes.length,
+          sha256,
+          uploadedAt: new Date(),
+        },
+        select: {
+          originalFileName: true,
+          sizeBytes: true,
+          mimeType: true,
+          uploadedAt: true,
+        },
+      });
     });
 
     if (existing && existing.storageKey !== storageKey) {
