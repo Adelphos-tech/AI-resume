@@ -115,6 +115,29 @@ export const masterCareerProfileBasicsSchema = z.strictObject({
     }),
 });
 
+/**
+ * Conservative chronology check for partial career dates (YYYY or YYYY-MM).
+ * Rejects only what is provably contradictory — a missing month preserves
+ * uncertainty rather than fabricating precision:
+ *
+ *   different years:            reject if end year < start year
+ *   same year, both months:     reject if end month < start month
+ *   same year, missing month:   accept (unknown ordering)
+ */
+export function isValidCareerDateRange(
+  startDate: string | null,
+  endDate: string | null,
+): boolean {
+  if (startDate === null || endDate === null) return true;
+  const [startYear, startMonth] = startDate.split("-");
+  const [endYear, endMonth] = endDate.split("-");
+  if (endYear !== startYear) return endYear > startYear;
+  if (startMonth !== undefined && endMonth !== undefined) {
+    return endMonth >= startMonth;
+  }
+  return true;
+}
+
 export const masterCareerProfileWorkEntrySchema = z
   .strictObject({
     id: entryId,
@@ -130,6 +153,9 @@ export const masterCareerProfileWorkEntrySchema = z
   })
   .refine((w) => !(w.isCurrent && w.endDate !== null), {
     message: "endDate must be null when isCurrent is true",
+  })
+  .refine((w) => isValidCareerDateRange(w.startDate, w.endDate), {
+    message: "endDate cannot be before startDate",
   });
 
 const educationEntrySchema = z.strictObject({
