@@ -166,6 +166,11 @@ export default async function CandidateDetailPage({
             ? `Draft profile exists · Updated ${dateFormatter.format(candidate.careerProfile.updatedAt)}`
             : "Not created"}
         </p>
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/admin/candidates/${candidate.id}/career-profile`}>
+            {candidate.careerProfile ? "Edit profile" : "Create profile"}
+          </Link>
+        </Button>
       </section>
 
       <section className="space-y-3 border-t pt-6">

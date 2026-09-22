@@ -91,7 +91,7 @@ const MAX_LINKS = 20;
 
 // --- Sections ----------------------------------------------------------------
 
-const basicsSchema = z.strictObject({
+export const masterCareerProfileBasicsSchema = z.strictObject({
   // Nullable: a stored draft may be empty; resume-ready requires it.
   fullName: optString(200),
   headline: optString(300),
@@ -179,7 +179,7 @@ const languageEntrySchema = z.strictObject({
 // --- Canonical document --------------------------------------------------------
 
 export const masterCareerProfileSchema = z.strictObject({
-  basics: basicsSchema,
+  basics: masterCareerProfileBasicsSchema,
   work: z.array(workEntrySchema).max(MAX_WORK),
   education: z.array(educationEntrySchema).max(MAX_EDUCATION),
   skills: z.array(skillGroupSchema).max(MAX_SKILL_GROUPS),
@@ -219,6 +219,37 @@ export function createEmptyMasterCareerProfile(): MasterCareerProfileData {
     certifications: [],
     languages: [],
   };
+}
+
+export type MasterCareerProfileBasics = z.infer<
+  typeof masterCareerProfileBasicsSchema
+>;
+
+/**
+ * Deterministic first-creation initialization from operational Candidate
+ * data. In-memory only — nothing is persisted by this helper, and once a
+ * profile exists it must never be re-initialized from Candidate.
+ */
+export function createInitialMasterCareerProfileFromCandidate(candidate: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string | null;
+  location?: string | null;
+  linkedinUrl?: string | null;
+}): MasterCareerProfileData {
+  const profile = createEmptyMasterCareerProfile();
+  const basics = profile.basics;
+  basics.fullName = `${candidate.firstName} ${candidate.lastName}`.trim();
+  basics.email = candidate.email;
+  basics.phone = candidate.phone ?? null;
+  basics.location = candidate.location ?? null;
+  if (candidate.linkedinUrl) {
+    basics.links = [{ label: "LinkedIn", url: candidate.linkedinUrl }];
+  }
+  // Guarantee the initialized draft obeys the canonical contract even if
+  // operational Candidate data drifts from its expectations.
+  return masterCareerProfileSchema.parse(profile);
 }
 
 export function isWithinProfileSizeLimit(data: MasterCareerProfileData) {
