@@ -13,6 +13,10 @@ jobs:
       # Placeholder only: Prisma config requires DATABASE_URL to be present
       # for client generation/build. No database is provisioned in CI.
       DATABASE_URL: postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder
+      # Placeholder only: auth config requires these to be present at build
+      # time. Not real secrets; no auth traffic occurs in CI.
+      BETTER_AUTH_SECRET: ci-placeholder-secret-not-a-real-key-0000
+      BETTER_AUTH_URL: http://localhost:3000
 
     steps:
       - name: Checkout

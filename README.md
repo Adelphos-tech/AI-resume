@@ -56,6 +56,27 @@ Requires the database running (`pnpm db:up`) and `DATABASE_URL` set in `.env`.
 
 No application models exist yet; migrations start with the first real model.
 
+## Authentication
+
+Internal admin/team authentication uses Better Auth with email/password
+credentials. Public signup is disabled — accounts are created by an
+operator only. Auth data lives in PostgreSQL via the Prisma adapter
+(`user`, `session`, `account`, `verification` tables); sessions are
+database-backed. `BETTER_AUTH_SECRET` and `BETTER_AUTH_URL` are required
+in `.env` (see `.env.example`).
+
+Create the initial administrator intentionally:
+
+```sh
+ADMIN_EMAIL=<email> ADMIN_PASSWORD=<password> pnpm admin:create
+```
+
+The user is created with `role=ADMIN`; the password is stored hashed.
+
+To regenerate the auth tables in `prisma/schema.prisma` after changing
+`src/server/auth-options.ts`, run `pnpm auth:generate` (Better Auth CLI
+pinned to the same version as the `better-auth` package).
+
 ## Production Docker Image
 
 `docker build -t rolerace .` builds a multi-stage production image

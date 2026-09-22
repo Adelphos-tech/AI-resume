@@ -18,11 +18,15 @@
     "db:generate": "prisma generate",
     "db:validate": "prisma validate",
     "db:studio": "prisma studio",
-    "db:migrate": "prisma migrate dev"
+    "db:migrate": "prisma migrate dev",
+    "admin:create": "NODE_OPTIONS='--conditions=react-server' tsx scripts/create-admin.ts",
+    "auth:generate": "pnpm dlx auth@1.7.5 generate --config scripts/auth-cli.ts --output prisma/schema.prisma --adapter prisma --dialect postgresql -y"
   },
   "dependencies": {
+    "@better-auth/prisma-adapter": "1.7.5",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
+    "better-auth": "1.7.5",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.3.2",
     "dotenv": "^18.0.1",
@@ -46,6 +50,7 @@
     "prisma": "^7.10.0",
     "shadcn": "^4.21.0",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   },
   "packageManager": "pnpm@10.34.5"
