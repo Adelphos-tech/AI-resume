@@ -16,7 +16,6 @@ import {
   CANDIDATE_PACKAGE_LABELS,
   CANDIDATE_STATUS_LABELS,
 } from "@/lib/candidate-labels";
-import { cn } from "@/lib/utils";
 import { listCandidates } from "@/server/candidates/list-candidates";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
