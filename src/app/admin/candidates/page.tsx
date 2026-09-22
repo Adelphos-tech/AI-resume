@@ -106,7 +106,12 @@ export default async function CandidatesPage({
                 {items.map((candidate) => (
                   <TableRow key={candidate.id}>
                     <TableCell className="font-medium">
-                      {candidate.firstName} {candidate.lastName}
+                      <Link
+                        href={`/admin/candidates/${candidate.id}`}
+                        className="underline-offset-4 hover:underline"
+                      >
+                        {candidate.firstName} {candidate.lastName}
+                      </Link>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {candidate.email}
@@ -142,7 +147,12 @@ export default async function CandidatesPage({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate font-medium">
-                      {candidate.firstName} {candidate.lastName}
+                      <Link
+                        href={`/admin/candidates/${candidate.id}`}
+                        className="underline-offset-4 hover:underline"
+                      >
+                        {candidate.firstName} {candidate.lastName}
+                      </Link>
                     </p>
                     <p className="truncate text-sm text-muted-foreground">
                       {candidate.email}
