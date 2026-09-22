@@ -1,7 +1,7 @@
 import "server-only";
 
 import { Prisma } from "@/generated/prisma/client";
-import { candidateListQuerySchema } from "@/server/candidates/schema";
+import { candidateListQuerySchema } from "@/lib/candidate-schemas";
 import { prisma } from "@/server/db";
 import { requireInternalSession } from "@/server/session";
 

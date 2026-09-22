@@ -60,12 +60,17 @@ export default async function CandidatesPage({
 
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <h2 className="text-2xl font-semibold tracking-tight">Candidates</h2>
-        <p className="text-sm text-muted-foreground">
-          Showing {from}–{to} of {total}{" "}
-          {total === 1 ? "candidate" : "candidates"}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-semibold tracking-tight">Candidates</h2>
+          <p className="text-sm text-muted-foreground">
+            Showing {from}–{to} of {total}{" "}
+            {total === 1 ? "candidate" : "candidates"}
+          </p>
+        </div>
+        <Button asChild size="sm">
+          <Link href="/admin/candidates/new">Add candidate</Link>
+        </Button>
       </div>
 
       <CandidateFilters initial={filters} hasActiveFilters={hasActiveFilters} />
