@@ -5,26 +5,18 @@
 - Node.js 20.19+ (Node 20 LTS) or 22.12+ (Node 22 LTS); newer supported LTS
   versions also work. Developed on Node 22.18. Required by Prisma 7.
 - pnpm 10 (managed via Corepack: `corepack enable`)
+- Docker with Docker Compose (for the local PostgreSQL database)
 
 ## Install
 
 pnpm install
+cp .env.example .env # then set real local values
 
 ## Development
 
 pnpm dev
 
-## Type Check
-
-pnpm typecheck
-
-## Lint
-
-pnpm lint
-
-## Production Build
-
-pnpm build
+Requires `.env` to exist. See Environment and Database sections below.
 
 ## Environment
 
