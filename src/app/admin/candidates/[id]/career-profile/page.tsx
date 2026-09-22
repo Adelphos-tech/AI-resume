@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CareerProfileBasicsForm } from "@/components/admin/career-profile-basics-form";
+import { CareerProfileWorkForm } from "@/components/admin/career-profile-work-form";
 import { Button } from "@/components/ui/button";
 import {
   createInitialMasterCareerProfileFromCandidate,
@@ -65,6 +66,16 @@ export default async function CareerProfileEditorPage({
         <CareerProfileBasicsForm
           candidateId={candidate.id}
           initialBasics={profile.basics}
+        />
+      </section>
+
+      <section className="space-y-4 border-t pt-6">
+        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+          Work Experience
+        </h3>
+        <CareerProfileWorkForm
+          candidateId={candidate.id}
+          initialWork={profile.work}
         />
       </section>
     </div>

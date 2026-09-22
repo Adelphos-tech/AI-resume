@@ -115,7 +115,7 @@ export const masterCareerProfileBasicsSchema = z.strictObject({
     }),
 });
 
-const workEntrySchema = z
+export const masterCareerProfileWorkEntrySchema = z
   .strictObject({
     id: entryId,
     company: reqString(300),
@@ -180,7 +180,7 @@ const languageEntrySchema = z.strictObject({
 
 export const masterCareerProfileSchema = z.strictObject({
   basics: masterCareerProfileBasicsSchema,
-  work: z.array(workEntrySchema).max(MAX_WORK),
+  work: z.array(masterCareerProfileWorkEntrySchema).max(MAX_WORK),
   education: z.array(educationEntrySchema).max(MAX_EDUCATION),
   skills: z.array(skillGroupSchema).max(MAX_SKILL_GROUPS),
   projects: z.array(projectEntrySchema).max(MAX_PROJECTS),
@@ -224,6 +224,15 @@ export function createEmptyMasterCareerProfile(): MasterCareerProfileData {
 export type MasterCareerProfileBasics = z.infer<
   typeof masterCareerProfileBasicsSchema
 >;
+
+export type MasterCareerProfileWorkEntry = z.infer<
+  typeof masterCareerProfileWorkEntrySchema
+>;
+
+/** Standalone array schema for the work-only write boundary. */
+export const masterCareerProfileWorkSchema = z
+  .array(masterCareerProfileWorkEntrySchema)
+  .max(MAX_WORK);
 
 /**
  * Deterministic first-creation initialization from operational Candidate
