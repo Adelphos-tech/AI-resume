@@ -8,7 +8,10 @@ import {
   createInitialMasterCareerProfileFromCandidate,
   isWithinProfileSizeLimit,
   masterCareerProfileBasicsSchema,
+  masterCareerProfileCertificationsSchema,
   masterCareerProfileEducationSchema,
+  masterCareerProfileLanguagesSchema,
+  masterCareerProfileProjectsSchema,
   masterCareerProfileSchema,
   masterCareerProfileSkillsSchema,
   masterCareerProfileWorkSchema,
@@ -125,14 +128,17 @@ export async function getMasterCareerProfile(
 }
 
 /**
- * Basics-only write boundary. The browser submits only the basics section;
- * the server loads the current canonical profile, replaces just `.basics`,
- * revalidates the COMPLETE document, and persists it — so unrelated
- * sections can never be wiped by a partial form payload.
+ * Shared section-merge write boundary: validates only the submitted
+ * section, merges it into the CURRENT canonical profile (or the
+ * deterministic Candidate-derived initial draft), revalidates the
+ * complete document via upsertMasterCareerProfile, and persists it.
+ * A partial payload can never wipe unrelated sections.
  */
-export async function updateMasterCareerProfileBasics(
+async function updateProfileSection<T>(
   candidateId: string,
-  rawBasics: unknown,
+  rawSection: unknown,
+  sectionSchema: z.ZodType<T>,
+  apply: (base: MasterCareerProfileData, section: T) => MasterCareerProfileData,
 ): Promise<UpsertMasterCareerProfileResult> {
   await requireInternalSession();
 
@@ -141,8 +147,8 @@ export async function updateMasterCareerProfileBasics(
     return { success: false, message: "Candidate not found." };
   }
 
-  const parsedBasics = masterCareerProfileBasicsSchema.safeParse(rawBasics);
-  if (!parsedBasics.success) {
+  const parsed = sectionSchema.safeParse(rawSection);
+  if (!parsed.success) {
     return { success: false, message: "Profile data is invalid." };
   }
 
@@ -158,115 +164,91 @@ export async function updateMasterCareerProfileBasics(
 
   // upsertMasterCareerProfile revalidates the merged document and enforces
   // the size cap before persisting.
-  return upsertMasterCareerProfile(candidateId, {
-    ...base,
-    basics: parsedBasics.data,
-  });
+  return upsertMasterCareerProfile(candidateId, apply(base, parsed.data));
 }
 
-/**
- * Work-only write boundary — same merge semantics as the basics boundary:
- * the browser submits only the canonical work array; the server replaces
- * just `.work` on the current (or freshly initialized) document and
- * revalidates the complete profile before persisting.
- */
-export async function updateMasterCareerProfileWork(
+export function updateMasterCareerProfileBasics(
+  candidateId: string,
+  rawBasics: unknown,
+): Promise<UpsertMasterCareerProfileResult> {
+  return updateProfileSection(
+    candidateId,
+    rawBasics,
+    masterCareerProfileBasicsSchema,
+    (base, basics) => ({ ...base, basics }),
+  );
+}
+
+export function updateMasterCareerProfileWork(
   candidateId: string,
   rawWork: unknown,
 ): Promise<UpsertMasterCareerProfileResult> {
-  await requireInternalSession();
-
-  const parsedId = candidateIdSchema.safeParse(candidateId);
-  if (!parsedId.success) {
-    return { success: false, message: "Candidate not found." };
-  }
-
-  const parsedWork = masterCareerProfileWorkSchema.safeParse(rawWork);
-  if (!parsedWork.success) {
-    return { success: false, message: "Profile data is invalid." };
-  }
-
-  const candidate = await findProfileContext(parsedId.data);
-  if (!candidate) {
-    return { success: false, message: "Candidate not found." };
-  }
-
-  const base = resolveBaseProfile(candidate);
-  if ("error" in base) {
-    return { success: false, message: base.error };
-  }
-
-  return upsertMasterCareerProfile(candidateId, {
-    ...base,
-    work: parsedWork.data,
-  });
+  return updateProfileSection(
+    candidateId,
+    rawWork,
+    masterCareerProfileWorkSchema,
+    (base, work) => ({ ...base, work }),
+  );
 }
 
-/** Education-only write boundary — same section-merge semantics. */
-export async function updateMasterCareerProfileEducation(
+export function updateMasterCareerProfileEducation(
   candidateId: string,
   rawEducation: unknown,
 ): Promise<UpsertMasterCareerProfileResult> {
-  await requireInternalSession();
-
-  const parsedId = candidateIdSchema.safeParse(candidateId);
-  if (!parsedId.success) {
-    return { success: false, message: "Candidate not found." };
-  }
-
-  const parsedEducation =
-    masterCareerProfileEducationSchema.safeParse(rawEducation);
-  if (!parsedEducation.success) {
-    return { success: false, message: "Profile data is invalid." };
-  }
-
-  const candidate = await findProfileContext(parsedId.data);
-  if (!candidate) {
-    return { success: false, message: "Candidate not found." };
-  }
-
-  const base = resolveBaseProfile(candidate);
-  if ("error" in base) {
-    return { success: false, message: base.error };
-  }
-
-  return upsertMasterCareerProfile(candidateId, {
-    ...base,
-    education: parsedEducation.data,
-  });
+  return updateProfileSection(
+    candidateId,
+    rawEducation,
+    masterCareerProfileEducationSchema,
+    (base, education) => ({ ...base, education }),
+  );
 }
 
-/** Skills-only write boundary — same section-merge semantics. */
-export async function updateMasterCareerProfileSkills(
+export function updateMasterCareerProfileSkills(
   candidateId: string,
   rawSkills: unknown,
 ): Promise<UpsertMasterCareerProfileResult> {
-  await requireInternalSession();
+  return updateProfileSection(
+    candidateId,
+    rawSkills,
+    masterCareerProfileSkillsSchema,
+    (base, skills) => ({ ...base, skills }),
+  );
+}
 
-  const parsedId = candidateIdSchema.safeParse(candidateId);
-  if (!parsedId.success) {
-    return { success: false, message: "Candidate not found." };
-  }
+export function updateMasterCareerProfileProjects(
+  candidateId: string,
+  rawProjects: unknown,
+): Promise<UpsertMasterCareerProfileResult> {
+  return updateProfileSection(
+    candidateId,
+    rawProjects,
+    masterCareerProfileProjectsSchema,
+    (base, projects) => ({ ...base, projects }),
+  );
+}
 
-  const parsedSkills = masterCareerProfileSkillsSchema.safeParse(rawSkills);
-  if (!parsedSkills.success) {
-    return { success: false, message: "Profile data is invalid." };
-  }
+export function updateMasterCareerProfileCertifications(
+  candidateId: string,
+  rawCertifications: unknown,
+): Promise<UpsertMasterCareerProfileResult> {
+  return updateProfileSection(
+    candidateId,
+    rawCertifications,
+    masterCareerProfileCertificationsSchema,
+    (base, certifications) => ({ ...base, certifications }),
+  );
+}
 
-  const candidate = await findProfileContext(parsedId.data);
-  if (!candidate) {
-    return { success: false, message: "Candidate not found." };
-  }
-
-  const base = resolveBaseProfile(candidate);
-  if ("error" in base) {
-    return { success: false, message: base.error };
-  }
-
-  return upsertMasterCareerProfile(candidateId, {
-    ...base,
-    skills: parsedSkills.data,
-  });
+export function updateMasterCareerProfileLanguages(
+  candidateId: string,
+  rawLanguages: unknown,
+): Promise<UpsertMasterCareerProfileResult> {
+  return updateProfileSection(
+    candidateId,
+    rawLanguages,
+    masterCareerProfileLanguagesSchema,
+    (base, languages) => ({ ...base, languages }),
+  );
 }
 
 export async function upsertMasterCareerProfile(

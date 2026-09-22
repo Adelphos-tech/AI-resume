@@ -3,7 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CareerProfileBasicsForm } from "@/components/admin/career-profile-basics-form";
+import { CareerProfileCertificationsForm } from "@/components/admin/career-profile-certifications-form";
 import { CareerProfileEducationForm } from "@/components/admin/career-profile-education-form";
+import { CareerProfileLanguagesForm } from "@/components/admin/career-profile-languages-form";
+import { CareerProfileProjectsForm } from "@/components/admin/career-profile-projects-form";
 import { CareerProfileSkillsForm } from "@/components/admin/career-profile-skills-form";
 import { CareerProfileWorkForm } from "@/components/admin/career-profile-work-form";
 import { Button } from "@/components/ui/button";
@@ -98,6 +101,36 @@ export default async function CareerProfileEditorPage({
         <CareerProfileSkillsForm
           candidateId={candidate.id}
           initialSkills={profile.skills}
+        />
+      </section>
+
+      <section className="space-y-4 border-t pt-6">
+        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+          Projects
+        </h3>
+        <CareerProfileProjectsForm
+          candidateId={candidate.id}
+          initialProjects={profile.projects}
+        />
+      </section>
+
+      <section className="space-y-4 border-t pt-6">
+        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+          Certifications
+        </h3>
+        <CareerProfileCertificationsForm
+          candidateId={candidate.id}
+          initialCertifications={profile.certifications}
+        />
+      </section>
+
+      <section className="space-y-4 border-t pt-6">
+        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+          Languages
+        </h3>
+        <CareerProfileLanguagesForm
+          candidateId={candidate.id}
+          initialLanguages={profile.languages}
         />
       </section>
     </div>
