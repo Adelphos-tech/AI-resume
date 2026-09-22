@@ -158,19 +158,23 @@ export const masterCareerProfileWorkEntrySchema = z
     message: "endDate cannot be before startDate",
   });
 
-const educationEntrySchema = z.strictObject({
-  id: entryId,
-  institution: reqString(300),
-  degree: optString(200),
-  fieldOfStudy: optString(200),
-  location: optString(200),
-  startDate: optDate,
-  endDate: optDate,
-  grade: optString(100),
-  highlights: stringList(1000).pipe(z.array(z.string()).max(MAX_HIGHLIGHTS)),
-});
+export const masterCareerProfileEducationEntrySchema = z
+  .strictObject({
+    id: entryId,
+    institution: reqString(300),
+    degree: optString(200),
+    fieldOfStudy: optString(200),
+    location: optString(200),
+    startDate: optDate,
+    endDate: optDate,
+    grade: optString(100),
+    highlights: stringList(1000).pipe(z.array(z.string()).max(MAX_HIGHLIGHTS)),
+  })
+  .refine((e) => isValidCareerDateRange(e.startDate, e.endDate), {
+    message: "endDate cannot be before startDate",
+  });
 
-const skillGroupSchema = z.strictObject({
+export const masterCareerProfileSkillGroupSchema = z.strictObject({
   id: entryId,
   name: reqString(200),
   keywords: stringList(100).pipe(z.array(z.string()).max(MAX_KEYWORDS)),
@@ -207,8 +211,10 @@ const languageEntrySchema = z.strictObject({
 export const masterCareerProfileSchema = z.strictObject({
   basics: masterCareerProfileBasicsSchema,
   work: z.array(masterCareerProfileWorkEntrySchema).max(MAX_WORK),
-  education: z.array(educationEntrySchema).max(MAX_EDUCATION),
-  skills: z.array(skillGroupSchema).max(MAX_SKILL_GROUPS),
+  education: z
+    .array(masterCareerProfileEducationEntrySchema)
+    .max(MAX_EDUCATION),
+  skills: z.array(masterCareerProfileSkillGroupSchema).max(MAX_SKILL_GROUPS),
   projects: z.array(projectEntrySchema).max(MAX_PROJECTS),
   certifications: z.array(certificationEntrySchema).max(MAX_CERTIFICATIONS),
   languages: z.array(languageEntrySchema).max(MAX_LANGUAGES),
@@ -259,6 +265,24 @@ export type MasterCareerProfileWorkEntry = z.infer<
 export const masterCareerProfileWorkSchema = z
   .array(masterCareerProfileWorkEntrySchema)
   .max(MAX_WORK);
+
+export type MasterCareerProfileEducationEntry = z.infer<
+  typeof masterCareerProfileEducationEntrySchema
+>;
+
+/** Standalone array schema for the education-only write boundary. */
+export const masterCareerProfileEducationSchema = z
+  .array(masterCareerProfileEducationEntrySchema)
+  .max(MAX_EDUCATION);
+
+export type MasterCareerProfileSkillGroup = z.infer<
+  typeof masterCareerProfileSkillGroupSchema
+>;
+
+/** Standalone array schema for the skills-only write boundary. */
+export const masterCareerProfileSkillsSchema = z
+  .array(masterCareerProfileSkillGroupSchema)
+  .max(MAX_SKILL_GROUPS);
 
 /**
  * Deterministic first-creation initialization from operational Candidate

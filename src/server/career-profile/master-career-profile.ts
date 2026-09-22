@@ -8,7 +8,9 @@ import {
   createInitialMasterCareerProfileFromCandidate,
   isWithinProfileSizeLimit,
   masterCareerProfileBasicsSchema,
+  masterCareerProfileEducationSchema,
   masterCareerProfileSchema,
+  masterCareerProfileSkillsSchema,
   masterCareerProfileWorkSchema,
   type MasterCareerProfileData,
 } from "@/lib/master-career-profile-schema";
@@ -197,6 +199,73 @@ export async function updateMasterCareerProfileWork(
   return upsertMasterCareerProfile(candidateId, {
     ...base,
     work: parsedWork.data,
+  });
+}
+
+/** Education-only write boundary — same section-merge semantics. */
+export async function updateMasterCareerProfileEducation(
+  candidateId: string,
+  rawEducation: unknown,
+): Promise<UpsertMasterCareerProfileResult> {
+  await requireInternalSession();
+
+  const parsedId = candidateIdSchema.safeParse(candidateId);
+  if (!parsedId.success) {
+    return { success: false, message: "Candidate not found." };
+  }
+
+  const parsedEducation =
+    masterCareerProfileEducationSchema.safeParse(rawEducation);
+  if (!parsedEducation.success) {
+    return { success: false, message: "Profile data is invalid." };
+  }
+
+  const candidate = await findProfileContext(parsedId.data);
+  if (!candidate) {
+    return { success: false, message: "Candidate not found." };
+  }
+
+  const base = resolveBaseProfile(candidate);
+  if ("error" in base) {
+    return { success: false, message: base.error };
+  }
+
+  return upsertMasterCareerProfile(candidateId, {
+    ...base,
+    education: parsedEducation.data,
+  });
+}
+
+/** Skills-only write boundary — same section-merge semantics. */
+export async function updateMasterCareerProfileSkills(
+  candidateId: string,
+  rawSkills: unknown,
+): Promise<UpsertMasterCareerProfileResult> {
+  await requireInternalSession();
+
+  const parsedId = candidateIdSchema.safeParse(candidateId);
+  if (!parsedId.success) {
+    return { success: false, message: "Candidate not found." };
+  }
+
+  const parsedSkills = masterCareerProfileSkillsSchema.safeParse(rawSkills);
+  if (!parsedSkills.success) {
+    return { success: false, message: "Profile data is invalid." };
+  }
+
+  const candidate = await findProfileContext(parsedId.data);
+  if (!candidate) {
+    return { success: false, message: "Candidate not found." };
+  }
+
+  const base = resolveBaseProfile(candidate);
+  if ("error" in base) {
+    return { success: false, message: base.error };
+  }
+
+  return upsertMasterCareerProfile(candidateId, {
+    ...base,
+    skills: parsedSkills.data,
   });
 }
 

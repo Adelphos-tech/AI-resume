@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CareerProfileBasicsForm } from "@/components/admin/career-profile-basics-form";
+import { CareerProfileEducationForm } from "@/components/admin/career-profile-education-form";
+import { CareerProfileSkillsForm } from "@/components/admin/career-profile-skills-form";
 import { CareerProfileWorkForm } from "@/components/admin/career-profile-work-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -76,6 +78,26 @@ export default async function CareerProfileEditorPage({
         <CareerProfileWorkForm
           candidateId={candidate.id}
           initialWork={profile.work}
+        />
+      </section>
+
+      <section className="space-y-4 border-t pt-6">
+        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+          Education
+        </h3>
+        <CareerProfileEducationForm
+          candidateId={candidate.id}
+          initialEducation={profile.education}
+        />
+      </section>
+
+      <section className="space-y-4 border-t pt-6">
+        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+          Skills
+        </h3>
+        <CareerProfileSkillsForm
+          candidateId={candidate.id}
+          initialSkills={profile.skills}
         />
       </section>
     </div>
