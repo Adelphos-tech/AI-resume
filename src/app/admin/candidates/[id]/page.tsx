@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { CandidateStatusControl } from "@/components/admin/candidate-status-control";
+import { IntakeAccessControl } from "@/components/admin/intake-access-control";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -136,6 +137,16 @@ export default async function CandidateDetailPage({
           />
         </section>
       </div>
+
+      <section className="space-y-3 border-t pt-6">
+        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+          Intake access
+        </h3>
+        <IntakeAccessControl
+          candidateId={candidate.id}
+          access={candidate.intakeAccess}
+        />
+      </section>
     </div>
   );
 }

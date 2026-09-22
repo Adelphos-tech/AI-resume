@@ -89,19 +89,33 @@ enum CandidateStatus {
 }
 
 model Candidate {
-  id          String           @id @default(cuid())
-  firstName   String
-  lastName    String
-  email       String
-  phone       String?
-  location    String?
-  linkedinUrl String?
-  package     CandidatePackage
-  status      CandidateStatus  @default(NEW)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id           String                 @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String
+  phone        String?
+  location     String?
+  linkedinUrl  String?
+  package      CandidatePackage
+  status       CandidateStatus        @default(NEW)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  intakeAccess CandidateIntakeAccess?
 
   @@index([status])
   @@index([createdAt])
   @@map("candidate")
+}
+
+model CandidateIntakeAccess {
+  id          String    @id @default(cuid())
+  candidateId String    @unique
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@map("candidate_intake_access")
 }

@@ -20,6 +20,12 @@ const candidateDetailSelect = {
   status: true,
   createdAt: true,
   updatedAt: true,
+  intakeAccess: {
+    select: {
+      expiresAt: true,
+      revokedAt: true,
+    },
+  },
 } satisfies Prisma.CandidateSelect;
 
 export type CandidateDetail = Prisma.CandidateGetPayload<{
