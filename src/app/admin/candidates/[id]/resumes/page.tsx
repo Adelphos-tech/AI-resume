@@ -1,9 +1,9 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ResumeVariantCreateForm } from "@/components/admin/resume-variant-create-form";
 import { Button } from "@/components/ui/button";
+import { RESUME_TEMPLATES } from "@/lib/resume-schema";
 import { prisma } from "@/server/db";
 import { listCandidateResumeVariants } from "@/server/resume-variants/resume-variants";
 import { requireInternalSession } from "@/server/session";
@@ -28,7 +28,6 @@ export default async function CandidateResumesPage({
       id: true,
       firstName: true,
       lastName: true,
-      intake: { select: { targetRoles: true } },
       careerProfile: { select: { candidateId: true } },
     },
   });
@@ -39,9 +38,10 @@ export default async function CandidateResumesPage({
 
   const variants = await listCandidateResumeVariants(candidate.id);
   const fullName = `${candidate.firstName} ${candidate.lastName}`;
+  const canCreate = !!candidate.careerProfile;
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-3xl space-y-6">
       <Button asChild variant="ghost" size="sm" className="-ml-2">
         <Link href={`/admin/candidates/${candidate.id}`}>
           <ArrowLeft />
@@ -49,54 +49,74 @@ export default async function CandidateResumesPage({
         </Link>
       </Button>
 
-      <header className="space-y-1">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Resume variants
-        </h2>
-        <p className="text-sm text-muted-foreground">{fullName}</p>
-      </header>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <header className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Resume variants
+          </h1>
+          <p className="text-sm text-muted-foreground">{fullName}</p>
+        </header>
+        {canCreate && (
+          <Button asChild>
+            <Link href={`/admin/candidates/${candidate.id}/resumes/new`}>
+              <Plus />
+              Create resume
+            </Link>
+          </Button>
+        )}
+      </div>
 
-      <section className="space-y-3">
-        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
-          Existing resumes
-        </h3>
-        {variants.success && variants.variants.length > 0 ? (
-          <ul className="divide-y rounded-lg border">
-            {variants.variants.map((v) => (
-              <li key={v.id}>
-                <Link
-                  href={`/admin/candidates/${candidate.id}/resumes/${v.id}`}
-                  className="block px-4 py-3 transition-colors hover:bg-muted/50"
-                >
-                  <p className="text-sm font-medium">{v.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {v.targetRole} · {v.targetCountry} ·{" "}
+      {variants.success && variants.variants.length > 0 ? (
+        <ul className="divide-y rounded-xl border bg-white">
+          {variants.variants.map((v) => (
+            <li key={v.id}>
+              <Link
+                href={`/admin/candidates/${candidate.id}/resumes/${v.id}`}
+                className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/50"
+              >
+                <FileText className="size-4 shrink-0 text-muted-foreground" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{v.name}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {v.targetRole} · {v.targetCountry}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {RESUME_TEMPLATES[
+                      v.templateKey as keyof typeof RESUME_TEMPLATES
+                    ]?.name ?? v.templateKey}
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
                     {dateFormatter.format(v.createdAt)}
                   </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-muted-foreground">No resumes yet</p>
-        )}
-      </section>
-
-      <section className="space-y-3 border-t pt-6">
-        <h3 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
-          Create resume
-        </h3>
-        {candidate.careerProfile ? (
-          <ResumeVariantCreateForm
-            candidateId={candidate.id}
-            suggestedRoles={candidate.intake?.targetRoles ?? []}
-          />
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Create the career profile before generating a resume.
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="rounded-xl border border-dashed bg-white p-10 text-center">
+          <FileText className="mx-auto size-6 text-muted-foreground" />
+          <p className="mt-3 text-sm font-medium">No resumes yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Create a resume from the candidate&rsquo;s reviewed career profile.
           </p>
-        )}
-      </section>
+          {canCreate && (
+            <Button asChild className="mt-5">
+              <Link href={`/admin/candidates/${candidate.id}/resumes/new`}>
+                <Plus />
+                Create resume
+              </Link>
+            </Button>
+          )}
+          {!canCreate && (
+            <p className="mt-4 text-xs text-muted-foreground">
+              Create the career profile before generating a resume.
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
