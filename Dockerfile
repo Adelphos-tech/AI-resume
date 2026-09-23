@@ -42,6 +42,7 @@ RUN apt-get update \
       libatspi2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 \
       libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2 \
       libpango-1.0-0 libcairo2 libx11-6 libxcb1 libxext6 libglib2.0-0 \
+      fonts-noto-cjk fonts-ipafont-gothic \
     && rm -rf /var/lib/apt/lists/*
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 COPY --from=builder /ms-playwright /ms-playwright
