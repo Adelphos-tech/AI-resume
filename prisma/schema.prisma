@@ -104,6 +104,7 @@ model Candidate {
   intake       CandidateIntake?
   resumeSource CandidateResumeSource?
   careerProfile MasterCareerProfile?
+  resumeVariants ResumeVariant[]
 
   @@index([status])
   @@index([createdAt])
@@ -210,4 +211,22 @@ model CandidateIntakeAccess {
   candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@map("candidate_intake_access")
+}
+
+model ResumeVariant {
+  id                   String   @id @default(cuid())
+  candidateId          String
+  name                 String
+  targetRole           String
+  targetCountry        String
+  templateKey          String
+  profileSchemaVersion Int
+  profileSnapshot      Json
+  resumeData           Json
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  candidate            Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@index([candidateId])
+  @@map("resume_variant")
 }
