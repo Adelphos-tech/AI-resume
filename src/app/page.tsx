@@ -1,40 +1,43 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import type { Metadata } from "next";
+
+import { AiReviewShowcase } from "@/components/marketing/ai-review-showcase";
+import { AudienceSection } from "@/components/marketing/audience-section";
+import { FinalCta } from "@/components/marketing/final-cta";
+import { HeroSection } from "@/components/marketing/hero-section";
+import { HowItWorks } from "@/components/marketing/how-it-works";
+import { PackagesSection } from "@/components/marketing/packages-section";
+import { ProductDemoSection } from "@/components/marketing/product-demo-section";
+import { PublicFooter } from "@/components/marketing/public-footer";
+import { PublicNavbar } from "@/components/marketing/public-navbar";
+import { TemplateShowcase } from "@/components/marketing/template-showcase";
+
+export const metadata: Metadata = {
+  title: "RoleRace — Career-Ready Resumes for Every Opportunity",
+  description:
+    "RoleRace helps professionals build targeted resumes from a structured career profile, choose professional templates, get AI-powered feedback, and export polished PDF and DOCX resumes.",
+  openGraph: {
+    title: "RoleRace — Career-Ready Resumes for Every Opportunity",
+    description:
+      "RoleRace helps professionals build targeted resumes from a structured career profile, choose professional templates, get AI-powered feedback, and export polished PDF and DOCX resumes.",
+    type: "website",
+  },
+};
 
 export default function Home() {
   return (
-    <main className="mx-auto flex min-h-svh w-full max-w-md flex-col items-start justify-center gap-6 px-6 py-16">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-semibold">RoleRace</h1>
-        <p className="text-sm text-muted-foreground">Design foundation</p>
-      </div>
-
-      <div className="flex gap-3">
-        <Button>Primary Button</Button>
-        <Button variant="secondary">Secondary Button</Button>
-      </div>
-
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Career intelligence platform</CardTitle>
-          <CardDescription>
-            Temporary foundation page verifying the RoleRace design system.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Badge>Foundation Ready</Badge>
-        </CardContent>
-      </Card>
-
-      <Input type="email" placeholder="Email address" />
-    </main>
+    <>
+      <PublicNavbar />
+      <main>
+        <HeroSection />
+        <ProductDemoSection />
+        <TemplateShowcase />
+        <HowItWorks />
+        <AiReviewShowcase />
+        <AudienceSection />
+        <PackagesSection />
+        <FinalCta />
+      </main>
+      <PublicFooter />
+    </>
   );
 }
