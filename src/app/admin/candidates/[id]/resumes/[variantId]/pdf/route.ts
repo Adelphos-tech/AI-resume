@@ -2,10 +2,8 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { getResumeVariant } from "@/server/resume-variants/resume-variants";
-import {
-  generateResumePdf,
-  resumePdfFileName,
-} from "@/server/resume-variants/pdf";
+import { resumeExportFileName } from "@/server/resume-variants/file-name";
+import { generateResumePdf } from "@/server/resume-variants/pdf";
 import { requireInternalSession } from "@/server/session";
 
 // Better Auth prefixes the cookie with __Secure- when serving over HTTPS.
@@ -53,8 +51,9 @@ export async function GET(
   return new NextResponse(new Uint8Array(pdf), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${resumePdfFileName(
+      "Content-Disposition": `attachment; filename="${resumeExportFileName(
         variant.name,
+        "pdf",
       )}"`,
       "Cache-Control": "private, no-store",
       "X-Content-Type-Options": "nosniff",

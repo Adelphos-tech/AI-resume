@@ -66,6 +66,14 @@ export default async function ResumeVariantPage({
             Download PDF
           </a>
         </Button>
+        <Button asChild variant="outline" size="sm">
+          <a
+            href={`/admin/candidates/${id}/resumes/${variantId}/docx`}
+            download
+          >
+            Download DOCX
+          </a>
+        </Button>
       </div>
 
       <dl className="space-y-0">

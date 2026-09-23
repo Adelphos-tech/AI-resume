@@ -1,6 +1,6 @@
 import type { ResumeData, ResumeSectionKey } from "@/lib/resume-schema";
 
-import { formatCareerDateRange } from "../format";
+import { formatCareerDateRange } from "@/lib/resume-format";
 
 /**
  * ATS Classic — single-column, restrained, text-first resume document.

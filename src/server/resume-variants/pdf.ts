@@ -88,12 +88,4 @@ export async function generateResumePdf(input: {
   }
 }
 
-/** Safe ASCII filename for Content-Disposition — no CR/LF, no control. */
-export function resumePdfFileName(name: string): string {
-  const slug = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
-  return `${slug || "resume"}.pdf`;
-}
+export { resumeExportFileName } from "./file-name";
