@@ -6,6 +6,7 @@ import {
 
 import { AtsClassicTemplate } from "./templates/ats-classic";
 import { CorporateProfessionalTemplate } from "./templates/corporate-professional";
+import { ModernMinimalTemplate } from "./templates/modern-minimal";
 import { TechnicalTemplate } from "./templates/technical";
 
 /**
@@ -35,5 +36,7 @@ export function ResumeRenderer({
       return <CorporateProfessionalTemplate data={resumeData} />;
     case "technical":
       return <TechnicalTemplate data={resumeData} />;
+    case "modern-minimal":
+      return <ModernMinimalTemplate data={resumeData} />;
   }
 }

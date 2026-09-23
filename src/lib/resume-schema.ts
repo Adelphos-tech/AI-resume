@@ -16,6 +16,7 @@ export const RESUME_TEMPLATE_KEYS = [
   "ats-classic",
   "corporate-professional",
   "technical",
+  "modern-minimal",
 ] as const;
 
 export type ResumeTemplateKey = (typeof RESUME_TEMPLATE_KEYS)[number];
@@ -49,6 +50,13 @@ export const RESUME_TEMPLATES: Record<
     description:
       "A compact engineering-focused single-column resume for software, data, cloud, security, and technical roles.",
     category: "Technical / Engineering",
+  },
+  "modern-minimal": {
+    key: "modern-minimal",
+    name: "Modern Minimal",
+    description:
+      "A clean, contemporary single-column resume with generous whitespace for modern professional, product, startup, SaaS, and business roles.",
+    category: "Modern / Professional",
   },
 };
 

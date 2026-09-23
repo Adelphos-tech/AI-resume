@@ -12,6 +12,10 @@ import {
   buildCorporateParagraphs,
   CORPORATE_THEME,
 } from "./docx/corporate-professional";
+import {
+  buildModernMinimalParagraphs,
+  MODERN_MINIMAL_THEME,
+} from "./docx/modern-minimal";
 import { buildTechnicalParagraphs, TECHNICAL_THEME } from "./docx/technical";
 import { PAGE } from "./docx/shared";
 
@@ -36,6 +40,11 @@ const TEMPLATE_BUILDERS: Record<
     build: buildTechnicalParagraphs,
     font: TECHNICAL_THEME.font,
     color: TECHNICAL_THEME.body,
+  },
+  "modern-minimal": {
+    build: buildModernMinimalParagraphs,
+    font: MODERN_MINIMAL_THEME.font,
+    color: MODERN_MINIMAL_THEME.body,
   },
 };
 
