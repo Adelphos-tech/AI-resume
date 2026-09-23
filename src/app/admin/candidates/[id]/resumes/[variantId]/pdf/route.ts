@@ -39,6 +39,7 @@ export async function GET(
       candidateId: id,
       variantId,
       sessionToken,
+      templateKey: variant.templateKey,
     });
   } catch {
     // Never leak Chromium/Playwright internals to the client.

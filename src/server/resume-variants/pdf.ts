@@ -2,6 +2,7 @@ import "server-only";
 
 import { chromium, type Browser } from "playwright";
 
+import { RESUME_TEMPLATES } from "@/lib/resume-schema";
 import { env } from "@/server/env";
 
 const MAX_PDF_BYTES = 10 * 1024 * 1024; // 10 MiB
@@ -27,7 +28,11 @@ export async function generateResumePdf(input: {
   candidateId: string;
   variantId: string;
   sessionToken: string;
+  templateKey: string;
 }): Promise<Buffer> {
+  if (!Object.hasOwn(RESUME_TEMPLATES, input.templateKey)) {
+    throw new Error(`Unsupported resume template: ${input.templateKey}`);
+  }
   const origin = new URL(env.PDF_RENDER_ORIGIN);
   const renderUrl = `${origin.origin}/print/resume/${encodeURIComponent(
     input.candidateId,
@@ -63,7 +68,7 @@ export async function generateResumePdf(input: {
 
     // Readiness = the real resume root for the expected template.
     await page.waitForSelector(
-      '[data-resume-document][data-resume-template="ats-classic"]',
+      `[data-resume-document][data-resume-template="${input.templateKey}"]`,
       { timeout: READY_TIMEOUT_MS },
     );
     await page.evaluate(() => document.fonts.ready);

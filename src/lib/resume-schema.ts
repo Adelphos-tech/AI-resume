@@ -12,7 +12,10 @@ import { z } from "zod";
 /* Template registry — identity contract only; rendering comes later.  */
 /* ------------------------------------------------------------------ */
 
-export const RESUME_TEMPLATE_KEYS = ["ats-classic"] as const;
+export const RESUME_TEMPLATE_KEYS = [
+  "ats-classic",
+  "corporate-professional",
+] as const;
 
 export type ResumeTemplateKey = (typeof RESUME_TEMPLATE_KEYS)[number];
 
@@ -31,6 +34,13 @@ export const RESUME_TEMPLATES: Record<
     description:
       "Single-column professional layout optimized for applicant tracking systems.",
     category: "ATS / Professional",
+  },
+  "corporate-professional": {
+    key: "corporate-professional",
+    name: "Corporate Professional",
+    description:
+      "A polished single-column resume for corporate, business, management, consulting, finance, operations, and product roles.",
+    category: "Corporate / Professional",
   },
 };
 

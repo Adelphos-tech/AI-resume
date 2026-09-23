@@ -5,6 +5,7 @@ import {
 } from "@/lib/resume-schema";
 
 import { AtsClassicTemplate } from "./templates/ats-classic";
+import { CorporateProfessionalTemplate } from "./templates/corporate-professional";
 
 /**
  * Resume document dispatcher. `templateKey` comes from a persisted
@@ -29,5 +30,7 @@ export function ResumeRenderer({
   switch (templateKey as ResumeTemplateKey) {
     case "ats-classic":
       return <AtsClassicTemplate data={resumeData} />;
+    case "corporate-professional":
+      return <CorporateProfessionalTemplate data={resumeData} />;
   }
 }
