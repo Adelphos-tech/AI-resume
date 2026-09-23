@@ -53,6 +53,14 @@ export default async function ResumeVariantPage({
         </p>
       </header>
 
+      <div>
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/admin/candidates/${id}/resumes/${variantId}/preview`}>
+            View resume
+          </Link>
+        </Button>
+      </div>
+
       <dl className="space-y-0">
         <div className="grid grid-cols-[9rem_1fr] items-baseline gap-4 py-2.5">
           <dt className="text-sm text-muted-foreground">Target role</dt>
