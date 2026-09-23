@@ -15,6 +15,7 @@ import { z } from "zod";
 export const RESUME_TEMPLATE_KEYS = [
   "ats-classic",
   "corporate-professional",
+  "technical",
 ] as const;
 
 export type ResumeTemplateKey = (typeof RESUME_TEMPLATE_KEYS)[number];
@@ -41,6 +42,13 @@ export const RESUME_TEMPLATES: Record<
     description:
       "A polished single-column resume for corporate, business, management, consulting, finance, operations, and product roles.",
     category: "Corporate / Professional",
+  },
+  technical: {
+    key: "technical",
+    name: "Technical",
+    description:
+      "A compact engineering-focused single-column resume for software, data, cloud, security, and technical roles.",
+    category: "Technical / Engineering",
   },
 };
 

@@ -6,6 +6,7 @@ import {
 
 import { AtsClassicTemplate } from "./templates/ats-classic";
 import { CorporateProfessionalTemplate } from "./templates/corporate-professional";
+import { TechnicalTemplate } from "./templates/technical";
 
 /**
  * Resume document dispatcher. `templateKey` comes from a persisted
@@ -32,5 +33,7 @@ export function ResumeRenderer({
       return <AtsClassicTemplate data={resumeData} />;
     case "corporate-professional":
       return <CorporateProfessionalTemplate data={resumeData} />;
+    case "technical":
+      return <TechnicalTemplate data={resumeData} />;
   }
 }

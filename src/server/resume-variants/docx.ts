@@ -12,6 +12,7 @@ import {
   buildCorporateParagraphs,
   CORPORATE_THEME,
 } from "./docx/corporate-professional";
+import { buildTechnicalParagraphs, TECHNICAL_THEME } from "./docx/technical";
 import { PAGE } from "./docx/shared";
 
 const MAX_DOCX_BYTES = 10 * 1024 * 1024; // 10 MiB
@@ -30,6 +31,11 @@ const TEMPLATE_BUILDERS: Record<
     build: buildCorporateParagraphs,
     font: CORPORATE_THEME.font,
     color: CORPORATE_THEME.body,
+  },
+  technical: {
+    build: buildTechnicalParagraphs,
+    font: TECHNICAL_THEME.font,
+    color: TECHNICAL_THEME.body,
   },
 };
 
