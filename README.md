@@ -11,6 +11,7 @@
 
 pnpm install
 cp .env.example .env # then set real local values
+pnpm exec playwright install chromium # one-time: browser for resume PDF export
 
 ## Development
 
@@ -85,6 +86,11 @@ requires `DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL` at
 runtime and listens on port 3000 internally.
 Local development should still use `pnpm dev`; reverse proxy and VPS
 deployment are handled separately.
+
+Resume PDF export runs headless Chromium (Playwright) inside the server.
+The image ships Chromium and its OS libraries; behind a reverse proxy,
+set `PDF_RENDER_ORIGIN` to an origin the container itself can reach
+(e.g. `http://127.0.0.1:3000`).
 
 ## Health Check
 

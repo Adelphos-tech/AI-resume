@@ -96,3 +96,37 @@
     @apply font-medium tracking-tight;
   }
 }
+
+/* ---------------------------------------------------------------
+ * Resume print/PDF geometry — A4 only for V1 export. Chromium's
+ * print layout owns pagination; these rules keep the document
+ * clean (no canvas chrome) and hint sensible break points.
+ * ------------------------------------------------------------- */
+@page {
+  size: A4;
+  margin: 16mm 15mm;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  [data-resume-document] {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Keep each career entry intact where it fits on a page; longer
+     entries break naturally between lines. */
+  [data-resume-document] [data-resume-source-id],
+  [data-resume-document] li {
+    break-inside: avoid;
+  }
+
+  /* Never strand a section heading at the bottom of a page. */
+  [data-resume-document] h2 {
+    break-after: avoid;
+  }
+}

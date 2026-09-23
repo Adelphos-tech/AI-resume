@@ -53,11 +53,18 @@ export default async function ResumeVariantPage({
         </p>
       </header>
 
-      <div>
+      <div className="flex flex-wrap gap-2">
         <Button asChild variant="outline" size="sm">
           <Link href={`/admin/candidates/${id}/resumes/${variantId}/preview`}>
             View resume
           </Link>
+        </Button>
+        {/* Plain anchor — not a Next Link — so the expensive export is
+            never prefetched; it only runs on explicit operator click. */}
+        <Button asChild variant="outline" size="sm">
+          <a href={`/admin/candidates/${id}/resumes/${variantId}/pdf`} download>
+            Download PDF
+          </a>
         </Button>
       </div>
 
