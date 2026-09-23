@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AiReviewPanel } from "@/components/admin/ai-review-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RESUME_TEMPLATES, type ResumeTemplateKey } from "@/lib/resume-schema";
@@ -116,6 +117,8 @@ export default async function ResumeVariantPage({
           ))}
         </dl>
       </section>
+
+      <AiReviewPanel candidateId={id} variantId={variantId} />
     </div>
   );
 }
