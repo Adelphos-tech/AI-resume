@@ -56,12 +56,16 @@ export type ReviewResumeResult =
   | { success: true; review: AiResumeReview }
   | { success: false; message: string };
 
-export async function reviewResumeVariant(
+/**
+ * Authorization-free review core: callers MUST enforce their own
+ * session/ownership boundary before invoking. The admin wrapper
+ * enforces requireInternalSession(); the candidate wrapper enforces
+ * requireCandidateSession() and passes the session-owned candidate id.
+ */
+export async function reviewResumeVariantCore(
   candidateId: string,
   variantId: string,
 ): Promise<ReviewResumeResult> {
-  await requireInternalSession();
-
   const parsedId = variantIdSchema.safeParse(variantId);
   if (!parsedId.success) {
     return { success: false, message: "Resume variant not found." };
@@ -158,4 +162,12 @@ export async function reviewResumeVariant(
   }
 
   return { success: true, review: review.data };
+}
+
+export async function reviewResumeVariant(
+  candidateId: string,
+  variantId: string,
+): Promise<ReviewResumeResult> {
+  await requireInternalSession();
+  return reviewResumeVariantCore(candidateId, variantId);
 }

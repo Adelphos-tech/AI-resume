@@ -1,4 +1,4 @@
-import { ArrowLeft, FileDown } from "lucide-react";
+import { ArrowLeft, FileDown, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -47,7 +47,14 @@ export default async function CandidateResumeDetailPage({
             {variant.targetRole} · {variant.targetCountry} · {templateName}
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href={`/candidate/ai-review/${variantId}`}
+            className="inline-flex items-center gap-2 rounded-xl border border-emerald-600/30 bg-emerald-50/50 px-5 py-2.5 text-sm font-semibold text-emerald-800 transition-colors hover:bg-emerald-50"
+          >
+            <Sparkles className="size-4" aria-hidden />
+            Review with AI
+          </Link>
           <a
             href={`/candidate/resumes/${variantId}/pdf`}
             className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-800"

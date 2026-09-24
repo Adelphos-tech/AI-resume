@@ -1,0 +1,79 @@
+import { ArrowLeft, FileText } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import { CandidateAiReviewPanel } from "@/components/candidate/ai-review/review-panel";
+import { ResumeRenderer } from "@/components/resume/resume-renderer";
+import { RESUME_TEMPLATES, type ResumeTemplateKey } from "@/lib/resume-schema";
+import { getResumeVariantCore } from "@/server/resume-variants/resume-variants";
+import { requireCandidateSession } from "@/server/session";
+
+export const metadata = { title: "AI Review — RoleRace" };
+
+export default async function CandidateAiReviewWorkspacePage({
+  params,
+}: {
+  params: Promise<{ variantId: string }>;
+}) {
+  const { candidate } = await requireCandidateSession();
+  const { variantId } = await params;
+
+  const result = await getResumeVariantCore(variantId);
+  if (!result.success || result.variant.candidateId !== candidate.id) {
+    notFound();
+  }
+  const variant = result.variant;
+  const templateName =
+    RESUME_TEMPLATES[variant.templateKey as ResumeTemplateKey]?.name ??
+    variant.templateKey;
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <Link
+          href="/candidate/ai-review"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800"
+        >
+          <ArrowLeft className="size-3.5" aria-hidden />
+          Back to AI Review
+        </Link>
+      </div>
+
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
+            {variant.name}
+          </h1>
+          <p className="mt-1.5 text-sm text-stone-600">
+            {variant.targetRole} · {variant.targetCountry} · {templateName}
+          </p>
+        </div>
+        <Link
+          href={`/candidate/resumes/${variant.id}`}
+          className="inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:border-emerald-600/30 hover:bg-emerald-50/50"
+        >
+          <FileText className="size-4" aria-hidden />
+          View resume
+        </Link>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[3fr_2fr]">
+        <section
+          aria-label="Resume preview"
+          className="order-2 rounded-2xl border border-stone-200 bg-stone-100/70 p-4 xl:order-1 md:p-6"
+        >
+          <div className="mx-auto max-w-[720px] overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
+            <ResumeRenderer
+              templateKey={variant.templateKey}
+              resumeData={variant.resumeData}
+            />
+          </div>
+        </section>
+
+        <section aria-label="AI review" className="order-1 xl:order-2">
+          <CandidateAiReviewPanel variantId={variant.id} />
+        </section>
+      </div>
+    </div>
+  );
+}
