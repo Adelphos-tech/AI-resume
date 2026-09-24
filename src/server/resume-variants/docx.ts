@@ -16,6 +16,11 @@ import {
   buildModernMinimalParagraphs,
   MODERN_MINIMAL_THEME,
 } from "./docx/modern-minimal";
+import {
+  buildCompactProfessionalParagraphs,
+  COMPACT_PROFESSIONAL_THEME,
+} from "./docx/compact-professional";
+import { buildExecutiveParagraphs, EXECUTIVE_THEME } from "./docx/executive";
 import { buildTechnicalParagraphs, TECHNICAL_THEME } from "./docx/technical";
 import { PAGE } from "./docx/shared";
 
@@ -45,6 +50,16 @@ const TEMPLATE_BUILDERS: Record<
     build: buildModernMinimalParagraphs,
     font: MODERN_MINIMAL_THEME.font,
     color: MODERN_MINIMAL_THEME.body,
+  },
+  "compact-professional": {
+    build: buildCompactProfessionalParagraphs,
+    font: COMPACT_PROFESSIONAL_THEME.font,
+    color: COMPACT_PROFESSIONAL_THEME.body,
+  },
+  executive: {
+    build: buildExecutiveParagraphs,
+    font: EXECUTIVE_THEME.font,
+    color: EXECUTIVE_THEME.body,
   },
 };
 

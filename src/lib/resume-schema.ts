@@ -17,6 +17,8 @@ export const RESUME_TEMPLATE_KEYS = [
   "corporate-professional",
   "technical",
   "modern-minimal",
+  "compact-professional",
+  "executive",
 ] as const;
 
 export type ResumeTemplateKey = (typeof RESUME_TEMPLATE_KEYS)[number];
@@ -57,6 +59,20 @@ export const RESUME_TEMPLATES: Record<
     description:
       "A clean, contemporary single-column resume with generous whitespace for modern professional, product, startup, SaaS, and business roles.",
     category: "Modern / Professional",
+  },
+  "compact-professional": {
+    key: "compact-professional",
+    name: "Compact Professional",
+    description:
+      "A dense, information-rich single-column resume with right-aligned dates for experienced professionals and technical careers.",
+    category: "Compact / ATS",
+  },
+  executive: {
+    key: "executive",
+    name: "Executive",
+    description:
+      "A refined leadership resume with strong name typography and an emerald accent rule for senior, director, and executive roles.",
+    category: "Executive / Leadership",
   },
 };
 

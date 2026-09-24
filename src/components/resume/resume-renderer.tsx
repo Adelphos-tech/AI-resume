@@ -5,7 +5,9 @@ import {
 } from "@/lib/resume-schema";
 
 import { AtsClassicTemplate } from "./templates/ats-classic";
+import { CompactProfessionalTemplate } from "./templates/compact-professional";
 import { CorporateProfessionalTemplate } from "./templates/corporate-professional";
+import { ExecutiveTemplate } from "./templates/executive";
 import { ModernMinimalTemplate } from "./templates/modern-minimal";
 import { TechnicalTemplate } from "./templates/technical";
 
@@ -38,5 +40,9 @@ export function ResumeRenderer({
       return <TechnicalTemplate data={resumeData} />;
     case "modern-minimal":
       return <ModernMinimalTemplate data={resumeData} />;
+    case "compact-professional":
+      return <CompactProfessionalTemplate data={resumeData} />;
+    case "executive":
+      return <ExecutiveTemplate data={resumeData} />;
   }
 }
