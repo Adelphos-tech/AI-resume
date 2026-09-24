@@ -8,9 +8,11 @@ import { AtsClassicTemplate } from "./templates/ats-classic";
 import { CompactProfessionalTemplate } from "./templates/compact-professional";
 import { CorporateProfessionalTemplate } from "./templates/corporate-professional";
 import { ElegantSerifTemplate } from "./templates/elegant-serif";
+import { EditorialGridTemplate } from "./templates/editorial-grid";
 import { EmeraldBannerTemplate } from "./templates/emerald-banner";
 import { ExecutiveTemplate } from "./templates/executive";
 import { ModernMinimalTemplate } from "./templates/modern-minimal";
+import { ModernSidebarTemplate } from "./templates/modern-sidebar";
 import { TechnicalTemplate } from "./templates/technical";
 
 /**
@@ -50,5 +52,9 @@ export function ResumeRenderer({
       return <ElegantSerifTemplate data={resumeData} />;
     case "emerald-banner":
       return <EmeraldBannerTemplate data={resumeData} />;
+    case "modern-sidebar":
+      return <ModernSidebarTemplate data={resumeData} />;
+    case "editorial-grid":
+      return <EditorialGridTemplate data={resumeData} />;
   }
 }

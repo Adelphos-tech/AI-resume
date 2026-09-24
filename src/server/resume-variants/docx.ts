@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Document, Packer, type Paragraph } from "docx";
+import { Document, Packer, type Paragraph, type Table } from "docx";
 
 import type { ResumeData } from "@/lib/resume-schema";
 
@@ -28,7 +28,15 @@ import {
   buildEmeraldBannerParagraphs,
   EMERALD_BANNER_THEME,
 } from "./docx/emerald-banner";
+import {
+  buildEditorialGridParagraphs,
+  EDITORIAL_GRID_THEME,
+} from "./docx/editorial-grid";
 import { buildExecutiveParagraphs, EXECUTIVE_THEME } from "./docx/executive";
+import {
+  buildModernSidebarParagraphs,
+  MODERN_SIDEBAR_THEME,
+} from "./docx/modern-sidebar";
 import { buildTechnicalParagraphs, TECHNICAL_THEME } from "./docx/technical";
 import { PAGE } from "./docx/shared";
 
@@ -37,7 +45,11 @@ const ZIP_SIGNATURE = Buffer.from("PK\x03\x04", "binary");
 
 const TEMPLATE_BUILDERS: Record<
   string,
-  { build: (data: ResumeData) => Paragraph[]; font: string; color: string }
+  {
+    build: (data: ResumeData) => (Paragraph | Table)[];
+    font: string;
+    color: string;
+  }
 > = {
   "ats-classic": {
     build: buildAtsClassicParagraphs,
@@ -78,6 +90,16 @@ const TEMPLATE_BUILDERS: Record<
     build: buildEmeraldBannerParagraphs,
     font: EMERALD_BANNER_THEME.font,
     color: EMERALD_BANNER_THEME.body,
+  },
+  "modern-sidebar": {
+    build: buildModernSidebarParagraphs,
+    font: MODERN_SIDEBAR_THEME.font,
+    color: MODERN_SIDEBAR_THEME.body,
+  },
+  "editorial-grid": {
+    build: buildEditorialGridParagraphs,
+    font: EDITORIAL_GRID_THEME.font,
+    color: EDITORIAL_GRID_THEME.body,
   },
 };
 

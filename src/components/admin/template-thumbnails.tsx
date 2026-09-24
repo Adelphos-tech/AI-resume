@@ -183,6 +183,58 @@ function EmeraldBannerThumbnail() {
   );
 }
 
+function ModernSidebarThumbnail() {
+  return (
+    <Frame>
+      <Line w="w-2/5" tone="bg-stone-500" h="h-[4px]" />
+      <Line w="w-1/3" tone="bg-emerald-700" h="h-[2.5px]" />
+      <div className="mt-1 flex flex-1 gap-2">
+        <div className="flex w-[30%] flex-col gap-1 rounded-sm bg-stone-100 p-1">
+          <Line w="w-full" h="h-[2px]" />
+          <Line w="w-3/4" h="h-[2px]" />
+          <Line w="w-full" h="h-[2px]" />
+          <Line w="w-2/3" h="h-[2px]" />
+        </div>
+        <div className="flex flex-1 flex-col gap-1">
+          <Line w="w-full" />
+          <Line w="w-full" />
+          <Line w="w-4/5" />
+          <Line w="w-full" />
+          <Line w="w-3/5" />
+        </div>
+      </div>
+    </Frame>
+  );
+}
+
+function EditorialGridThumbnail() {
+  return (
+    <Frame>
+      <div className="border-t-2 border-stone-700" />
+      <div className="flex gap-2">
+        <div className="w-[24%]" />
+        <Line w="w-1/2" tone="bg-stone-500" h="h-[4px]" />
+      </div>
+      <div className="flex gap-2">
+        <Line w="w-1/6" tone="bg-stone-400" h="h-[2px]" />
+        <Line w="w-3/5" />
+      </div>
+      <div className="flex gap-2 border-t border-stone-100 pt-1">
+        <Line w="w-1/6" tone="bg-stone-400" h="h-[2px]" />
+        <Line w="w-full" />
+      </div>
+      <div className="flex gap-2 border-t border-stone-100 pt-1">
+        <Line w="w-1/6" tone="bg-stone-400" h="h-[2px]" />
+        <Line w="w-4/5" />
+      </div>
+      <div className="flex gap-2 border-t border-stone-100 pt-1">
+        <Line w="w-1/6" tone="bg-stone-400" h="h-[2px]" />
+        <Line w="w-3/5" />
+      </div>
+    </Frame>
+  );
+}
+
 export const TEMPLATE_THUMBNAILS: Record<
   ResumeTemplateKey,
   () => React.ReactNode
@@ -195,4 +247,6 @@ export const TEMPLATE_THUMBNAILS: Record<
   executive: ExecutiveThumbnail,
   "elegant-serif": ElegantSerifThumbnail,
   "emerald-banner": EmeraldBannerThumbnail,
+  "modern-sidebar": ModernSidebarThumbnail,
+  "editorial-grid": EditorialGridThumbnail,
 };

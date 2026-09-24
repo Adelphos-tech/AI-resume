@@ -15,6 +15,8 @@ direction of specific templates:
   Resume, MIT License.
 - **Emerald Banner** — inspired by the `leafish` template of Reactive
   Resume, MIT License.
+- **Modern Sidebar** — inspired by the `azurill` template of Reactive
+  Resume, MIT License.
 
 MIT License (upstream projects)
 

@@ -21,6 +21,8 @@ export const RESUME_TEMPLATE_KEYS = [
   "executive",
   "elegant-serif",
   "emerald-banner",
+  "modern-sidebar",
+  "editorial-grid",
 ] as const;
 
 export type ResumeTemplateKey = (typeof RESUME_TEMPLATE_KEYS)[number];
@@ -89,6 +91,20 @@ export const RESUME_TEMPLATES: Record<
     description:
       "A confident branded resume with an emerald banner header and clean single-column body for modern professionals.",
     category: "Branded / Modern",
+  },
+  "modern-sidebar": {
+    key: "modern-sidebar",
+    name: "Modern Sidebar",
+    description:
+      "A contemporary two-column resume with a light sidebar for skills and details, keeping experience as the main focus.",
+    category: "Modern / Two-Column",
+  },
+  "editorial-grid": {
+    key: "editorial-grid",
+    name: "Editorial Grid",
+    description:
+      "A disciplined editorial resume with a narrow metadata rail and strict grid alignment for a distinctive professional look.",
+    category: "Editorial / Grid",
   },
 };
 
