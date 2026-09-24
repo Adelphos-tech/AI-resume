@@ -142,6 +142,47 @@ function ExecutiveThumbnail() {
   );
 }
 
+function ElegantSerifThumbnail() {
+  return (
+    <Frame>
+      <div className="mx-auto w-1/3">
+        <Line w="w-full" tone="bg-stone-500" h="h-[4px]" />
+      </div>
+      <div className="mx-auto w-1/2">
+        <Line w="w-full" h="h-[2.5px]" />
+      </div>
+      <div className="mx-auto mt-1.5 w-3/5 border-t border-stone-200" />
+      <div className="mt-2" />
+      <Line w="w-1/5" tone="bg-stone-400" h="h-[2.5px]" />
+      <div className="mt-1" />
+      <Line w="w-full" />
+      <Line w="w-4/5" />
+      <div className="mt-1.5" />
+      <Line w="w-1/5" tone="bg-stone-400" h="h-[2.5px]" />
+      <div className="mt-1" />
+      <Line w="w-3/5" />
+    </Frame>
+  );
+}
+
+function EmeraldBannerThumbnail() {
+  return (
+    <Frame>
+      <div className="rounded-sm bg-emerald-700 px-1.5 py-1.5">
+        <Line w="w-1/2" tone="bg-white/80" h="h-[3px]" />
+        <Line w="w-3/4" tone="bg-white/40" h="h-[2px]" />
+      </div>
+      <Line w="w-1/4" tone="bg-emerald-700" h="h-[2.5px]" />
+      <div className="mt-1" />
+      <Line w="w-full" />
+      <Line w="w-4/5" />
+      <Line w="w-1/4" tone="bg-emerald-700" h="h-[2.5px]" />
+      <div className="mt-1" />
+      <Line w="w-3/5" />
+    </Frame>
+  );
+}
+
 export const TEMPLATE_THUMBNAILS: Record<
   ResumeTemplateKey,
   () => React.ReactNode
@@ -152,4 +193,6 @@ export const TEMPLATE_THUMBNAILS: Record<
   "modern-minimal": ModernMinimalThumbnail,
   "compact-professional": CompactProfessionalThumbnail,
   executive: ExecutiveThumbnail,
+  "elegant-serif": ElegantSerifThumbnail,
+  "emerald-banner": EmeraldBannerThumbnail,
 };

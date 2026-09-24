@@ -11,6 +11,10 @@ direction of specific templates:
   RenderCV (https://github.com/rendercv/rendercv), MIT License.
 - **Executive** — inspired by the `scizor` template of Reactive Resume
   (https://github.com/AmruthPillai/Reactive-Resume), MIT License.
+- **Elegant Serif** — inspired by the `kakuna` template of Reactive
+  Resume, MIT License.
+- **Emerald Banner** — inspired by the `leafish` template of Reactive
+  Resume, MIT License.
 
 MIT License (upstream projects)
 

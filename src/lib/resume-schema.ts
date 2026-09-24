@@ -19,6 +19,8 @@ export const RESUME_TEMPLATE_KEYS = [
   "modern-minimal",
   "compact-professional",
   "executive",
+  "elegant-serif",
+  "emerald-banner",
 ] as const;
 
 export type ResumeTemplateKey = (typeof RESUME_TEMPLATE_KEYS)[number];
@@ -73,6 +75,20 @@ export const RESUME_TEMPLATES: Record<
     description:
       "A refined leadership resume with strong name typography and an emerald accent rule for senior, director, and executive roles.",
     category: "Executive / Leadership",
+  },
+  "elegant-serif": {
+    key: "elegant-serif",
+    name: "Elegant Serif",
+    description:
+      "A refined editorial resume with serif typography, centered header, and hairline rules for understated professional polish.",
+    category: "Elegant / Editorial",
+  },
+  "emerald-banner": {
+    key: "emerald-banner",
+    name: "Emerald Banner",
+    description:
+      "A confident branded resume with an emerald banner header and clean single-column body for modern professionals.",
+    category: "Branded / Modern",
   },
 };
 

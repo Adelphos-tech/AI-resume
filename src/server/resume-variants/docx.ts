@@ -20,6 +20,14 @@ import {
   buildCompactProfessionalParagraphs,
   COMPACT_PROFESSIONAL_THEME,
 } from "./docx/compact-professional";
+import {
+  buildElegantSerifParagraphs,
+  ELEGANT_SERIF_THEME,
+} from "./docx/elegant-serif";
+import {
+  buildEmeraldBannerParagraphs,
+  EMERALD_BANNER_THEME,
+} from "./docx/emerald-banner";
 import { buildExecutiveParagraphs, EXECUTIVE_THEME } from "./docx/executive";
 import { buildTechnicalParagraphs, TECHNICAL_THEME } from "./docx/technical";
 import { PAGE } from "./docx/shared";
@@ -60,6 +68,16 @@ const TEMPLATE_BUILDERS: Record<
     build: buildExecutiveParagraphs,
     font: EXECUTIVE_THEME.font,
     color: EXECUTIVE_THEME.body,
+  },
+  "elegant-serif": {
+    build: buildElegantSerifParagraphs,
+    font: ELEGANT_SERIF_THEME.font,
+    color: ELEGANT_SERIF_THEME.body,
+  },
+  "emerald-banner": {
+    build: buildEmeraldBannerParagraphs,
+    font: EMERALD_BANNER_THEME.font,
+    color: EMERALD_BANNER_THEME.body,
   },
 };
 
