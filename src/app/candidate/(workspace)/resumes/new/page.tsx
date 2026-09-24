@@ -2,12 +2,25 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { CreateResumeForm } from "@/components/candidate/resumes/create-form";
+import { RESUME_TEMPLATES } from "@/lib/resume-schema";
 import { getCandidateResumes } from "@/server/candidates/resumes";
 
 export const metadata = { title: "Create Resume — RoleRace" };
 
-export default async function NewResumePage() {
-  const { targetRoleSuggestions, resumeReady } = await getCandidateResumes();
+export default async function NewResumePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ template?: string }>;
+}) {
+  const [{ template }, { targetRoleSuggestions, resumeReady }] =
+    await Promise.all([searchParams, getCandidateResumes()]);
+
+  // Optional gallery preselection — validated against the registry;
+  // anything unknown falls back to the existing default.
+  const initialTemplate =
+    template && Object.hasOwn(RESUME_TEMPLATES, template)
+      ? template
+      : undefined;
 
   return (
     <div className="space-y-6">
@@ -21,7 +34,10 @@ export default async function NewResumePage() {
       </div>
 
       {resumeReady ? (
-        <CreateResumeForm targetRoleSuggestions={targetRoleSuggestions} />
+        <CreateResumeForm
+          targetRoleSuggestions={targetRoleSuggestions}
+          initialTemplate={initialTemplate}
+        />
       ) : (
         <div className="rounded-2xl border border-stone-200 bg-white px-6 py-12 text-center">
           <p className="text-base font-semibold text-stone-900">

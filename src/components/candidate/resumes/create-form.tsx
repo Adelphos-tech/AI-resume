@@ -25,8 +25,10 @@ type FormValues = {
 
 export function CreateResumeForm({
   targetRoleSuggestions,
+  initialTemplate,
 }: {
   targetRoleSuggestions: string[];
+  initialTemplate?: string;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -42,7 +44,10 @@ export function CreateResumeForm({
       name: "",
       targetRole: "",
       targetCountry: "",
-      templateKey: "ats-classic",
+      templateKey:
+        initialTemplate && initialTemplate in RESUME_TEMPLATES
+          ? (initialTemplate as ResumeTemplateKey)
+          : "ats-classic",
     },
   });
 
