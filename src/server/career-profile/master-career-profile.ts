@@ -81,11 +81,15 @@ function resolveBaseProfile(
   return parsed.data;
 }
 
-export async function getMasterCareerProfile(
+/**
+ * Authorization-free core: callers MUST enforce their own session/ownership
+ * boundary before invoking. Admin wrappers enforce requireInternalSession();
+ * candidate wrappers enforce requireCandidateSession() and pass the
+ * session-owned candidate id.
+ */
+export async function getMasterCareerProfileCore(
   candidateId: string,
 ): Promise<GetMasterCareerProfileResult> {
-  await requireInternalSession();
-
   const parsedId = candidateIdSchema.safeParse(candidateId);
   if (!parsedId.success) {
     return { success: false, message: "Candidate not found." };
@@ -134,14 +138,12 @@ export async function getMasterCareerProfile(
  * complete document via upsertMasterCareerProfile, and persists it.
  * A partial payload can never wipe unrelated sections.
  */
-async function updateProfileSection<T>(
+async function updateProfileSectionCore<T>(
   candidateId: string,
   rawSection: unknown,
   sectionSchema: z.ZodType<T>,
   apply: (base: MasterCareerProfileData, section: T) => MasterCareerProfileData,
 ): Promise<UpsertMasterCareerProfileResult> {
-  await requireInternalSession();
-
   const parsedId = candidateIdSchema.safeParse(candidateId);
   if (!parsedId.success) {
     return { success: false, message: "Candidate not found." };
@@ -162,9 +164,24 @@ async function updateProfileSection<T>(
     return { success: false, message: base.error };
   }
 
-  // upsertMasterCareerProfile revalidates the merged document and enforces
+  // The core upsert revalidates the merged document and enforces
   // the size cap before persisting.
-  return upsertMasterCareerProfile(candidateId, apply(base, parsed.data));
+  return upsertMasterCareerProfileCore(candidateId, apply(base, parsed.data));
+}
+
+async function updateProfileSection<T>(
+  candidateId: string,
+  rawSection: unknown,
+  sectionSchema: z.ZodType<T>,
+  apply: (base: MasterCareerProfileData, section: T) => MasterCareerProfileData,
+): Promise<UpsertMasterCareerProfileResult> {
+  await requireInternalSession();
+  return updateProfileSectionCore(
+    candidateId,
+    rawSection,
+    sectionSchema,
+    apply,
+  );
 }
 
 export function updateMasterCareerProfileBasics(
@@ -251,12 +268,10 @@ export function updateMasterCareerProfileLanguages(
   );
 }
 
-export async function upsertMasterCareerProfile(
+export async function upsertMasterCareerProfileCore(
   candidateId: string,
   rawProfile: unknown,
 ): Promise<UpsertMasterCareerProfileResult> {
-  await requireInternalSession();
-
   const parsedId = candidateIdSchema.safeParse(candidateId);
   if (!parsedId.success) {
     return { success: false, message: "Candidate not found." };
@@ -298,4 +313,98 @@ export async function upsertMasterCareerProfile(
     schemaVersion: record.schemaVersion,
     updatedAt: record.updatedAt,
   };
+}
+
+export async function getMasterCareerProfile(
+  candidateId: string,
+): Promise<GetMasterCareerProfileResult> {
+  await requireInternalSession();
+  return getMasterCareerProfileCore(candidateId);
+}
+
+export async function upsertMasterCareerProfile(
+  candidateId: string,
+  rawProfile: unknown,
+): Promise<UpsertMasterCareerProfileResult> {
+  await requireInternalSession();
+  return upsertMasterCareerProfileCore(candidateId, rawProfile);
+}
+
+/** Candidate-facing section writes: callers pass the session-owned id. */
+export function updateCandidateProfileBasics(
+  candidateId: string,
+  rawBasics: unknown,
+) {
+  return updateProfileSectionCore(
+    candidateId,
+    rawBasics,
+    masterCareerProfileBasicsSchema,
+    (base, basics) => ({ ...base, basics }),
+  );
+}
+export function updateCandidateProfileWork(
+  candidateId: string,
+  rawWork: unknown,
+) {
+  return updateProfileSectionCore(
+    candidateId,
+    rawWork,
+    masterCareerProfileWorkSchema,
+    (base, work) => ({ ...base, work }),
+  );
+}
+export function updateCandidateProfileEducation(
+  candidateId: string,
+  rawEducation: unknown,
+) {
+  return updateProfileSectionCore(
+    candidateId,
+    rawEducation,
+    masterCareerProfileEducationSchema,
+    (base, education) => ({ ...base, education }),
+  );
+}
+export function updateCandidateProfileSkills(
+  candidateId: string,
+  rawSkills: unknown,
+) {
+  return updateProfileSectionCore(
+    candidateId,
+    rawSkills,
+    masterCareerProfileSkillsSchema,
+    (base, skills) => ({ ...base, skills }),
+  );
+}
+export function updateCandidateProfileProjects(
+  candidateId: string,
+  rawProjects: unknown,
+) {
+  return updateProfileSectionCore(
+    candidateId,
+    rawProjects,
+    masterCareerProfileProjectsSchema,
+    (base, projects) => ({ ...base, projects }),
+  );
+}
+export function updateCandidateProfileCertifications(
+  candidateId: string,
+  rawCertifications: unknown,
+) {
+  return updateProfileSectionCore(
+    candidateId,
+    rawCertifications,
+    masterCareerProfileCertificationsSchema,
+    (base, certifications) => ({ ...base, certifications }),
+  );
+}
+export function updateCandidateProfileLanguages(
+  candidateId: string,
+  rawLanguages: unknown,
+) {
+  return updateProfileSectionCore(
+    candidateId,
+    rawLanguages,
+    masterCareerProfileLanguagesSchema,
+    (base, languages) => ({ ...base, languages }),
+  );
 }
