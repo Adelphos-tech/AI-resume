@@ -55,12 +55,16 @@ export type ListResumeVariantsResult =
  * name/targetRole/targetCountry/templateKey — the snapshot and
  * resumeData are generated server-side and can never be forged.
  */
-export async function createResumeVariant(
+/**
+ * Authorization-free core: callers MUST enforce their own session/ownership
+ * boundary. The admin wrapper enforces requireInternalSession(); the
+ * candidate wrapper enforces requireCandidateSession() and passes the
+ * session-owned candidate id.
+ */
+export async function createResumeVariantCore(
   candidateId: string,
   rawConfig: unknown,
 ): Promise<CreateResumeVariantResult> {
-  await requireInternalSession();
-
   const parsedId = candidateIdSchema.safeParse(candidateId);
   if (!parsedId.success) {
     return { success: false, message: "Candidate not found." };
@@ -169,11 +173,9 @@ export async function getResumeVariant(
   };
 }
 
-export async function listCandidateResumeVariants(
+export async function listCandidateResumeVariantsCore(
   candidateId: string,
 ): Promise<ListResumeVariantsResult> {
-  await requireInternalSession();
-
   const parsedId = candidateIdSchema.safeParse(candidateId);
   if (!parsedId.success) {
     return { success: false, message: "Candidate not found." };
@@ -217,4 +219,19 @@ function toSummary(row: {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
+}
+
+export async function createResumeVariant(
+  candidateId: string,
+  rawConfig: unknown,
+): Promise<CreateResumeVariantResult> {
+  await requireInternalSession();
+  return createResumeVariantCore(candidateId, rawConfig);
+}
+
+export async function listCandidateResumeVariants(
+  candidateId: string,
+): Promise<ListResumeVariantsResult> {
+  await requireInternalSession();
+  return listCandidateResumeVariantsCore(candidateId);
 }

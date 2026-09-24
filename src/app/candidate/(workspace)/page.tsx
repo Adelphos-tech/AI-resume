@@ -83,7 +83,7 @@ export default async function CandidateDashboard() {
           </p>
         </div>
         <Link
-          href="/candidate/resumes"
+          href="/candidate/resumes/new"
           className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-800"
         >
           <FilePlus2 className="size-4" aria-hidden />
