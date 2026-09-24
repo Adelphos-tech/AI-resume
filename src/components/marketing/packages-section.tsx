@@ -77,7 +77,7 @@ export function PackagesSection() {
                 ))}
               </ul>
               <a
-                href="#final-cta"
+                href="/candidate/register"
                 className={`mt-8 rounded-xl py-2.5 text-center text-sm font-semibold transition-colors ${
                   p.emphasized
                     ? "bg-emerald-700 text-white hover:bg-emerald-800"

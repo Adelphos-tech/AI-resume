@@ -100,7 +100,7 @@ export function AiReviewShowcase() {
           </ul>
 
           <a
-            href="#pricing"
+            href="/candidate/register"
             className="inline-block rounded-xl bg-emerald-400 px-6 py-3 text-sm font-semibold text-emerald-950 shadow-lg shadow-emerald-400/20 transition-colors hover:bg-emerald-300"
           >
             Explore AI Review

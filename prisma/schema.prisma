@@ -19,6 +19,7 @@ model User {
   role          String?   @default("STAFF")
   sessions      Session[]
   accounts      Account[]
+  candidate     Candidate?
 
   @@unique([email])
   @@map("user")
@@ -98,6 +99,8 @@ model Candidate {
   linkedinUrl  String?
   package      CandidatePackage
   status       CandidateStatus        @default(NEW)
+  userId       String?                @unique
+  user         User?                  @relation(fields: [userId], references: [id])
   createdAt    DateTime               @default(now())
   updatedAt    DateTime               @updatedAt
   intakeAccess CandidateIntakeAccess?

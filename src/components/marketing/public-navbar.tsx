@@ -55,13 +55,13 @@ export function PublicNavbar() {
 
         <div className="hidden items-center gap-3 md:flex">
           <a
-            href="#pricing"
+            href="/candidate/login"
             className="text-sm font-medium text-stone-600 transition-colors hover:text-stone-900"
           >
             Login
           </a>
           <a
-            href="#pricing"
+            href="/candidate/register"
             className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-800"
           >
             Get Started
@@ -95,7 +95,7 @@ export function PublicNavbar() {
             ))}
             <li className="pt-2">
               <a
-                href="#pricing"
+                href="/candidate/register"
                 onClick={() => setOpen(false)}
                 className="block rounded-lg bg-emerald-700 px-3 py-2.5 text-center text-sm font-semibold text-white"
               >

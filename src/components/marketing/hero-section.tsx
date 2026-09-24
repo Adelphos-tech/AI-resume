@@ -47,7 +47,7 @@ export function HeroSection() {
 
           <div className="flex flex-wrap items-center gap-4">
             <a
-              href="#pricing"
+              href="/candidate/register"
               className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-700/20 transition-all hover:bg-emerald-800 hover:shadow-lg"
             >
               Get Started Free

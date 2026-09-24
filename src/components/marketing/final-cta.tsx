@@ -21,7 +21,7 @@ export function FinalCta() {
             RoleRace.
           </p>
           <a
-            href="#pricing"
+            href="/candidate/register"
             className="inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-8 py-3.5 text-sm font-semibold text-emerald-950 shadow-lg shadow-emerald-400/25 transition-colors hover:bg-emerald-300"
           >
             Get Started
