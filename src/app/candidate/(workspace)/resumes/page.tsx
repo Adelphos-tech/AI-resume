@@ -54,32 +54,37 @@ export default async function CandidateResumesPage() {
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {variants.map((v) => (
-            <li
-              key={v.id}
-              className="rounded-2xl border border-stone-200 bg-white p-5"
-            >
-              <span className="flex size-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
-                <FileText className="size-5" aria-hidden />
-              </span>
-              <p className="mt-4 truncate text-sm font-semibold text-stone-900">
-                {v.name}
-              </p>
-              <p className="mt-0.5 truncate text-xs text-stone-500">
-                {v.targetRole} · {v.targetCountry}
-              </p>
-              <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-3">
-                <p className="text-xs font-medium text-stone-600">
-                  {RESUME_TEMPLATES[v.templateKey as ResumeTemplateKey]?.name ??
-                    v.templateKey}
+            <li key={v.id}>
+              <Link
+                href={`/candidate/resumes/${v.id}`}
+                className="block rounded-2xl border border-stone-200 bg-white p-5 transition-colors hover:border-emerald-600/30 hover:shadow-sm"
+              >
+                <span className="flex size-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                  <FileText className="size-5" aria-hidden />
+                </span>
+                <p className="mt-4 truncate text-sm font-semibold text-stone-900">
+                  {v.name}
                 </p>
-                <p className="text-[11px] text-stone-400">
-                  {v.createdAt.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                <p className="mt-0.5 truncate text-xs text-stone-500">
+                  {v.targetRole} · {v.targetCountry}
                 </p>
-              </div>
+                <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-3">
+                  <p className="text-xs font-medium text-stone-600">
+                    {RESUME_TEMPLATES[v.templateKey as ResumeTemplateKey]
+                      ?.name ?? v.templateKey}
+                  </p>
+                  <p className="text-[11px] text-stone-400">
+                    {v.createdAt.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
+                <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
+                  View resume →
+                </span>
+              </Link>
             </li>
           ))}
         </ul>

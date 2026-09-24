@@ -36,8 +36,9 @@ export async function GET(
   let pdf: Buffer;
   try {
     pdf = await generateResumePdf({
-      candidateId: id,
-      variantId,
+      printPath: `/print/resume/${encodeURIComponent(id)}/${encodeURIComponent(
+        variantId,
+      )}`,
       sessionToken,
       templateKey: variant.templateKey,
     });

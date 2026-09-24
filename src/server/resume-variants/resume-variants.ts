@@ -137,11 +137,9 @@ export async function createResumeVariantCore(
   return { success: true, variant: toSummary(record) };
 }
 
-export async function getResumeVariant(
+export async function getResumeVariantCore(
   variantId: string,
 ): Promise<GetResumeVariantResult> {
-  await requireInternalSession();
-
   const parsedId = variantIdSchema.safeParse(variantId);
   if (!parsedId.success) {
     return { success: false, message: "Resume variant not found." };
@@ -234,4 +232,11 @@ export async function listCandidateResumeVariants(
 ): Promise<ListResumeVariantsResult> {
   await requireInternalSession();
   return listCandidateResumeVariantsCore(candidateId);
+}
+
+export async function getResumeVariant(
+  variantId: string,
+): Promise<GetResumeVariantResult> {
+  await requireInternalSession();
+  return getResumeVariantCore(variantId);
 }

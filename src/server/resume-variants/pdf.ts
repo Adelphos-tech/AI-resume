@@ -25,8 +25,7 @@ const SESSION_COOKIE = "better-auth.session_token";
  * Generation is on-demand and writes nothing.
  */
 export async function generateResumePdf(input: {
-  candidateId: string;
-  variantId: string;
+  printPath: string;
   sessionToken: string;
   templateKey: string;
 }): Promise<Buffer> {
@@ -34,9 +33,10 @@ export async function generateResumePdf(input: {
     throw new Error(`Unsupported resume template: ${input.templateKey}`);
   }
   const origin = new URL(env.PDF_RENDER_ORIGIN);
-  const renderUrl = `${origin.origin}/print/resume/${encodeURIComponent(
-    input.candidateId,
-  )}/${encodeURIComponent(input.variantId)}`;
+  // Server-controlled render target: the caller supplies ONLY a trusted
+  // internal path (never request URLs or user input); the origin always
+  // comes from the controlled PDF_RENDER_ORIGIN env.
+  const renderUrl = `${origin.origin}${input.printPath}`;
 
   let browser: Browser | null = null;
   try {
