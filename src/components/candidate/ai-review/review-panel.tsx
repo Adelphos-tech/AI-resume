@@ -23,17 +23,21 @@ const FINDING_LABELS: Record<
   weak: "Weak",
 };
 
+import type { QuoteStatus } from "@/components/candidate/ai-review/review-workspace";
+
 export function CandidateAiReviewPanel({
   variantId,
   activeBlockId,
   missingBlock,
+  quoteStatus,
   onLocate,
   onNewResult,
 }: {
   variantId: string;
   activeBlockId: string | null;
   missingBlock: boolean;
-  onLocate: (blockId: string) => void;
+  quoteStatus: QuoteStatus;
+  onLocate: (blockId: string, quote: string) => void;
   onNewResult: () => void;
 }) {
   const [review, setReview] = useState<AiResumeReview | null>(null);
@@ -146,7 +150,7 @@ export function CandidateAiReviewPanel({
                         type="button"
                         aria-pressed={activeBlockId === f.blockId}
                         aria-label={`View finding in resume: ${f.dimension.replaceAll("_", " ")}`}
-                        onClick={() => onLocate(f.blockId)}
+                        onClick={() => onLocate(f.blockId, f.quote)}
                         className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600"
                       >
                         <Crosshair className="size-3.5" aria-hidden />
@@ -158,6 +162,25 @@ export function CandidateAiReviewPanel({
                     {missingBlock && activeBlockId === f.blockId && (
                       <p role="alert" className="text-xs text-red-600">
                         We couldn&apos;t locate this section in the preview.
+                      </p>
+                    )}
+                    {quoteStatus === "not-found" &&
+                      activeBlockId === f.blockId && (
+                        <p role="status" className="text-xs text-stone-500">
+                          We found the section, but couldn&apos;t mark the exact
+                          quoted text.
+                        </p>
+                      )}
+                    {quoteStatus === "unsupported" &&
+                      activeBlockId === f.blockId && (
+                        <p role="status" className="text-xs text-stone-500">
+                          Exact phrase highlighting isn&apos;t available in this
+                          browser.
+                        </p>
+                      )}
+                    {quoteStatus === "ok" && activeBlockId === f.blockId && (
+                      <p className="sr-only" role="status">
+                        Highlighted quoted text in resume.
                       </p>
                     )}
                     <blockquote className="rounded-md border-l-2 border-emerald-600/40 bg-stone-50 py-1.5 pl-3 text-sm text-stone-600 italic">
