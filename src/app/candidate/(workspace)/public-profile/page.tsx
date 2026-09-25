@@ -1,12 +1,24 @@
 import { PublicProfileSettings } from "@/components/candidate/public-profile/public-profile-settings";
+import { prisma } from "@/server/db";
 import { env } from "@/server/env";
 import { getCandidatePublicProfile } from "@/server/public-profile/public-profile";
 
 export const metadata = { title: "Public Profile — RoleRace" };
 
 export default async function CandidatePublicProfilePage() {
-  const { profile } = await getCandidatePublicProfile();
+  const { candidate, profile } = await getCandidatePublicProfile();
   const link = profile?.links[0] ?? null;
+
+  const variants = await prisma.resumeVariant.findMany({
+    where: { candidateId: candidate.id },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      targetRole: true,
+      targetCountry: true,
+    },
+  });
 
   return (
     <div className="max-w-4xl space-y-6">
@@ -25,6 +37,29 @@ export default async function CandidatePublicProfilePage() {
         isPublished={profile?.isPublished ?? false}
         shareUrl={link ? `${env.PUBLIC_SHARE_ORIGIN}/n/${link.token}` : null}
         publicUrl={profile ? `/u/${profile.slug}` : null}
+        initial={
+          profile
+            ? {
+                publicHeadline: profile.publicHeadline ?? "",
+                publicBio: profile.publicBio ?? "",
+                publicLocation: profile.publicLocation ?? "",
+                currentFocus: profile.currentFocus ?? "",
+                workAuthorization: profile.workAuthorization ?? "",
+                openToOpportunities: profile.openToOpportunities,
+                linkedinUrl: profile.linkedinUrl ?? "",
+                githubUrl: profile.githubUrl ?? "",
+                websiteUrl: profile.websiteUrl ?? "",
+                showExperience: profile.showExperience,
+                showEducation: profile.showEducation,
+                showSkills: profile.showSkills,
+                showProjects: profile.showProjects,
+                showCertifications: profile.showCertifications,
+                showLanguages: profile.showLanguages,
+                featuredResumeVariantId: profile.featuredResumeVariantId ?? "",
+              }
+            : null
+        }
+        variants={variants}
       />
     </div>
   );

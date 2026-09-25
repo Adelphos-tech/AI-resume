@@ -230,6 +230,7 @@ model ResumeVariant {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
   candidate            Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  featuredOnPublicProfiles PublicProfile[] @relation("FeaturedPublicResume")
 
   @@index([candidateId])
   @@map("resume_variant")
@@ -240,6 +241,26 @@ model PublicProfile {
   candidateId String   @unique
   slug        String   @unique
   isPublished Boolean  @default(false)
+  // Public presentation layer — canonical career data stays in
+  // MasterCareerProfile. Career-section visibility defaults to false so
+  // existing profiles never leak MCP data on upgrade.
+  publicHeadline String?
+  publicBio      String?
+  publicLocation String?
+  currentFocus   String?
+  workAuthorization String?
+  openToOpportunities Boolean @default(false)
+  showExperience      Boolean @default(false)
+  showEducation       Boolean @default(false)
+  showSkills          Boolean @default(false)
+  showProjects        Boolean @default(false)
+  showCertifications  Boolean @default(false)
+  showLanguages       Boolean @default(false)
+  linkedinUrl         String?
+  githubUrl           String?
+  websiteUrl          String?
+  featuredResumeVariantId String?
+  featuredResumeVariant   ResumeVariant? @relation("FeaturedPublicResume", fields: [featuredResumeVariantId], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)

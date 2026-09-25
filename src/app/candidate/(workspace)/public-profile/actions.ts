@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import {
   createPublicProfile,
   setPublicProfilePublished,
+  updatePublicProfileSettings,
   updatePublicProfileSlug,
 } from "@/server/public-profile/public-profile";
 
@@ -34,6 +35,12 @@ export async function publishPublicProfileAction() {
 
 export async function unpublishPublicProfileAction() {
   const result = await setPublicProfilePublished(false);
+  if (result.success) revalidate();
+  return result;
+}
+
+export async function savePublicProfileSettingsAction(raw: unknown) {
+  const result = await updatePublicProfileSettings(raw);
   if (result.success) revalidate();
   return result;
 }
