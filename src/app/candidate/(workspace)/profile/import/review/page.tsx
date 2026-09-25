@@ -18,7 +18,7 @@ export default async function CandidateResumeImportReviewPage() {
       originalFileName: true,
       mimeType: true,
       extraction: {
-        select: { status: true, extractedText: true },
+        select: { status: true, extractedText: true, sourceSha256: true },
       },
     },
   });
@@ -57,6 +57,7 @@ export default async function CandidateResumeImportReviewPage() {
         rawText={source.extraction.extractedText}
         fileName={source.originalFileName}
         fileType={source.mimeType === "application/pdf" ? "PDF" : "DOCX"}
+        revision={source.extraction.sourceSha256}
       />
     </div>
   );

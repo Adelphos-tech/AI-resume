@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { FileText } from "lucide-react";
+import Link from "next/link";
+import { useState, useTransition } from "react";
+import { CheckCircle2, FileText } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { ResumeImportDraft } from "@/server/resume-import/parse-resume";
+import { candidateImportResumeAction } from "@/app/candidate/(workspace)/profile/import/review/actions";
 
 type Draft = ResumeImportDraft;
 
@@ -94,14 +97,25 @@ export function ImportReview({
   rawText,
   fileName,
   fileType,
+  revision,
 }: {
   draft: Draft;
   rawText: string;
   fileName: string;
   fileType: string;
+  revision: string;
 }) {
   const [d, setD] = useState<Draft>(() => structuredClone(draft));
   const [excluded, setExcluded] = useState<Set<string>>(new Set());
+  const [confirming, setConfirming] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [summary, setSummary] = useState<{
+    added: Record<string, number>;
+    skippedDuplicates: number;
+    basicsFilled: string[];
+    basicsKept: string[];
+  } | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const toggle = (key: string) =>
     setExcluded((prev) => {
@@ -157,6 +171,160 @@ export function ImportReview({
     d.basics.location ||
     d.basics.links.length > 0 ||
     d.basics.headline;
+
+  function handleImport() {
+    setImportError(null);
+    const payload = {
+      revision,
+      basics: {
+        fullName: d.basics.fullName,
+        headline: d.basics.headline,
+        email: d.basics.email,
+        phone: d.basics.phone,
+        location: d.basics.location,
+        summary: d.basics.summary,
+        links: d.basics.links,
+      },
+      work: d.work
+        .filter((w) => !excluded.has(w.key))
+        .map((w) => ({
+          position: w.position ?? "",
+          company: w.company ?? "",
+          location: w.location,
+          startDate: w.startDate,
+          endDate: w.endDate,
+          isCurrent: w.isCurrent,
+          highlights: w.highlights,
+        })),
+      education: d.education
+        .filter((e) => !excluded.has(e.key))
+        .map((e) => ({
+          degree: e.degree ?? "",
+          institution: e.institution ?? "",
+          location: e.location,
+          startDate: e.startDate,
+          endDate: e.endDate,
+        })),
+      skills: d.skills
+        .filter((g) => !excluded.has(g.key))
+        .map((g) => ({ name: g.name, keywords: g.keywords })),
+      projects: d.projects
+        .filter((p) => !excluded.has(p.key))
+        .map((p) => ({
+          name: p.name ?? "",
+          url: p.url,
+          highlights: p.highlights,
+        })),
+      certifications: d.certifications
+        .filter((c) => !excluded.has(c.key))
+        .map((c) => ({
+          name: c.name ?? "",
+          issuer: c.issuer,
+          date: c.date,
+        })),
+      languages: d.languages
+        .filter((l) => !excluded.has(l.key))
+        .map((l) => ({ language: l.language ?? "", fluency: l.fluency })),
+    };
+
+    startTransition(async () => {
+      try {
+        const result = await candidateImportResumeAction(payload);
+        if (result.success) {
+          setSummary(result.summary);
+          setConfirming(false);
+          window.scrollTo({ top: 0 });
+        } else {
+          setImportError(result.message);
+          setConfirming(false);
+        }
+      } catch {
+        setImportError("Unable to import. Please try again.");
+        setConfirming(false);
+      }
+    });
+  }
+
+  if (summary) {
+    const addedLabels: [string, string][] = [
+      ["work", "experience"],
+      ["education", "education"],
+      ["skills", "skills"],
+      ["projects", "projects"],
+      ["certifications", "certifications"],
+      ["languages", "languages"],
+      ["links", "links"],
+    ];
+    return (
+      <div className="max-w-3xl space-y-5">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-6">
+          <div className="flex items-start gap-3">
+            <CheckCircle2
+              className="mt-0.5 size-5 shrink-0 text-emerald-700"
+              aria-hidden
+            />
+            <div className="space-y-3">
+              <h2 className="text-base font-semibold text-stone-900">
+                Resume information imported
+              </h2>
+              <div className="text-sm text-stone-700">
+                {addedLabels.some(([k]) => summary.added[k] > 0) && (
+                  <>
+                    <p className="font-medium">Added to your Career Profile:</p>
+                    <ul className="mt-1 list-disc space-y-0.5 pl-5">
+                      {addedLabels
+                        .filter(([k]) => summary.added[k] > 0)
+                        .map(([k, label]) => (
+                          <li key={k}>
+                            {summary.added[k]} {label}
+                          </li>
+                        ))}
+                    </ul>
+                  </>
+                )}
+                {summary.basicsFilled.length > 0 && (
+                  <p className="mt-2">
+                    Filled profile fields: {summary.basicsFilled.join(", ")}.
+                  </p>
+                )}
+                {summary.basicsKept.length > 0 && (
+                  <p className="mt-2">
+                    Kept existing profile information:{" "}
+                    {summary.basicsKept.join(", ")}.
+                  </p>
+                )}
+                {summary.skippedDuplicates > 0 && (
+                  <p className="mt-2">
+                    {summary.skippedDuplicates} item
+                    {summary.skippedDuplicates === 1 ? "" : "s"} already in your
+                    profile — skipped.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {d.needsReview.length > 0 && (
+          <p className="text-sm text-stone-600">
+            {d.needsReview.length} item
+            {d.needsReview.length === 1 ? "" : "s"} were not imported because
+            they still need manual review. You can add them directly in your
+            Career Profile.
+          </p>
+        )}
+
+        <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <Link href="/candidate/profile">View Career Profile</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/candidate/resumes/new">Create a resume</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl space-y-5">
@@ -547,10 +715,101 @@ export function ImportReview({
         </div>
       </details>
 
-      <div className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600">
-        Your Career Profile has not been changed. Import will be available after
-        this review is confirmed.
-      </div>
+      {importError && (
+        <p
+          role="alert"
+          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          {importError}
+        </p>
+      )}
+
+      {d.needsReview.length > 0 && (
+        <p className="text-xs text-stone-500">
+          {d.needsReview.length} item{d.needsReview.length === 1 ? "" : "s"}{" "}
+          need manual review and will not be imported.
+        </p>
+      )}
+
+      {confirming ? (
+        <div className="rounded-2xl border border-stone-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-stone-900">
+            Import selected information?
+          </h2>
+          <ul className="mt-3 space-y-1.5 text-sm text-stone-600">
+            <li className="flex gap-2">
+              <CheckCircle2
+                className="mt-0.5 size-4 shrink-0 text-emerald-600"
+                aria-hidden
+              />
+              Keep your existing Career Profile information
+            </li>
+            <li className="flex gap-2">
+              <CheckCircle2
+                className="mt-0.5 size-4 shrink-0 text-emerald-600"
+                aria-hidden
+              />
+              Add new resume information you selected
+            </li>
+            <li className="flex gap-2">
+              <CheckCircle2
+                className="mt-0.5 size-4 shrink-0 text-emerald-600"
+                aria-hidden
+              />
+              Fill empty profile fields where possible
+            </li>
+            <li className="flex gap-2">
+              <CheckCircle2
+                className="mt-0.5 size-4 shrink-0 text-emerald-600"
+                aria-hidden
+              />
+              Skip information already in your profile
+            </li>
+          </ul>
+          <p className="mt-3 text-xs text-stone-500">
+            Nothing will be automatically deleted.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setConfirming(false)}
+              disabled={isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleImport}
+              disabled={isPending}
+              aria-busy={isPending}
+            >
+              {isPending ? "Importing…" : "Import to Career Profile"}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-5">
+          <h2 className="text-sm font-semibold text-stone-900">
+            Ready to import?
+          </h2>
+          <p className="mt-1.5 text-sm text-stone-600">
+            Your existing Career Profile will be kept. New information will be
+            added, and empty profile fields may be filled.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <Button type="button" onClick={() => setConfirming(true)}>
+              Import selected information
+            </Button>
+            <Link
+              href="/candidate/profile/import"
+              className="text-sm font-semibold text-stone-600 hover:text-stone-800"
+            >
+              Back to extracted resume
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
