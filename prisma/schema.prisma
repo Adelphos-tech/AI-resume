@@ -108,6 +108,7 @@ model Candidate {
   resumeSource CandidateResumeSource?
   careerProfile MasterCareerProfile?
   resumeVariants ResumeVariant[]
+  publicProfile PublicProfile?
 
   @@index([status])
   @@index([createdAt])
@@ -232,4 +233,29 @@ model ResumeVariant {
 
   @@index([candidateId])
   @@map("resume_variant")
+}
+
+model PublicProfile {
+  id          String   @id @default(cuid())
+  candidateId String   @unique
+  slug        String   @unique
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  links       PublicProfileLink[]
+
+  @@map("public_profile")
+}
+
+model PublicProfileLink {
+  id              String   @id @default(cuid())
+  publicProfileId String   @unique
+  token           String   @unique
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  publicProfile   PublicProfile @relation(fields: [publicProfileId], references: [id], onDelete: Cascade)
+
+  @@map("public_profile_link")
 }
