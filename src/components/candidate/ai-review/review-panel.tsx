@@ -34,6 +34,7 @@ export function CandidateAiReviewPanel({
   quoteStatus,
   onLocate,
   onNewResult,
+  onReviewReady,
   onPendingChange,
 }: {
   variantId: string;
@@ -44,6 +45,7 @@ export function CandidateAiReviewPanel({
   quoteStatus: QuoteStatus;
   onLocate: (blockId: string, quote: string) => void;
   onNewResult: () => void;
+  onReviewReady: (review: AiResumeReview) => void;
   onPendingChange: (pending: boolean) => void;
 }) {
   const [review, setReview] = useState<AiResumeReview | null>(null);
@@ -53,6 +55,7 @@ export function CandidateAiReviewPanel({
   function onReview() {
     if (isPending) return;
     setError(null);
+    setReview(null);
     onNewResult();
     onPendingChange(true);
     startTransition(async () => {
@@ -60,6 +63,7 @@ export function CandidateAiReviewPanel({
         const result = await candidateReviewResumeAction({ variantId });
         if (result.success) {
           setReview(result.review);
+          onReviewReady(result.review);
         } else {
           setError(result.message);
         }
@@ -158,6 +162,26 @@ export function CandidateAiReviewPanel({
             <p className="text-sm leading-relaxed text-stone-700">
               {review.overall.summary}
             </p>
+            <p className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-500">
+              {review.findings.some((f) => f.status !== "weak") && (
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    aria-hidden
+                    className="inline-block size-2 rounded-full bg-emerald-500"
+                  />
+                  Supporting
+                </span>
+              )}
+              {review.findings.some((f) => f.status === "weak") && (
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    aria-hidden
+                    className="inline-block size-2 rounded-full bg-amber-500"
+                  />
+                  Needs strengthening
+                </span>
+              )}
+            </p>
           </div>
 
           {review.findings.length > 0 && (
@@ -224,9 +248,23 @@ export function CandidateAiReviewPanel({
                     <blockquote className="rounded-md border-l-2 border-emerald-600/40 bg-stone-50 py-1.5 pl-3 text-sm text-stone-600 italic">
                       {f.quote}
                     </blockquote>
-                    <p className="text-sm text-stone-800">{f.reason}</p>
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
+                        {f.status === "weak"
+                          ? "Why this matters"
+                          : "Why this works"}
+                      </p>
+                      <p className="text-sm text-stone-800">{f.reason}</p>
+                    </div>
                     {f.guidance && (
-                      <p className="text-sm text-stone-500">{f.guidance}</p>
+                      <div className="space-y-1">
+                        <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
+                          {f.status === "weak"
+                            ? "How to improve"
+                            : "How to make it even stronger"}
+                        </p>
+                        <p className="text-sm text-stone-500">{f.guidance}</p>
+                      </div>
                     )}
                   </li>
                 ))}
@@ -257,6 +295,19 @@ export function CandidateAiReviewPanel({
               </ul>
             </div>
           )}
+
+          <div className="border-t border-stone-100 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onReview}
+              disabled={isPending}
+            >
+              <Sparkles className="size-4" aria-hidden />
+              {isPending ? "Reviewing…" : "Run new review"}
+            </Button>
+          </div>
         </div>
       )}
     </div>

@@ -3,10 +3,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CandidateAiReviewPanel } from "@/components/candidate/ai-review/review-panel";
+import type { AiResumeReview } from "@/server/ai/resume-review-schema";
 
 const QUOTE_HIGHLIGHT_NAME = "rolerace-ai-quote";
+const POSITIVE_HIGHLIGHT_NAME = "rolerace-review-positive";
+const IMPROVE_HIGHLIGHT_NAME = "rolerace-review-improve";
 
 export type QuoteStatus = "none" | "unsupported" | "not-found" | "ok";
+
+type Annotation = {
+  key: string;
+  blockId: string;
+  quote: string;
+  label: string;
+  improvement: boolean;
+  top: number;
+};
 
 /**
  * Collect the block's text nodes and build a global-offset map so an
@@ -51,19 +63,20 @@ function quoteHighlightSupported(): boolean {
   );
 }
 
-function clearQuoteHighlight() {
-  if (quoteHighlightSupported()) {
-    CSS.highlights.delete(QUOTE_HIGHLIGHT_NAME);
-  }
+function findBlock(root: HTMLElement, blockId: string): Element | undefined {
+  return Array.from(root.querySelectorAll("[data-resume-block-id]")).find(
+    (el) => (el as HTMLElement).dataset.resumeBlockId === blockId,
+  );
 }
 
 /**
  * Client coordinator for the candidate AI Review workspace. Owns
- * activeFinding/activeBlockId state, applies the `resume-block-active`
+ * pending/active/annotation state, applies the `resume-block-active`
  * whole-block treatment to the exact data-resume-block-id element, and
- * registers a CSS Custom Highlight for the finding's exact quote —
- * scoped to that block only. Browser state is never authoritative for
- * persisted resume data.
+ * registers CSS Custom Highlights: passive per-status annotations for
+ * every anchored finding plus a stronger exact-quote highlight for the
+ * selected finding. Browser state is never authoritative for persisted
+ * resume data.
  */
 export function ReviewWorkspace({
   variantId,
@@ -78,6 +91,7 @@ export function ReviewWorkspace({
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [scanning, setScanning] = useState(false);
+  const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [active, setActive] = useState<{
     blockId: string;
     quote: string;
@@ -85,22 +99,92 @@ export function ReviewWorkspace({
   const [missingBlock, setMissingBlock] = useState(false);
   const [quoteStatus, setQuoteStatus] = useState<QuoteStatus>("none");
 
-  const clearDom = useCallback(() => {
+  /** Clears only the selected-finding treatment (block class + quote). */
+  const clearActiveDom = useCallback(() => {
     rootRef.current
       ?.querySelectorAll("[data-resume-block-id]")
       .forEach((el) => el.classList.remove("resume-block-active"));
-    clearQuoteHighlight();
+    if (quoteHighlightSupported()) {
+      CSS.highlights.delete(QUOTE_HIGHLIGHT_NAME);
+    }
   }, []);
+
+  /** Clears everything, including passive annotation groups. */
+  const clearDom = useCallback(() => {
+    clearActiveDom();
+    if (quoteHighlightSupported()) {
+      CSS.highlights.delete(POSITIVE_HIGHLIGHT_NAME);
+      CSS.highlights.delete(IMPROVE_HIGHLIGHT_NAME);
+    }
+  }, [clearActiveDom]);
+
+  const reset = useCallback(() => {
+    setActive(null);
+    setMissingBlock(false);
+    setQuoteStatus("none");
+    setAnnotations([]);
+    clearDom();
+  }, [clearDom]);
+
+  /**
+   * Called by the panel when a validated review arrives. Builds passive
+   * annotations for every anchored finding: exact quote ranges grouped
+   * by status, plus gutter marker positions. blockId remains the sole
+   * targeting authority — quotes are only searched inside their block.
+   */
+  const buildAnnotations = useCallback(
+    (review: AiResumeReview) => {
+      clearDom();
+      setActive(null);
+      setMissingBlock(false);
+      setQuoteStatus("none");
+      setAnnotations([]);
+
+      const root = rootRef.current;
+      if (!root || !quoteHighlightSupported()) return;
+
+      const rootRect = root.getBoundingClientRect();
+      const positive: Range[] = [];
+      const improve: Range[] = [];
+      const marks: Annotation[] = [];
+
+      for (const [i, f] of review.findings.entries()) {
+        const block = findBlock(root, f.blockId);
+        if (!block) continue;
+        const ranges = quoteRangesInBlock(block, f.quote);
+        if (ranges.length === 0) continue;
+        const improvement = f.status === "weak";
+        (improvement ? improve : positive).push(...ranges);
+        marks.push({
+          key: `${f.blockId}:${i}`,
+          blockId: f.blockId,
+          quote: f.quote,
+          label: `${improvement ? "Needs strengthening" : "Supporting"} finding: ${f.dimension.replaceAll("_", " ")}`,
+          improvement,
+          top: block.getBoundingClientRect().top - rootRect.top,
+        });
+      }
+
+      // Registration order is paint order — passive groups first so the
+      // active quote highlight (always re-registered on selection) wins.
+      if (positive.length) {
+        CSS.highlights.set(POSITIVE_HIGHLIGHT_NAME, new Highlight(...positive));
+      }
+      if (improve.length) {
+        CSS.highlights.set(IMPROVE_HIGHLIGHT_NAME, new Highlight(...improve));
+      }
+      setAnnotations(marks);
+    },
+    [clearDom],
+  );
 
   const locate = useCallback(
     (blockId: string, quote: string) => {
       setActive({ blockId, quote });
-      clearDom();
+      clearActiveDom();
 
       const target = rootRef.current
-        ? Array.from(
-            rootRef.current.querySelectorAll("[data-resume-block-id]"),
-          ).find((el) => (el as HTMLElement).dataset.resumeBlockId === blockId)
+        ? findBlock(rootRef.current, blockId)
         : undefined;
 
       if (!target) {
@@ -132,15 +216,30 @@ export function ReviewWorkspace({
         inline: "nearest",
       });
     },
-    [clearDom],
+    [clearActiveDom],
   );
 
-  const reset = useCallback(() => {
-    setActive(null);
-    setMissingBlock(false);
-    setQuoteStatus("none");
-    clearDom();
-  }, [clearDom]);
+  // Recompute marker positions when the preview reflows.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || annotations.length === 0) return;
+    const ro = new ResizeObserver(() => {
+      const rootRect = root.getBoundingClientRect();
+      setAnnotations((prev) =>
+        prev.map((a) => {
+          const block = findBlock(root, a.blockId);
+          return block
+            ? {
+                ...a,
+                top: block.getBoundingClientRect().top - rootRect.top,
+              }
+            : a;
+        }),
+      );
+    });
+    ro.observe(root);
+    return () => ro.disconnect();
+  }, [annotations.length]);
 
   useEffect(() => clearDom, [clearDom]);
 
@@ -154,6 +253,20 @@ export function ReviewWorkspace({
           text-decoration: underline;
           text-decoration-color: var(--color-emerald-700, #047857);
           text-decoration-thickness: 2px;
+          text-underline-offset: 2px;
+        }
+        ::highlight(rolerace-review-positive) {
+          background-color: rgb(110 231 183 / 0.3);
+          text-decoration: underline;
+          text-decoration-color: rgb(110 231 183 / 0.55);
+          text-decoration-thickness: 1px;
+          text-underline-offset: 2px;
+        }
+        ::highlight(rolerace-review-improve) {
+          background-color: rgb(253 230 138 / 0.4);
+          text-decoration: underline;
+          text-decoration-color: rgb(217 119 6 / 0.5);
+          text-decoration-thickness: 1px;
           text-underline-offset: 2px;
         }
       `}</style>
@@ -179,6 +292,25 @@ export function ReviewWorkspace({
                 className={`rr-scan-beam ${scanning ? "rr-scanning" : ""}`}
               />
             </div>
+            {/* Passive review annotations — accessible markers anchored
+                to each finding's canonical block, overlaid on the
+                document edge without touching template DOM. */}
+            {annotations.map((a) => (
+              <button
+                key={a.key}
+                type="button"
+                aria-label={a.label}
+                onClick={() => locate(a.blockId, a.quote)}
+                style={{ top: a.top }}
+                className={`absolute left-1 z-10 grid size-5 -translate-y-1/2 place-items-center rounded-full border text-[11px] font-bold shadow-sm transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-emerald-600 ${
+                  a.improvement
+                    ? "border-amber-500/50 bg-amber-100 text-amber-800"
+                    : "border-emerald-500/50 bg-emerald-100 text-emerald-800"
+                } ${active?.blockId === a.blockId ? "ring-2 ring-emerald-700" : ""}`}
+              >
+                {a.improvement ? "!" : "✓"}
+              </button>
+            ))}
           </div>
         </section>
       </div>
@@ -193,6 +325,7 @@ export function ReviewWorkspace({
           quoteStatus={quoteStatus}
           onLocate={locate}
           onNewResult={reset}
+          onReviewReady={buildAnnotations}
           onPendingChange={setScanning}
         />
       </section>
