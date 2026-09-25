@@ -9,6 +9,7 @@ import {
   masterCareerProfileSchema,
 } from "@/lib/master-career-profile-schema";
 import { prisma } from "@/server/db";
+import { resumeImportPayloadSchema } from "@/server/resume-import/import-schema";
 import { upsertMasterCareerProfileCore } from "@/server/career-profile/master-career-profile";
 import { requireCandidateSession } from "@/server/session";
 
@@ -17,103 +18,6 @@ import { requireCandidateSession } from "@/server/session";
 // The reviewed draft is submitted by the browser but ownership, revision
 // freshness, canonical IDs, dedupe and size limits are all server-side.
 // ---------------------------------------------------------------------------
-
-const str = (max: number) => z.string().trim().max(max);
-const optStr = (max: number) =>
-  str(max)
-    .nullable()
-    .transform((v) => v || null);
-const optDate = z
-  .string()
-  .trim()
-  .nullable()
-  .transform((v) => v || null)
-  .refine((v) => v === null || /^\d{4}$|^\d{4}-(0[1-9]|1[0-2])$/.test(v));
-
-export const resumeImportPayloadSchema = z
-  .strictObject({
-    // Revision token for optimistic concurrency only — NOT authority.
-    revision: z.string().trim().min(8).max(128),
-    basics: z.strictObject({
-      fullName: optStr(200),
-      headline: optStr(300),
-      email: optStr(320).refine(
-        (v) => v === null || z.email().safeParse(v).success,
-      ),
-      phone: optStr(50),
-      location: optStr(200),
-      summary: optStr(5000),
-      links: z
-        .array(
-          z.strictObject({
-            label: str(100),
-            url: str(2048).refine((v) => /^https?:\/\//.test(v)),
-          }),
-        )
-        .max(20),
-    }),
-    work: z
-      .array(
-        z.strictObject({
-          position: str(300),
-          company: str(300),
-          location: optStr(200),
-          startDate: optDate,
-          endDate: optDate,
-          isCurrent: z.boolean(),
-          highlights: z.array(str(1000)).max(30),
-        }),
-      )
-      .max(30),
-    education: z
-      .array(
-        z.strictObject({
-          degree: str(200),
-          institution: str(300),
-          location: optStr(200),
-          startDate: optDate,
-          endDate: optDate,
-        }),
-      )
-      .max(20),
-    skills: z
-      .array(
-        z.strictObject({
-          name: str(200),
-          keywords: z.array(str(100)).max(50),
-        }),
-      )
-      .max(30),
-    projects: z
-      .array(
-        z.strictObject({
-          name: str(300),
-          url: optStr(2048).refine((v) => v === null || /^https?:\/\//.test(v)),
-          highlights: z.array(str(1000)).max(30),
-        }),
-      )
-      .max(30),
-    certifications: z
-      .array(
-        z.strictObject({
-          name: str(300),
-          issuer: optStr(300),
-          date: optDate,
-        }),
-      )
-      .max(30),
-    languages: z
-      .array(
-        z.strictObject({
-          language: str(100),
-          fluency: optStr(100),
-        }),
-      )
-      .max(20),
-  })
-  .strict();
-
-export type ResumeImportPayload = z.infer<typeof resumeImportPayloadSchema>;
 
 const norm = (v: string | null | undefined) =>
   (v ?? "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -129,6 +33,7 @@ export type ImportSummary = {
     links: number;
   };
   skippedDuplicates: number;
+  skippedIncomplete: number;
   basicsFilled: string[];
   basicsKept: string[];
 };
@@ -217,6 +122,7 @@ export async function importResumeToCareerProfile(
       links: 0,
     },
     skippedDuplicates: 0,
+    skippedIncomplete: 0,
     basicsFilled: [],
     basicsKept: [],
   };
@@ -270,6 +176,10 @@ export async function importResumeToCareerProfile(
   const workKeys = new Set(base.work.map(workKey));
   const work = [...base.work];
   for (const w of payload.work) {
+    if (!w.position || !w.company) {
+      summary.skippedIncomplete++;
+      continue;
+    }
     const k = workKey(w);
     if (workKeys.has(k)) {
       summary.skippedDuplicates++;
@@ -303,6 +213,10 @@ export async function importResumeToCareerProfile(
   const eduKeys = new Set(base.education.map(eduKey));
   const education = [...base.education];
   for (const e of payload.education) {
+    if (!e.institution) {
+      summary.skippedIncomplete++;
+      continue;
+    }
     const k = eduKey(e);
     if (eduKeys.has(k)) {
       summary.skippedDuplicates++;
@@ -329,6 +243,10 @@ export async function importResumeToCareerProfile(
     keywords: [...g.keywords],
   }));
   for (const g of payload.skills) {
+    if (!g.name || g.keywords.length === 0) {
+      summary.skippedIncomplete++;
+      continue;
+    }
     const target = skills.find((s) => norm(s.name) === norm(g.name));
     if (target) {
       const have = new Set(target.keywords.map((k) => norm(k)));
@@ -359,6 +277,10 @@ export async function importResumeToCareerProfile(
   const projKeys = new Set(base.projects.map(projKey));
   const projects = [...base.projects];
   for (const p of payload.projects) {
+    if (!p.name) {
+      summary.skippedIncomplete++;
+      continue;
+    }
     const k = projKey(p);
     if (projKeys.has(k)) {
       summary.skippedDuplicates++;
@@ -384,6 +306,10 @@ export async function importResumeToCareerProfile(
   const certKeys = new Set(base.certifications.map(certKey));
   const certifications = [...base.certifications];
   for (const c of payload.certifications) {
+    if (!c.name) {
+      summary.skippedIncomplete++;
+      continue;
+    }
     const k = certKey(c);
     if (certKeys.has(k)) {
       summary.skippedDuplicates++;
@@ -406,6 +332,10 @@ export async function importResumeToCareerProfile(
   const langKeys = new Set(base.languages.map((l) => norm(l.language)));
   const languages = [...base.languages];
   for (const l of payload.languages) {
+    if (!l.language) {
+      summary.skippedIncomplete++;
+      continue;
+    }
     if (langKeys.has(norm(l.language))) {
       summary.skippedDuplicates++;
       continue;

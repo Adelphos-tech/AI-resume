@@ -112,6 +112,7 @@ export function ImportReview({
   const [summary, setSummary] = useState<{
     added: Record<string, number>;
     skippedDuplicates: number;
+    skippedIncomplete: number;
     basicsFilled: string[];
     basicsKept: string[];
   } | null>(null);
@@ -300,6 +301,14 @@ export function ImportReview({
                     profile — skipped.
                   </p>
                 )}
+                {summary.skippedIncomplete > 0 && (
+                  <p className="mt-2">
+                    {summary.skippedIncomplete} item
+                    {summary.skippedIncomplete === 1 ? "" : "s"} couldn&apos;t
+                    be imported because a required field was empty — you can add
+                    them directly in your Career Profile.
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -326,10 +335,22 @@ export function ImportReview({
     );
   }
 
+  const includedCount =
+    d.work.length +
+    d.education.length +
+    d.skills.length +
+    d.projects.length +
+    d.certifications.length +
+    d.languages.length -
+    excluded.size;
+
   return (
-    <div className="max-w-3xl space-y-5">
+    <div className="max-w-3xl space-y-5 pb-4">
       <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        Nothing will be added to your Career Profile until you confirm.
+        Nothing will be added to your Career Profile until you confirm. Review
+        and edit the information below — when you&apos;re ready, use
+        {"\u201C"}Import to Career Profile{"\u201D"} to add the selected
+        information.
       </p>
 
       {hasBasics && (
@@ -731,8 +752,11 @@ export function ImportReview({
         </p>
       )}
 
-      {confirming ? (
-        <div className="rounded-2xl border border-stone-200 bg-white p-5">
+      {confirming && (
+        <div
+          id="import-confirm-panel"
+          className="rounded-2xl border border-stone-200 bg-white p-5"
+        >
           <h2 className="text-sm font-semibold text-stone-900">
             Import selected information?
           </h2>
@@ -788,28 +812,46 @@ export function ImportReview({
             </Button>
           </div>
         </div>
-      ) : (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-5">
-          <h2 className="text-sm font-semibold text-stone-900">
-            Ready to import?
-          </h2>
-          <p className="mt-1.5 text-sm text-stone-600">
-            Your existing Career Profile will be kept. New information will be
-            added, and empty profile fields may be filled.
-          </p>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <Button type="button" onClick={() => setConfirming(true)}>
-              Import selected information
-            </Button>
-            <Link
-              href="/candidate/profile/import"
-              className="text-sm font-semibold text-stone-600 hover:text-stone-800"
-            >
-              Back to extracted resume
-            </Link>
-          </div>
-        </div>
       )}
+
+      {/* Sticky action bar — stays reachable anywhere in the review. */}
+      <div className="sticky bottom-0 -mx-1 border-t border-stone-200 bg-white/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-stone-900">
+              Ready when you are
+            </p>
+            <p className="text-xs text-stone-500">
+              {includedCount} item{includedCount === 1 ? "" : "s"} selected —
+              safely merged into your Career Profile.{" "}
+              <Link
+                href="/candidate/profile/import"
+                className="font-semibold text-stone-600 underline-offset-2 hover:text-stone-800 hover:underline"
+              >
+                Back to extracted resume
+              </Link>
+            </p>
+          </div>
+          <Button
+            type="button"
+            className="w-full sm:w-auto"
+            onClick={() => {
+              setConfirming(true);
+              setTimeout(
+                () =>
+                  document
+                    .getElementById("import-confirm-panel")
+                    ?.scrollIntoView({ behavior: "smooth", block: "center" }),
+                0,
+              );
+            }}
+            disabled={confirming || isPending}
+            aria-busy={isPending}
+          >
+            {isPending ? "Importing…" : "Import to Career Profile"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
