@@ -2,7 +2,7 @@ import { ArrowLeft, FileText } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { CandidateAiReviewPanel } from "@/components/candidate/ai-review/review-panel";
+import { ReviewWorkspace } from "@/components/candidate/ai-review/review-workspace";
 import { ResumeRenderer } from "@/components/resume/resume-renderer";
 import { RESUME_TEMPLATES, type ResumeTemplateKey } from "@/lib/resume-schema";
 import { getResumeVariantCore } from "@/server/resume-variants/resume-variants";
@@ -57,23 +57,15 @@ export default async function CandidateAiReviewWorkspacePage({
         </Link>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[3fr_2fr]">
-        <section
-          aria-label="Resume preview"
-          className="order-2 rounded-2xl border border-stone-200 bg-stone-100/70 p-4 xl:order-1 md:p-6"
-        >
-          <div className="mx-auto max-w-[720px] overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm">
-            <ResumeRenderer
-              templateKey={variant.templateKey}
-              resumeData={variant.resumeData}
-            />
-          </div>
-        </section>
-
-        <section aria-label="AI review" className="order-1 xl:order-2">
-          <CandidateAiReviewPanel variantId={variant.id} />
-        </section>
-      </div>
+      <ReviewWorkspace
+        variantId={variant.id}
+        preview={
+          <ResumeRenderer
+            templateKey={variant.templateKey}
+            resumeData={variant.resumeData}
+          />
+        }
+      />
     </div>
   );
 }

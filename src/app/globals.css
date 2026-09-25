@@ -136,3 +136,13 @@
     scroll-behavior: smooth;
   }
 }
+
+/* AI Review: active canonical block highlight. Outline-based so it
+   never shifts layout/typography; print styles are unaffected because
+   the class is applied only in the interactive workspace. */
+.resume-block-active {
+  outline: 2px solid var(--color-emerald-600, #047857);
+  outline-offset: 2px;
+  background-color: var(--color-emerald-50, #ecfdf5);
+  border-radius: 3px;
+}

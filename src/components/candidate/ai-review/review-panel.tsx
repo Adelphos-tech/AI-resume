@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { Crosshair, Sparkles } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { candidateReviewResumeAction } from "@/app/candidate/(workspace)/ai-review/actions";
@@ -23,7 +23,19 @@ const FINDING_LABELS: Record<
   weak: "Weak",
 };
 
-export function CandidateAiReviewPanel({ variantId }: { variantId: string }) {
+export function CandidateAiReviewPanel({
+  variantId,
+  activeBlockId,
+  missingBlock,
+  onLocate,
+  onNewResult,
+}: {
+  variantId: string;
+  activeBlockId: string | null;
+  missingBlock: boolean;
+  onLocate: (blockId: string) => void;
+  onNewResult: () => void;
+}) {
   const [review, setReview] = useState<AiResumeReview | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -31,6 +43,7 @@ export function CandidateAiReviewPanel({ variantId }: { variantId: string }) {
   function onReview() {
     if (isPending) return;
     setError(null);
+    onNewResult();
     startTransition(async () => {
       try {
         const result = await candidateReviewResumeAction({ variantId });
@@ -112,7 +125,11 @@ export function CandidateAiReviewPanel({ variantId }: { variantId: string }) {
                 {review.findings.map((f, i) => (
                   <li
                     key={`${f.blockId}:${i}`}
-                    className="space-y-2 rounded-xl border border-stone-200 p-4"
+                    className={`space-y-2 rounded-xl border p-4 ${
+                      activeBlockId === f.blockId
+                        ? "border-emerald-600/50 bg-emerald-50/40"
+                        : "border-stone-200"
+                    }`}
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge
@@ -125,7 +142,24 @@ export function CandidateAiReviewPanel({ variantId }: { variantId: string }) {
                       <span className="text-xs text-stone-500 capitalize">
                         {f.dimension.replaceAll("_", " ")}
                       </span>
+                      <button
+                        type="button"
+                        aria-pressed={activeBlockId === f.blockId}
+                        aria-label={`View finding in resume: ${f.dimension.replaceAll("_", " ")}`}
+                        onClick={() => onLocate(f.blockId)}
+                        className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600"
+                      >
+                        <Crosshair className="size-3.5" aria-hidden />
+                        {activeBlockId === f.blockId
+                          ? "Viewing in resume"
+                          : "View in resume"}
+                      </button>
                     </div>
+                    {missingBlock && activeBlockId === f.blockId && (
+                      <p role="alert" className="text-xs text-red-600">
+                        We couldn&apos;t locate this section in the preview.
+                      </p>
+                    )}
                     <blockquote className="rounded-md border-l-2 border-emerald-600/40 bg-stone-50 py-1.5 pl-3 text-sm text-stone-600 italic">
                       {f.quote}
                     </blockquote>
