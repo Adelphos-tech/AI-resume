@@ -19,10 +19,10 @@ export default async function CandidateResumesPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
+          <h1 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
             Resumes
           </h1>
-          <p className="mt-1.5 text-sm text-stone-600">
+          <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
             Create and manage targeted resumes from your career profile.
           </p>
         </div>

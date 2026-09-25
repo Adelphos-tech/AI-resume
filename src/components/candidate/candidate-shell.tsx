@@ -199,7 +199,7 @@ export function CandidateShell({ candidate, children }: CandidateShellProps) {
 
       {/* content */}
       <main className="w-full pt-14 lg:ml-60 lg:pt-0">
-        <div className="mx-auto w-full max-w-4xl px-6 py-10 md:px-10">
+        <div className="mx-auto w-full max-w-6xl px-6 py-10 md:px-10">
           {children}
         </div>
       </main>

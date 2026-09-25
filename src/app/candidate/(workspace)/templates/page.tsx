@@ -12,10 +12,10 @@ export default function TemplatesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
+        <h1 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
           Templates
         </h1>
-        <p className="mt-1.5 text-sm text-stone-600">
+        <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
           Choose a professional resume design for your next opportunity.
         </p>
         <p className="mt-1 text-xs font-medium text-stone-500">

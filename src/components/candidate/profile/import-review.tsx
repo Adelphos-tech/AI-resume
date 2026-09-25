@@ -257,7 +257,7 @@ export function ImportReview({
       ["links", "links"],
     ];
     return (
-      <div className="max-w-3xl space-y-5">
+      <div className="max-w-4xl space-y-5">
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-6">
           <div className="flex items-start gap-3">
             <CheckCircle2
@@ -345,7 +345,7 @@ export function ImportReview({
     excluded.size;
 
   return (
-    <div className="max-w-3xl space-y-5 pb-4">
+    <div className="max-w-4xl space-y-5 pb-4">
       <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
         Nothing will be added to your Career Profile until you confirm. Review
         and edit the information below — when you&apos;re ready, use

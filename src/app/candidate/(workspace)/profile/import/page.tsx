@@ -45,10 +45,10 @@ export default async function CandidateResumeImportPage() {
           <ArrowLeft className="size-4" aria-hidden />
           Back to Career Profile
         </Link>
-        <h1 className="mt-3 text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
+        <h1 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
           Import existing resume
         </h1>
-        <p className="mt-1.5 text-sm text-stone-600">
+        <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
           Upload your current resume and review the extracted text before adding
           anything to your Career Profile.
         </p>

@@ -17,7 +17,7 @@ export default async function CandidateProfilePage() {
   if (!result.success) {
     return (
       <div className="space-y-3">
-        <h1 className="text-2xl font-bold tracking-tight text-stone-900">
+        <h1 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
           Career Profile
         </h1>
         <p role="alert" className="text-sm text-red-600">

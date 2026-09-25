@@ -43,10 +43,10 @@ export default async function CandidateResumeImportReviewPage() {
           <ArrowLeft className="size-4" aria-hidden />
           Back to Import
         </Link>
-        <h1 className="mt-3 text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
+        <h1 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
           Review information from your resume
         </h1>
-        <p className="mt-1.5 text-sm text-stone-600">
+        <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
           Check what RoleRace found before adding anything to your Career
           Profile.
         </p>

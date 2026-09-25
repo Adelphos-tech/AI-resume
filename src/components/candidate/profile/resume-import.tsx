@@ -120,7 +120,7 @@ export function ResumeImport({
   }
 
   return (
-    <div className="max-w-3xl space-y-5">
+    <div className="max-w-4xl space-y-5">
       <div className="rounded-2xl border border-stone-200 bg-white p-6">
         <h2 className="text-sm font-semibold text-stone-900">
           {source ? "Your resume" : "Upload your resume"}
