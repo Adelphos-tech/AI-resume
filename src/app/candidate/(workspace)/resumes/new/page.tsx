@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileUp } from "lucide-react";
 
 import { CreateResumeForm } from "@/components/candidate/resumes/create-form";
 import { RESUME_TEMPLATES } from "@/lib/resume-schema";
@@ -26,10 +26,10 @@ export default async function NewResumePage({
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-          Create a new resume
+          Create resume
         </h1>
         <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
-          Choose your target and a professional template.
+          Create a targeted resume from your Career Profile.
         </p>
       </div>
 
@@ -41,18 +41,28 @@ export default async function NewResumePage({
       ) : (
         <div className="rounded-2xl border border-stone-200 bg-white px-6 py-12 text-center">
           <p className="text-base font-semibold text-stone-900">
-            Your Career Profile needs more information
+            Your Career Profile needs more information before you can create a
+            resume
           </p>
           <p className="mx-auto mt-1 max-w-sm text-sm leading-relaxed text-stone-500">
-            Complete your career profile before creating a resume.
+            Import an existing resume or complete your profile manually first.
           </p>
-          <Link
-            href="/candidate/profile"
-            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800"
-          >
-            <ArrowLeft className="size-4 rotate-180" aria-hidden />
-            Complete Career Profile
-          </Link>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/candidate/profile/import"
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800"
+            >
+              <FileUp className="size-4" aria-hidden />
+              Import existing resume
+            </Link>
+            <Link
+              href="/candidate/profile"
+              className="inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-semibold text-stone-700 transition-colors hover:border-emerald-600/30 hover:text-stone-900"
+            >
+              <ArrowLeft className="size-4 rotate-180" aria-hidden />
+              Career Profile
+            </Link>
+          </div>
         </div>
       )}
     </div>
