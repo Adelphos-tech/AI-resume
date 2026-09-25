@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
-import { FileText, Upload } from "lucide-react";
+import { ArrowRight, FileText, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -228,6 +229,19 @@ export function ResumeImport({
           >
             {extraction.extractedText}
           </article>
+          <div className="space-y-2 pt-2">
+            <p className="text-xs text-stone-500">
+              We&apos;ll organize the information we can identify so you can
+              review it before anything is added to your Career Profile.
+            </p>
+            <Link
+              href="/candidate/profile/import/review"
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
+            >
+              Continue to import
+              <ArrowRight className="size-4" aria-hidden />
+            </Link>
+          </div>
         </div>
       )}
 
