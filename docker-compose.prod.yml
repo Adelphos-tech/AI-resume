@@ -1,0 +1,87 @@
+# Production deployment — single-service RoleRace stack.
+#
+#   docker compose --env-file .env.production -f docker-compose.prod.yml up -d
+#
+# Both app.rolerace.com and go.rolerace.com are terminated by the host
+# Nginx and forwarded to 127.0.0.1:3100. Nothing else is public.
+name: rolerace
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: rolerace-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?required}
+      POSTGRES_USER: ${POSTGRES_USER:?required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+    # No host port — reachable only as postgres:5432 on the private network.
+    volumes:
+      - rolerace_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks:
+      - rolerace
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    image: rolerace-app:${ROLERACE_IMAGE_TAG:-latest}
+    container_name: rolerace-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env.production
+    # Loopback only — Nginx is the sole public ingress.
+    ports:
+      - "127.0.0.1:3100:3000"
+    volumes:
+      # Named volume inherits /app/.data ownership (uid 1000/node) from the
+      # image on first creation — uploaded resumes survive recreation.
+      - rolerace_resumes:/app/.data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "fetch(''http://127.0.0.1:3000/api/health'').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"',
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - rolerace
+
+  # One-shot migrator — built from the same Dockerfile (target: migrate).
+  # Run explicitly, never stays up:
+  #   docker compose --env-file .env.production -f docker-compose.prod.yml \
+  #     run --rm migrate
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrate
+    image: rolerace-migrate:${ROLERACE_IMAGE_TAG:-latest}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env.production
+    profiles:
+      - migrate
+    networks:
+      - rolerace
+
+volumes:
+  rolerace_postgres_data:
+  rolerace_resumes:
+
+networks:
+  rolerace:
