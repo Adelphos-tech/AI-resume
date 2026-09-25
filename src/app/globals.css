@@ -146,3 +146,75 @@
   background-color: var(--color-emerald-50, #ecfdf5);
   border-radius: 3px;
 }
+
+/* AI Review scan beam — a single absolutely positioned gradient band
+   sweeping top→bottom→top while a review request is pending. It lives
+   only inside the candidate AI Review workspace preview frame. */
+.rr-scan-beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -72px;
+  height: 72px;
+  background: linear-gradient(
+    to bottom,
+    rgb(16 185 129 / 0) 0%,
+    rgb(110 231 183 / 0.1) 55%,
+    rgb(16 185 129 / 0.22) 100%
+  );
+  border-bottom: 2px solid rgb(5 150 105 / 0.55);
+  opacity: 0;
+}
+
+.rr-scanning {
+  opacity: 1;
+  animation: rr-scan-sweep 9s ease-in-out infinite;
+}
+
+@keyframes rr-scan-sweep {
+  0% {
+    top: -72px;
+  }
+  50% {
+    top: 100%;
+  }
+  100% {
+    top: -72px;
+  }
+}
+
+/* Review panel status dot — gentle pulse while pending. */
+.rr-scan-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: var(--color-emerald-600, #059669);
+  box-shadow: 0 0 0 3px rgb(110 231 183 / 0.35);
+  animation: rr-scan-dot-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes rr-scan-dot-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgb(110 231 183 / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(110 231 183 / 0.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rr-scan-beam.rr-scanning {
+    animation: none;
+    top: 0;
+    height: 3px;
+    background: var(--color-emerald-600, #059669);
+    border-bottom: none;
+    opacity: 0.8;
+  }
+
+  .rr-scan-dot {
+    animation: none;
+  }
+}

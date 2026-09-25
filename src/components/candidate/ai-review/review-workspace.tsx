@@ -67,12 +67,17 @@ function clearQuoteHighlight() {
  */
 export function ReviewWorkspace({
   variantId,
+  targetRole,
+  targetCountry,
   preview,
 }: {
   variantId: string;
+  targetRole: string;
+  targetCountry: string;
   preview: React.ReactNode;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const [scanning, setScanning] = useState(false);
   const [active, setActive] = useState<{
     blockId: string;
     quote: string;
@@ -159,9 +164,21 @@ export function ReviewWorkspace({
         >
           <div
             ref={rootRef}
-            className="mx-auto max-w-[720px] overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm"
+            className="relative mx-auto max-w-[720px] overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm"
           >
             {preview}
+            {/* Decorative scan beam — derives purely from the pending
+                review request; aria-hidden and never interactive. */}
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${
+                scanning ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <div
+                className={`rr-scan-beam ${scanning ? "rr-scanning" : ""}`}
+              />
+            </div>
           </div>
         </section>
       </div>
@@ -169,11 +186,14 @@ export function ReviewWorkspace({
       <section aria-label="AI review" className="order-1 xl:order-2">
         <CandidateAiReviewPanel
           variantId={variantId}
+          targetRole={targetRole}
+          targetCountry={targetCountry}
           activeBlockId={active?.blockId ?? null}
           missingBlock={missingBlock}
           quoteStatus={quoteStatus}
           onLocate={locate}
           onNewResult={reset}
+          onPendingChange={setScanning}
         />
       </section>
     </div>

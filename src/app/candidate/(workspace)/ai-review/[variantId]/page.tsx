@@ -59,6 +59,8 @@ export default async function CandidateAiReviewWorkspacePage({
 
       <ReviewWorkspace
         variantId={variant.id}
+        targetRole={variant.targetRole}
+        targetCountry={variant.targetCountry}
         preview={
           <ResumeRenderer
             templateKey={variant.templateKey}

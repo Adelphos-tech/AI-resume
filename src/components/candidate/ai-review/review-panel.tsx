@@ -27,18 +27,24 @@ import type { QuoteStatus } from "@/components/candidate/ai-review/review-worksp
 
 export function CandidateAiReviewPanel({
   variantId,
+  targetRole,
+  targetCountry,
   activeBlockId,
   missingBlock,
   quoteStatus,
   onLocate,
   onNewResult,
+  onPendingChange,
 }: {
   variantId: string;
+  targetRole: string;
+  targetCountry: string;
   activeBlockId: string | null;
   missingBlock: boolean;
   quoteStatus: QuoteStatus;
   onLocate: (blockId: string, quote: string) => void;
   onNewResult: () => void;
+  onPendingChange: (pending: boolean) => void;
 }) {
   const [review, setReview] = useState<AiResumeReview | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +54,7 @@ export function CandidateAiReviewPanel({
     if (isPending) return;
     setError(null);
     onNewResult();
+    onPendingChange(true);
     startTransition(async () => {
       try {
         const result = await candidateReviewResumeAction({ variantId });
@@ -58,6 +65,8 @@ export function CandidateAiReviewPanel({
         }
       } catch {
         setError("We couldn't complete this review. Please try again.");
+      } finally {
+        onPendingChange(false);
       }
     });
   }
@@ -68,14 +77,43 @@ export function CandidateAiReviewPanel({
         AI Resume Review
       </h2>
 
+      {isPending && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="mt-3 space-y-2 rounded-xl border border-emerald-600/20 bg-emerald-50/50 p-4"
+        >
+          <div className="flex items-center gap-2">
+            <span className="rr-scan-dot" aria-hidden />
+            <p className="text-sm font-semibold text-stone-900">
+              Reviewing your resume
+            </p>
+          </div>
+          <p className="text-sm text-stone-600">
+            We&apos;re reviewing this saved resume against:{" "}
+            <span className="font-medium text-stone-700">
+              {targetRole} · {targetCountry}
+            </span>
+          </p>
+          <p className="text-xs leading-relaxed text-stone-500">
+            This may take a few minutes. This review runs only because you
+            requested it.
+          </p>
+        </div>
+      )}
+
       {!review && (
         <div className="mt-3 space-y-4">
-          <p className="text-sm leading-relaxed text-stone-600">
-            Review this saved resume against its target role and country.
-            Feedback considers role alignment, evidence strength, skills
-            relevance, clarity and specificity, achievement evidence, country
-            presentation, and ATS readability.
-          </p>
+          {!isPending && (
+            <>
+              <p className="text-sm leading-relaxed text-stone-600">
+                Review this saved resume against its target role and country.
+                Feedback considers role alignment, evidence strength, skills
+                relevance, clarity and specificity, achievement evidence,
+                country presentation, and ATS readability.
+              </p>
+            </>
+          )}
           <p className="text-xs text-stone-500">
             Reviews run only when you request them. Review results are temporary
             and are not saved yet.
