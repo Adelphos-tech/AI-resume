@@ -24,11 +24,23 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build \
     BETTER_AUTH_SECRET=build-placeholder-not-a-real-secret-00 \
-    BETTER_AUTH_URL=http://localhost:3000
+    BETTER_AUTH_URL=http://localhost:3000 \
+    PUBLIC_SHARE_ORIGIN=http://localhost:3000
 # Chromium for server-side resume PDF export; shared path copied to runner.
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 RUN pnpm exec playwright install chromium
 RUN pnpm build
+
+# Migrations: slim one-shot target reusing the deps stage (Prisma CLI is a
+# devDependency, so the runtime image below intentionally has no migrator).
+# Usage:
+#   docker build --target migrate -t rolerace-migrate .
+#   docker run --rm --network <db-net> -e DATABASE_URL=... rolerace-migrate
+FROM deps AS migrate
+COPY prisma ./prisma
+COPY prisma7.config.ts ./
+# Only ever applies pending migrations — never dev/reset/seed.
+CMD ["pnpm", "exec", "prisma", "migrate", "deploy"]
 
 # Runtime: standalone server only, non-root
 FROM base AS runner
