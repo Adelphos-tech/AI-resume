@@ -1,12 +1,22 @@
 "use client";
 
-import { Crosshair, Sparkles } from "lucide-react";
-import { useState, useTransition } from "react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  ChevronDown,
+  CircleDot,
+  Crosshair,
+  Lightbulb,
+  Sparkles,
+} from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 import { candidateReviewResumeAction } from "@/app/candidate/(workspace)/ai-review/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { AiResumeReview } from "@/server/ai/resume-review-schema";
+
+import type { QuoteStatus } from "@/components/candidate/ai-review/review-workspace";
 
 const OVERALL_LABELS: Record<AiResumeReview["overall"]["status"], string> = {
   strong_fit: "Strong fit",
@@ -23,7 +33,247 @@ const FINDING_LABELS: Record<
   weak: "Weak",
 };
 
-import type { QuoteStatus } from "@/components/candidate/ai-review/review-workspace";
+const REVIEW_DIMENSIONS = [
+  "Role alignment",
+  "Evidence strength",
+  "Skills relevance",
+  "Clarity and specificity",
+  "Achievement evidence",
+  "Country presentation",
+  "ATS readability",
+];
+
+type Finding = AiResumeReview["findings"][number];
+
+type PanelBus = {
+  activeBlockId: string | null;
+  missingBlock: boolean;
+  quoteStatus: QuoteStatus;
+  onLocate: (blockId: string, quote: string) => void;
+};
+
+function QuoteNotice({ bus }: { bus: PanelBus }) {
+  if (bus.missingBlock) {
+    return (
+      <p role="alert" className="mt-2 text-xs text-red-600">
+        We couldn&apos;t locate this section in the preview.
+      </p>
+    );
+  }
+  if (bus.quoteStatus === "not-found") {
+    return (
+      <p role="status" className="mt-2 text-xs text-stone-500">
+        We found the section, but couldn&apos;t mark the exact quoted text.
+      </p>
+    );
+  }
+  if (bus.quoteStatus === "unsupported") {
+    return (
+      <p role="status" className="mt-2 text-xs text-stone-500">
+        Exact phrase highlighting isn&apos;t available in this browser.
+      </p>
+    );
+  }
+  if (bus.quoteStatus === "ok") {
+    return (
+      <p className="sr-only" role="status">
+        Highlighted quoted text in resume.
+      </p>
+    );
+  }
+  return null;
+}
+
+function FindingCard({
+  f,
+  index,
+  defaultOpen,
+  bus,
+  selectedRef,
+}: {
+  f: Finding;
+  index: number;
+  defaultOpen: boolean;
+  bus: PanelBus;
+  selectedRef: React.RefObject<HTMLLIElement | null>;
+}) {
+  const weak = f.status === "weak";
+  const active = bus.activeBlockId === f.blockId;
+  const [userOpen, setUserOpen] = useState(defaultOpen);
+  // Selected findings always render expanded; otherwise the
+  // candidate's toggle (or the section default) decides.
+  const open = userOpen || active;
+  const detailsId = `finding-details-${index}`;
+
+  return (
+    <li
+      ref={active ? selectedRef : undefined}
+      className={`scroll-mt-40 rounded-xl border transition-colors ${
+        active
+          ? "border-emerald-600 bg-emerald-50/40 ring-1 ring-emerald-600/40"
+          : weak
+            ? "border-amber-600/30"
+            : "border-stone-200"
+      }`}
+    >
+      <div className="p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          {weak ? (
+            <AlertCircle
+              className="size-4 shrink-0 text-amber-600"
+              aria-hidden
+            />
+          ) : (
+            <CheckCircle2
+              className="size-4 shrink-0 text-emerald-600"
+              aria-hidden
+            />
+          )}
+          <Badge
+            variant={weak ? "destructive" : "secondary"}
+            className={
+              weak ? "bg-amber-100 text-amber-800 hover:bg-amber-100" : ""
+            }
+          >
+            {FINDING_LABELS[f.status]}
+          </Badge>
+          <span className="text-xs font-medium text-stone-500 capitalize">
+            {f.dimension.replaceAll("_", " ")}
+          </span>
+          <button
+            type="button"
+            aria-pressed={active}
+            aria-label={`View finding in resume: ${f.dimension.replaceAll("_", " ")}`}
+            onClick={() => bus.onLocate(f.blockId, f.quote)}
+            className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600"
+          >
+            <Crosshair className="size-3.5" aria-hidden />
+            {active ? "Viewing in resume" : "View in resume"}
+          </button>
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={detailsId}
+            aria-label={open ? "Collapse finding" : "Expand finding"}
+            onClick={() => setUserOpen((v) => !v)}
+            className="rounded-md p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600 focus-visible:outline-2 focus-visible:outline-emerald-600"
+          >
+            <ChevronDown
+              className={`size-4 transition-transform ${open ? "rotate-180" : ""}`}
+              aria-hidden
+            />
+          </button>
+        </div>
+        {!open && (
+          <p className="mt-2 line-clamp-1 text-sm text-stone-600 italic">
+            &ldquo;{f.quote}&rdquo;
+          </p>
+        )}
+        {open && (
+          <div id={detailsId}>
+            {active && <QuoteNotice bus={bus} />}
+            <blockquote className="mt-3 rounded-md border-l-2 border-emerald-600/40 bg-stone-50 py-1.5 pl-3 text-sm leading-relaxed text-stone-600 italic">
+              {f.quote}
+            </blockquote>
+            <div className="mt-4 grid gap-4 border-t border-stone-100 pt-4 sm:grid-cols-2">
+              <div>
+                <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
+                  {weak ? "Why this matters" : "Why this works"}
+                </p>
+                <p className="mt-1.5 text-[15px] leading-relaxed text-stone-800">
+                  {f.reason}
+                </p>
+              </div>
+              {f.guidance ? (
+                <div>
+                  <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
+                    {weak ? "How to improve" : "How to make it even stronger"}
+                  </p>
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
+                    {f.guidance}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        )}
+      </div>
+    </li>
+  );
+}
+
+function SectionAccordion({
+  id,
+  icon,
+  title,
+  description,
+  count,
+  countLabel,
+  accent,
+  open,
+  onToggle,
+  children,
+}: {
+  id: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  count: number;
+  countLabel: string;
+  accent: "emerald" | "amber" | "slate" | "mint";
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  const tone = {
+    emerald: "bg-emerald-50 text-emerald-700",
+    amber: "bg-amber-50 text-amber-700",
+    slate: "bg-stone-100 text-stone-600",
+    mint: "bg-teal-50 text-teal-700",
+  }[accent];
+
+  return (
+    <section aria-labelledby={`${id}-label`} className="scroll-mt-40">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={onToggle}
+        className="flex w-full items-center gap-3.5 rounded-xl border border-stone-200 bg-white px-4 py-3.5 text-left transition-colors hover:border-emerald-600/30 focus-visible:outline-2 focus-visible:outline-emerald-600"
+      >
+        <span
+          aria-hidden
+          className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${tone}`}
+        >
+          {icon}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span
+            id={`${id}-label`}
+            className="block text-base font-bold tracking-tight text-stone-900"
+          >
+            {title}
+          </span>
+          <span className="mt-0.5 block text-xs leading-relaxed text-stone-500">
+            {description}
+          </span>
+        </span>
+        <span className="shrink-0 text-xs font-semibold text-stone-500">
+          {count} {countLabel}
+        </span>
+        <ChevronDown
+          className={`size-4 shrink-0 text-stone-400 transition-transform ${open ? "rotate-180" : ""}`}
+          aria-hidden
+        />
+      </button>
+      {open && (
+        <div id={id} className="mt-3 space-y-3">
+          {children}
+        </div>
+      )}
+    </section>
+  );
+}
 
 export function CandidateAiReviewPanel({
   variantId,
@@ -51,11 +301,14 @@ export function CandidateAiReviewPanel({
   const [review, setReview] = useState<AiResumeReview | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const selectedRef = useRef<HTMLLIElement>(null);
 
   function onReview() {
     if (isPending) return;
     setError(null);
     setReview(null);
+    setOpenSections({});
     onNewResult();
     onPendingChange(true);
     startTransition(async () => {
@@ -64,6 +317,18 @@ export function CandidateAiReviewPanel({
         if (result.success) {
           setReview(result.review);
           onReviewReady(result.review);
+          // Default: first meaningful group open — usually What's working.
+          const working = result.review.findings.some(
+            (f) => f.status !== "weak",
+          );
+          const weak_ = result.review.findings.some((f) => f.status === "weak");
+          const gaps = result.review.gaps.length > 0;
+          setOpenSections({
+            working: working,
+            weak: !working && weak_,
+            gaps: !working && !weak_ && gaps,
+            recs: !working && !weak_ && !gaps,
+          });
         } else {
           setError(result.message);
         }
@@ -75,17 +340,105 @@ export function CandidateAiReviewPanel({
     });
   }
 
+  // Bring the selected finding card into view when a resume marker (or a
+  // previous View in resume) changes the active block.
+  useEffect(() => {
+    if (!activeBlockId || !selectedRef.current) return;
+    selectedRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
+  }, [activeBlockId]);
+
+  const working = review?.findings.filter((f) => f.status !== "weak") ?? [];
+  const weak = review?.findings.filter((f) => f.status === "weak") ?? [];
+  const gaps = review?.gaps ?? [];
+  // Recommendations derive from the review's own guidance text — weak
+  // findings first, then gaps — deduped and unchanged.
+  const recommendations = review
+    ? [
+        ...new Set(
+          [...weak.map((f) => f.guidance), ...gaps.map((g) => g.guidance)]
+            .filter((g): g is string => Boolean(g?.trim()))
+            .map((g) => g.trim()),
+        ),
+      ]
+    : [];
+
+  const takeawaysPositive = working.slice(0, 3);
+  const takeawaysImprove = [
+    ...weak.map((f) => ({ key: `f-${f.blockId}`, text: f.reason })),
+    ...gaps.map((g, i) => ({ key: `g-${i}`, text: g.reason })),
+  ].slice(0, 3);
+
+  const nav = [
+    {
+      id: "sec-working",
+      label: "What's working",
+      count: working.length,
+      icon: <CheckCircle2 className="size-3.5" aria-hidden />,
+    },
+    {
+      id: "sec-weak",
+      label: "Improve",
+      count: weak.length,
+      icon: <AlertCircle className="size-3.5" aria-hidden />,
+    },
+    {
+      id: "sec-gaps",
+      label: "Missing",
+      count: gaps.length,
+      icon: <CircleDot className="size-3.5" aria-hidden />,
+    },
+    {
+      id: "sec-recs",
+      label: "Recommendations",
+      count: recommendations.length,
+      icon: <Lightbulb className="size-3.5" aria-hidden />,
+    },
+  ].filter((s) => s.count > 0);
+
+  const sectionKey: Record<string, string> = {
+    "sec-working": "working",
+    "sec-weak": "weak",
+    "sec-gaps": "gaps",
+    "sec-recs": "recs",
+  };
+
+  function jumpTo(id: string) {
+    const key = sectionKey[id];
+    if (key) setOpenSections((s) => ({ ...s, [key]: true }));
+    document.getElementById(id)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+
+  const bus: PanelBus = { activeBlockId, missingBlock, quoteStatus, onLocate };
+
   return (
     <div className="rounded-2xl border border-stone-200 bg-white p-5 md:p-6">
-      <h2 className="text-sm font-semibold tracking-wide text-stone-900">
-        AI Resume Review
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-base font-semibold text-stone-900">AI Review</h2>
+        {review && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onReview}
+            disabled={isPending}
+          >
+            <Sparkles className="size-4" aria-hidden />
+            {isPending ? "Reviewing…" : "Run new review"}
+          </Button>
+        )}
+      </div>
 
       {isPending && (
         <div
           role="status"
           aria-live="polite"
-          className="mt-3 space-y-2 rounded-xl border border-emerald-600/20 bg-emerald-50/50 p-4"
+          className="mt-4 space-y-2 rounded-xl border border-emerald-600/20 bg-emerald-50/50 p-5"
         >
           <div className="flex items-center gap-2">
             <span className="rr-scan-dot" aria-hidden />
@@ -94,47 +447,60 @@ export function CandidateAiReviewPanel({
             </p>
           </div>
           <p className="text-sm text-stone-600">
-            We&apos;re reviewing this saved resume against:{" "}
             <span className="font-medium text-stone-700">
               {targetRole} · {targetCountry}
             </span>
           </p>
-          <p className="text-xs leading-relaxed text-stone-500">
+          <p className="text-sm leading-relaxed text-stone-500">
             This may take a few minutes. This review runs only because you
             requested it.
           </p>
         </div>
       )}
 
-      {!review && (
-        <div className="mt-3 space-y-4">
-          {!isPending && (
-            <>
-              <p className="text-sm leading-relaxed text-stone-600">
-                Review this saved resume against its target role and country.
-                Feedback considers role alignment, evidence strength, skills
-                relevance, clarity and specificity, achievement evidence,
-                country presentation, and ATS readability.
-              </p>
-            </>
-          )}
-          <p className="text-xs text-stone-500">
-            Reviews run only when you request them. Review results are temporary
-            and are not saved yet.
+      {!review && !isPending && !error && (
+        <div className="mt-4 space-y-5">
+          <p className="text-[15px] leading-relaxed text-stone-600">
+            Review this saved resume against:{" "}
+            <span className="font-medium text-stone-800">
+              {targetRole} · {targetCountry}
+            </span>
           </p>
-          <Button
-            type="button"
-            onClick={onReview}
-            disabled={isPending}
-            className="bg-emerald-700 hover:bg-emerald-800"
-          >
-            <Sparkles className="size-4" aria-hidden />
-            {isPending ? "Reviewing…" : "Review with AI"}
-          </Button>
+          <div className="rounded-xl border border-stone-100 bg-stone-50/60 p-4">
+            <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
+              We&apos;ll examine
+            </p>
+            <ul className="mt-2.5 grid gap-x-4 gap-y-1.5 text-sm text-stone-700 sm:grid-cols-2">
+              {REVIEW_DIMENSIONS.map((d) => (
+                <li key={d} className="flex items-center gap-2">
+                  <CircleDot
+                    className="size-3 shrink-0 text-emerald-600"
+                    aria-hidden
+                  />
+                  {d}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <Button
+              type="button"
+              onClick={onReview}
+              disabled={isPending}
+              className="bg-emerald-700 hover:bg-emerald-800"
+            >
+              <Sparkles className="size-4" aria-hidden />
+              {isPending ? "Reviewing…" : "Review with AI"}
+            </Button>
+            <p className="mt-3 text-xs leading-relaxed text-stone-500">
+              Runs only when you request it. This may take a few minutes. Review
+              results are temporary and are not saved yet.
+            </p>
+          </div>
         </div>
       )}
 
-      {error && (
+      {error && !isPending && (
         <div className="mt-4 space-y-3">
           <p role="alert" className="text-sm text-red-600">
             {error}
@@ -154,159 +520,214 @@ export function CandidateAiReviewPanel({
       )}
 
       {review && (
-        <div className="mt-4 space-y-6">
-          <div className="space-y-2">
-            <Badge variant="secondary">
-              {OVERALL_LABELS[review.overall.status]}
-            </Badge>
-            <p className="text-sm leading-relaxed text-stone-700">
-              {review.overall.summary}
-            </p>
-            <p className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-500">
-              {review.findings.some((f) => f.status !== "weak") && (
-                <span className="inline-flex items-center gap-1.5">
-                  <span
-                    aria-hidden
-                    className="inline-block size-2 rounded-full bg-emerald-500"
-                  />
-                  Supporting
-                </span>
-              )}
-              {review.findings.some((f) => f.status === "weak") && (
-                <span className="inline-flex items-center gap-1.5">
-                  <span
-                    aria-hidden
-                    className="inline-block size-2 rounded-full bg-amber-500"
-                  />
-                  Needs strengthening
-                </span>
-              )}
-            </p>
-          </div>
+        <div className="mt-5">
+          {/* overview + key takeaways */}
+          <section
+            aria-labelledby="review-overview"
+            className="grid gap-4 rounded-xl border border-emerald-600/20 bg-emerald-50/40 p-5 lg:grid-cols-[3fr_2fr]"
+          >
+            <div>
+              <p
+                id="review-overview"
+                className="text-xs font-semibold tracking-widest text-emerald-700 uppercase"
+              >
+                Overview
+              </p>
+              <p className="mt-2 text-lg font-bold tracking-tight text-stone-900">
+                {OVERALL_LABELS[review.overall.status]}
+              </p>
+              <p className="mt-2 text-[15px] leading-relaxed text-stone-700">
+                {review.overall.summary}
+              </p>
+            </div>
+            <div className="rounded-lg border border-emerald-600/15 bg-white/80 p-4">
+              <p className="text-xs font-semibold tracking-widest text-stone-500 uppercase">
+                Key takeaways
+              </p>
+              <ul className="mt-3 space-y-2.5">
+                {takeawaysPositive.map((f, i) => (
+                  <li key={`p-${i}`} className="flex items-start gap-2">
+                    <CheckCircle2
+                      className="mt-0.5 size-4 shrink-0 text-emerald-600"
+                      aria-hidden
+                    />
+                    <p className="line-clamp-2 text-sm leading-snug text-stone-700">
+                      {f.reason}
+                    </p>
+                  </li>
+                ))}
+                {takeawaysImprove.map((t) => (
+                  <li key={t.key} className="flex items-start gap-2">
+                    <AlertCircle
+                      className="mt-0.5 size-4 shrink-0 text-amber-600"
+                      aria-hidden
+                    />
+                    <p className="line-clamp-2 text-sm leading-snug text-stone-700">
+                      {t.text}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
 
-          {review.findings.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-stone-900">Findings</h3>
-              <ul className="space-y-3">
-                {review.findings.map((f, i) => (
-                  <li
-                    key={`${f.blockId}:${i}`}
-                    className={`space-y-2 rounded-xl border p-4 ${
-                      activeBlockId === f.blockId
-                        ? "border-emerald-600/50 bg-emerald-50/40"
-                        : "border-stone-200"
+          {/* section navigation */}
+          {nav.length > 0 && (
+            <nav
+              aria-label="Review sections"
+              className="sticky top-14 z-10 -mx-5 mt-4 border-y border-stone-100 bg-white/95 px-5 py-2.5 backdrop-blur-sm lg:top-4 lg:-mx-6 lg:px-6"
+            >
+              <div className="flex flex-wrap gap-2">
+                {nav.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => jumpTo(s.id)}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
+                      openSections[sectionKey[s.id]]
+                        ? "border-emerald-600/40 bg-emerald-50 text-emerald-800"
+                        : "border-stone-200 bg-white text-stone-700 hover:border-emerald-600/30 hover:text-emerald-800"
                     }`}
                   >
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge
-                        variant={
-                          f.status === "weak" ? "destructive" : "secondary"
-                        }
-                      >
-                        {FINDING_LABELS[f.status]}
-                      </Badge>
-                      <span className="text-xs text-stone-500 capitalize">
-                        {f.dimension.replaceAll("_", " ")}
-                      </span>
-                      <button
-                        type="button"
-                        aria-pressed={activeBlockId === f.blockId}
-                        aria-label={`View finding in resume: ${f.dimension.replaceAll("_", " ")}`}
-                        onClick={() => onLocate(f.blockId, f.quote)}
-                        className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600"
-                      >
-                        <Crosshair className="size-3.5" aria-hidden />
-                        {activeBlockId === f.blockId
-                          ? "Viewing in resume"
-                          : "View in resume"}
-                      </button>
-                    </div>
-                    {missingBlock && activeBlockId === f.blockId && (
-                      <p role="alert" className="text-xs text-red-600">
-                        We couldn&apos;t locate this section in the preview.
-                      </p>
-                    )}
-                    {quoteStatus === "not-found" &&
-                      activeBlockId === f.blockId && (
-                        <p role="status" className="text-xs text-stone-500">
-                          We found the section, but couldn&apos;t mark the exact
-                          quoted text.
-                        </p>
-                      )}
-                    {quoteStatus === "unsupported" &&
-                      activeBlockId === f.blockId && (
-                        <p role="status" className="text-xs text-stone-500">
-                          Exact phrase highlighting isn&apos;t available in this
-                          browser.
-                        </p>
-                      )}
-                    {quoteStatus === "ok" && activeBlockId === f.blockId && (
-                      <p className="sr-only" role="status">
-                        Highlighted quoted text in resume.
-                      </p>
-                    )}
-                    <blockquote className="rounded-md border-l-2 border-emerald-600/40 bg-stone-50 py-1.5 pl-3 text-sm text-stone-600 italic">
-                      {f.quote}
-                    </blockquote>
-                    <div className="space-y-1">
-                      <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
-                        {f.status === "weak"
-                          ? "Why this matters"
-                          : "Why this works"}
-                      </p>
-                      <p className="text-sm text-stone-800">{f.reason}</p>
-                    </div>
-                    {f.guidance && (
-                      <div className="space-y-1">
-                        <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
-                          {f.status === "weak"
-                            ? "How to improve"
-                            : "How to make it even stronger"}
-                        </p>
-                        <p className="text-sm text-stone-500">{f.guidance}</p>
-                      </div>
-                    )}
-                  </li>
+                    {s.icon}
+                    {s.label}
+                    <span className="rounded-full bg-stone-100 px-1.5 text-[11px] font-bold text-stone-500">
+                      {s.count}
+                    </span>
+                  </button>
                 ))}
-              </ul>
-            </div>
+              </div>
+            </nav>
           )}
 
-          {review.gaps.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-stone-900">
-                Missing evidence
-              </h3>
-              <ul className="space-y-3">
-                {review.gaps.map((g, i) => (
+          <div className="mt-5 space-y-4">
+            {working.length > 0 && (
+              <SectionAccordion
+                id="sec-working"
+                icon={<CheckCircle2 className="size-5" aria-hidden />}
+                title="What's working"
+                description="Strong aspects that align well with your target role."
+                count={working.length}
+                countLabel={working.length === 1 ? "finding" : "findings"}
+                accent="emerald"
+                open={Boolean(openSections.working)}
+                onToggle={() =>
+                  setOpenSections((s) => ({ ...s, working: !s.working }))
+                }
+              >
+                {working.map((f, i) => (
+                  <FindingCard
+                    key={`w-${i}`}
+                    f={f}
+                    index={i}
+                    defaultOpen={i === 0}
+                    bus={bus}
+                    selectedRef={selectedRef}
+                  />
+                ))}
+              </SectionAccordion>
+            )}
+
+            {weak.length > 0 && (
+              <SectionAccordion
+                id="sec-weak"
+                icon={<AlertCircle className="size-5" aria-hidden />}
+                title="Needs strengthening"
+                description="Areas that could be more specific or better demonstrated."
+                count={weak.length}
+                countLabel={weak.length === 1 ? "finding" : "findings"}
+                accent="amber"
+                open={Boolean(openSections.weak)}
+                onToggle={() =>
+                  setOpenSections((s) => ({ ...s, weak: !s.weak }))
+                }
+              >
+                {weak.map((f, i) => (
+                  <FindingCard
+                    key={`s-${i}`}
+                    f={f}
+                    index={i}
+                    defaultOpen={false}
+                    bus={bus}
+                    selectedRef={selectedRef}
+                  />
+                ))}
+              </SectionAccordion>
+            )}
+
+            {gaps.length > 0 && (
+              <SectionAccordion
+                id="sec-gaps"
+                icon={<CircleDot className="size-5" aria-hidden />}
+                title="Missing evidence"
+                description="Useful signals or evidence not found in this saved resume."
+                count={gaps.length}
+                countLabel={gaps.length === 1 ? "gap" : "gaps"}
+                accent="slate"
+                open={Boolean(openSections.gaps)}
+                onToggle={() =>
+                  setOpenSections((s) => ({ ...s, gaps: !s.gaps }))
+                }
+              >
+                {gaps.map((g, i) => (
                   <li
                     key={i}
-                    className="space-y-1.5 rounded-xl border border-dashed border-stone-300 bg-stone-50/60 p-4"
+                    className="list-none rounded-xl border border-dashed border-stone-300 bg-stone-50/60 p-4"
                   >
-                    <p className="text-xs font-semibold tracking-wide text-stone-600 uppercase">
+                    <p className="flex items-center gap-2 text-xs font-semibold tracking-wide text-stone-600 uppercase">
+                      <CircleDot
+                        className="size-3.5 text-stone-400"
+                        aria-hidden
+                      />
                       {g.category.replaceAll("_", " ")}
                     </p>
-                    <p className="text-sm text-stone-800">{g.reason}</p>
+                    <p className="mt-2 text-[15px] leading-relaxed text-stone-800">
+                      {g.reason}
+                    </p>
                     {g.guidance && (
-                      <p className="text-sm text-stone-500">{g.guidance}</p>
+                      <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
+                        {g.guidance}
+                      </p>
                     )}
                   </li>
                 ))}
-              </ul>
-            </div>
-          )}
+              </SectionAccordion>
+            )}
 
-          <div className="border-t border-stone-100 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={onReview}
-              disabled={isPending}
-            >
-              <Sparkles className="size-4" aria-hidden />
-              {isPending ? "Reviewing…" : "Run new review"}
-            </Button>
+            {recommendations.length > 0 && (
+              <SectionAccordion
+                id="sec-recs"
+                icon={<Lightbulb className="size-5" aria-hidden />}
+                title="Recommendations"
+                description="Focused next improvements suggested by this review."
+                count={recommendations.length}
+                countLabel={
+                  recommendations.length === 1
+                    ? "recommendation"
+                    : "recommendations"
+                }
+                accent="mint"
+                open={Boolean(openSections.recs)}
+                onToggle={() =>
+                  setOpenSections((s) => ({ ...s, recs: !s.recs }))
+                }
+              >
+                {recommendations.map((r, i) => (
+                  <li
+                    key={i}
+                    className="flex list-none items-start gap-3 rounded-xl border border-stone-200 bg-white p-4"
+                  >
+                    <Lightbulb
+                      className="mt-0.5 size-4 shrink-0 text-emerald-600"
+                      aria-hidden
+                    />
+                    <p className="text-[15px] leading-relaxed text-stone-700">
+                      {r}
+                    </p>
+                  </li>
+                ))}
+              </SectionAccordion>
+            )}
           </div>
         </div>
       )}

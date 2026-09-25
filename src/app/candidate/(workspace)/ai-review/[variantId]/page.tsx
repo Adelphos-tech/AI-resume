@@ -42,10 +42,18 @@ export default async function CandidateAiReviewWorkspacePage({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            {variant.name}
+            AI Review
           </h1>
           <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
-            {variant.targetRole} · {variant.targetCountry} · {templateName}
+            {variant.targetRole} · {variant.targetCountry}
+            <span className="text-stone-400">
+              {" "}
+              · {variant.name} · {templateName}
+            </span>
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-stone-500">
+            Review strengths, improvement areas, and missing evidence directly
+            against this saved resume.
           </p>
         </div>
         <Link

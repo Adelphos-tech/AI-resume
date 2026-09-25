@@ -1,5 +1,6 @@
 "use client";
 
+import { Maximize2, ZoomIn, ZoomOut } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CandidateAiReviewPanel } from "@/components/candidate/ai-review/review-panel";
@@ -11,12 +12,18 @@ const IMPROVE_HIGHLIGHT_NAME = "rolerace-review-improve";
 
 export type QuoteStatus = "none" | "unsupported" | "not-found" | "ok";
 
+/** Client-local preview zoom — layout-based, so annotations stay aligned. */
+const ZOOM_MIN = 0.75;
+const ZOOM_DEFAULT = 1;
+const ZOOM_MAX = 1.25;
+
 type Annotation = {
   key: string;
   blockId: string;
   quote: string;
   label: string;
   improvement: boolean;
+  number: number;
   top: number;
 };
 
@@ -90,6 +97,8 @@ export function ReviewWorkspace({
   preview: React.ReactNode;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLElement>(null);
+  const [zoom, setZoom] = useState<number>(ZOOM_DEFAULT);
   const [scanning, setScanning] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [active, setActive] = useState<{
@@ -159,8 +168,9 @@ export function ReviewWorkspace({
           key: `${f.blockId}:${i}`,
           blockId: f.blockId,
           quote: f.quote,
-          label: `${improvement ? "Needs strengthening" : "Supporting"} finding: ${f.dimension.replaceAll("_", " ")}`,
+          label: `${improvement ? "Needs strengthening" : "Supporting"} finding ${i + 1}: ${f.dimension.replaceAll("_", " ")}`,
           improvement,
+          number: i + 1,
           top: block.getBoundingClientRect().top - rootRect.top,
         });
       }
@@ -244,7 +254,7 @@ export function ReviewWorkspace({
   useEffect(() => clearDom, [clearDom]);
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[3fr_2fr]">
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
       {/* ::highlight() is paint-only and not understood by the CSS
           bundler — kept as a runtime style tag scoped to this page. */}
       <style>{`
@@ -270,52 +280,7 @@ export function ReviewWorkspace({
           text-underline-offset: 2px;
         }
       `}</style>
-      <div className="order-2 xl:order-1">
-        <section
-          aria-label="Resume preview"
-          className="rounded-2xl border border-stone-200 bg-stone-100/70 p-4 md:p-6"
-        >
-          <div
-            ref={rootRef}
-            className="relative mx-auto max-w-[720px] overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm"
-          >
-            {preview}
-            {/* Decorative scan beam — derives purely from the pending
-                review request; aria-hidden and never interactive. */}
-            <div
-              aria-hidden="true"
-              className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${
-                scanning ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              <div
-                className={`rr-scan-beam ${scanning ? "rr-scanning" : ""}`}
-              />
-            </div>
-            {/* Passive review annotations — accessible markers anchored
-                to each finding's canonical block, overlaid on the
-                document edge without touching template DOM. */}
-            {annotations.map((a) => (
-              <button
-                key={a.key}
-                type="button"
-                aria-label={a.label}
-                onClick={() => locate(a.blockId, a.quote)}
-                style={{ top: a.top }}
-                className={`absolute left-1 z-10 grid size-5 -translate-y-1/2 place-items-center rounded-full border text-[11px] font-bold shadow-sm transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-emerald-600 ${
-                  a.improvement
-                    ? "border-amber-500/50 bg-amber-100 text-amber-800"
-                    : "border-emerald-500/50 bg-emerald-100 text-emerald-800"
-                } ${active?.blockId === a.blockId ? "ring-2 ring-emerald-700" : ""}`}
-              >
-                {a.improvement ? "!" : "✓"}
-              </button>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      <section aria-label="AI review" className="order-1 xl:order-2">
+      <section aria-label="AI review">
         <CandidateAiReviewPanel
           variantId={variantId}
           targetRole={targetRole}
@@ -329,6 +294,97 @@ export function ReviewWorkspace({
           onPendingChange={setScanning}
         />
       </section>
+
+      {/* Resume pane — second in DOM so mobile/screen-reader order puts
+          review content first; xl+ places it in the left grid column. */}
+      <div className="xl:col-start-1 xl:row-start-1 xl:sticky xl:top-6">
+        <section
+          ref={previewRef}
+          aria-label="Resume preview"
+          className="rounded-2xl border border-stone-200 bg-stone-100/70 p-4 md:p-5"
+        >
+          <div className="overflow-x-auto">
+            <div
+              ref={rootRef}
+              style={{ width: `${Math.round(zoom * 100)}%` }}
+              className="relative mx-auto overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm"
+            >
+              {preview}
+              {/* Decorative scan beam — derives purely from the pending
+                review request; aria-hidden and never interactive. */}
+              <div
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${
+                  scanning ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <div
+                  className={`rr-scan-beam ${scanning ? "rr-scanning" : ""}`}
+                />
+              </div>
+              {/* Passive review annotations — accessible markers anchored
+                to each finding's canonical block, overlaid on the
+                document edge without touching template DOM. */}
+              {annotations.map((a) => (
+                <button
+                  key={a.key}
+                  type="button"
+                  aria-label={a.label}
+                  onClick={() => locate(a.blockId, a.quote)}
+                  style={{ top: a.top }}
+                  className={`absolute left-1 z-10 grid size-5 -translate-y-1/2 place-items-center rounded-full border text-[10px] font-bold shadow-sm transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-emerald-600 ${
+                    a.improvement
+                      ? "border-amber-500/50 bg-amber-100 text-amber-800"
+                      : "border-emerald-500/50 bg-emerald-100 text-emerald-800"
+                  } ${active?.blockId === a.blockId ? "ring-2 ring-emerald-700" : ""}`}
+                >
+                  {a.number}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* preview toolbar — client-local zoom only */}
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-stone-200 pt-3">
+            <p className="text-xs font-semibold text-stone-500">
+              Resume preview
+            </p>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label="Zoom out"
+                disabled={zoom <= ZOOM_MIN}
+                onClick={() => setZoom(ZOOM_MIN)}
+                className="rounded-md p-1.5 text-stone-500 hover:bg-stone-200/60 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-emerald-600"
+              >
+                <ZoomOut className="size-3.5" aria-hidden />
+              </button>
+              <span className="min-w-9 text-center text-xs font-semibold text-stone-600">
+                {Math.round(zoom * 100)}%
+              </span>
+              <button
+                type="button"
+                aria-label="Zoom in"
+                disabled={zoom >= ZOOM_MAX}
+                onClick={() => setZoom(ZOOM_MAX)}
+                className="rounded-md p-1.5 text-stone-500 hover:bg-stone-200/60 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-emerald-600"
+              >
+                <ZoomIn className="size-3.5" aria-hidden />
+              </button>
+              <button
+                type="button"
+                aria-label="Open resume preview fullscreen"
+                onClick={() =>
+                  void previewRef.current?.requestFullscreen().catch(() => {})
+                }
+                className="ml-1 rounded-md p-1.5 text-stone-500 hover:bg-stone-200/60 focus-visible:outline-2 focus-visible:outline-emerald-600"
+              >
+                <Maximize2 className="size-3.5" aria-hidden />
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
