@@ -1,7 +1,12 @@
 import { FilePlus2, FileText } from "lucide-react";
 import Link from "next/link";
 
-import { RESUME_TEMPLATES, type ResumeTemplateKey } from "@/lib/resume-schema";
+import { ResumeMiniPreview } from "@/components/resume/resume-mini-preview";
+import {
+  RESUME_TEMPLATES,
+  resumeDataSchema,
+  type ResumeTemplateKey,
+} from "@/lib/resume-schema";
 import { getCandidateResumes } from "@/server/candidates/resumes";
 
 export const metadata = { title: "Resumes — RoleRace" };
@@ -53,40 +58,52 @@ export default async function CandidateResumesPage() {
         </div>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {variants.map((v) => (
-            <li key={v.id}>
-              <Link
-                href={`/candidate/resumes/${v.id}`}
-                className="block rounded-2xl border border-stone-200 bg-white p-5 transition-colors hover:border-emerald-600/30 hover:shadow-sm"
-              >
-                <span className="flex size-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
-                  <FileText className="size-5" aria-hidden />
-                </span>
-                <p className="mt-4 truncate text-sm font-semibold text-stone-900">
-                  {v.name}
-                </p>
-                <p className="mt-0.5 truncate text-xs text-stone-500">
-                  {v.targetRole} · {v.targetCountry}
-                </p>
-                <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-3">
-                  <p className="text-xs font-medium text-stone-600">
-                    {RESUME_TEMPLATES[v.templateKey as ResumeTemplateKey]
-                      ?.name ?? v.templateKey}
+          {variants.map((v) => {
+            const parsed = resumeDataSchema.safeParse(v.resumeData);
+            return (
+              <li key={v.id}>
+                <Link
+                  href={`/candidate/resumes/${v.id}`}
+                  className="block rounded-2xl border border-stone-200 bg-white p-4 transition-colors hover:border-emerald-600/30 hover:shadow-sm"
+                >
+                  <div className="h-40 overflow-hidden rounded-lg border border-stone-200 bg-white">
+                    {parsed.success ? (
+                      <ResumeMiniPreview
+                        templateKey={v.templateKey}
+                        resumeData={parsed.data}
+                      />
+                    ) : (
+                      <span className="flex h-full items-center justify-center text-emerald-700">
+                        <FileText className="size-6" aria-hidden />
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-4 truncate text-sm font-semibold text-stone-900">
+                    {v.name}
                   </p>
-                  <p className="text-[11px] text-stone-400">
-                    {v.createdAt.toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
+                  <p className="mt-0.5 truncate text-xs text-stone-500">
+                    {v.targetRole} · {v.targetCountry}
                   </p>
-                </div>
-                <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
-                  View resume →
-                </span>
-              </Link>
-            </li>
-          ))}
+                  <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-3">
+                    <p className="text-xs font-medium text-stone-600">
+                      {RESUME_TEMPLATES[v.templateKey as ResumeTemplateKey]
+                        ?.name ?? v.templateKey}
+                    </p>
+                    <p className="text-[11px] text-stone-400">
+                      {v.createdAt.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                  <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
+                    View resume →
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

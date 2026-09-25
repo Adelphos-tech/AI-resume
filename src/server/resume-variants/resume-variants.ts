@@ -30,6 +30,8 @@ export type ResumeVariantSummary = {
   profileSchemaVersion: number;
   createdAt: Date;
   updatedAt: Date;
+  /** Persisted JSONB resume document — untrusted until parsed. */
+  resumeData: Prisma.JsonValue;
 };
 
 export type CreateResumeVariantResult =
@@ -205,6 +207,7 @@ function toSummary(row: {
   profileSchemaVersion: number;
   createdAt: Date;
   updatedAt: Date;
+  resumeData: Prisma.JsonValue;
 }): ResumeVariantSummary {
   return {
     id: row.id,
@@ -216,6 +219,7 @@ function toSummary(row: {
     profileSchemaVersion: row.profileSchemaVersion,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    resumeData: row.resumeData,
   };
 }
 
