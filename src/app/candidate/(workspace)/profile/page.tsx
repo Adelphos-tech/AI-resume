@@ -1,3 +1,6 @@
+import { FileUp } from "lucide-react";
+import Link from "next/link";
+
 import { CareerProfileWorkspace } from "@/components/candidate/profile/profile-workspace";
 import {
   createInitialMasterCareerProfileFromCandidate,
@@ -45,10 +48,26 @@ export default async function CandidateProfilePage() {
     resumeReadyMasterCareerProfileSchema.safeParse(profile).success;
 
   return (
-    <CareerProfileWorkspace
-      profile={profile}
-      resumeReady={resumeReady}
-      profilePersisted={result.profile !== null}
-    />
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-stone-200 bg-white px-5 py-4">
+        <p className="max-w-xl text-sm text-stone-600">
+          Already have a resume? Upload a PDF or DOCX and we&apos;ll extract the
+          text so you can review it before adding anything to your Career
+          Profile.
+        </p>
+        <Link
+          href="/candidate/profile/import"
+          className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 hover:bg-emerald-100"
+        >
+          <FileUp className="size-4" aria-hidden />
+          Import from existing resume
+        </Link>
+      </div>
+      <CareerProfileWorkspace
+        profile={profile}
+        resumeReady={resumeReady}
+        profilePersisted={result.profile !== null}
+      />
+    </div>
   );
 }

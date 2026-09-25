@@ -120,8 +120,19 @@ export async function extractCandidateResume(
     return { success: false, message: "Candidate not found." };
   }
 
+  return extractCandidateResumeCore(parsed.data);
+}
+
+/**
+ * Auth-free deterministic extraction over the trusted candidateId's
+ * owned source. Every caller derives candidateId from its own
+ * server-verified authority (internal session or candidate session).
+ */
+export async function extractCandidateResumeCore(
+  candidateId: string,
+): Promise<ExtractResumeResult> {
   const source = await prisma.candidateResumeSource.findUnique({
-    where: { candidateId: parsed.data },
+    where: { candidateId },
     select: {
       id: true,
       storageKey: true,
