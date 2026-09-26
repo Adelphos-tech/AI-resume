@@ -11,6 +11,7 @@ import {
   unpublishPublicProfileAction,
   updateSlugAction,
 } from "@/app/candidate/(workspace)/public-profile/actions";
+import { CareerCardNfcWriter } from "@/components/candidate/public-profile/career-card-nfc-writer";
 import { Button } from "@/components/ui/button";
 
 type VariantOption = {
@@ -580,6 +581,9 @@ export function PublicProfileSettings({
           </div>
         </section>
       )}
+
+      {/* program physical NFC card — browser-side only, no server writes */}
+      {shareUrl && <CareerCardNfcWriter careerCardUrl={shareUrl} />}
     </div>
   );
 }
