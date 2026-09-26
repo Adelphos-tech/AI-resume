@@ -16,8 +16,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:?required}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
     # No host port — reachable only as postgres:5432 on the private network.
+    # postgres:18+ mounts at /var/lib/postgresql (image manages data/ inside,
+    # enabling pg_upgrade); mounting at …/data directly fails its check.
     volumes:
-      - rolerace_postgres_data:/var/lib/postgresql/data
+      - rolerace_postgres_data:/var/lib/postgresql
     healthcheck:
       test:
         ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']

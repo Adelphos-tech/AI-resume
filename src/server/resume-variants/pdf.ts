@@ -8,7 +8,11 @@ import { env } from "@/server/env";
 const MAX_PDF_BYTES = 10 * 1024 * 1024; // 10 MiB
 const NAV_TIMEOUT_MS = 30_000;
 const READY_TIMEOUT_MS = 15_000;
-const SESSION_COOKIE = "better-auth.session_token";
+/**
+ * Session cookie name is supplied by the caller: production HTTPS
+ * sessions use the `__Secure-` prefix and Better Auth only reads that
+ * name; local HTTP sessions use the plain name.
+ */
 
 /**
  * Generate the ATS Classic PDF for a ResumeVariant.
@@ -27,6 +31,7 @@ const SESSION_COOKIE = "better-auth.session_token";
 export async function generateResumePdf(input: {
   printPath: string;
   sessionToken: string;
+  sessionCookieName: string;
   templateKey: string;
 }): Promise<Buffer> {
   if (!Object.hasOwn(RESUME_TEMPLATES, input.templateKey)) {
@@ -44,10 +49,13 @@ export async function generateResumePdf(input: {
     const context = await browser.newContext();
 
     // Transfer only the session cookie, scoped to our own origin.
+    // A `__Secure-` cookie requires secure transport, so PDF_RENDER_ORIGIN
+    // must be the real HTTPS origin in production (not a loopback URL).
     await context.addCookies([
       {
-        name: SESSION_COOKIE,
+        name: input.sessionCookieName,
         value: input.sessionToken,
+        secure: input.sessionCookieName.startsWith("__Secure-"),
         domain: origin.hostname,
         path: "/",
       },

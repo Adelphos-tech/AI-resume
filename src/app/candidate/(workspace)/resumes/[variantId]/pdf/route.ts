@@ -25,10 +25,8 @@ export async function GET(
   const variant = result.variant;
 
   const jar = await cookies();
-  const sessionToken = SESSION_COOKIES.map((n) => jar.get(n)?.value).find(
-    Boolean,
-  );
-  if (!sessionToken) {
+  const sessionCookie = SESSION_COOKIES.map((n) => jar.get(n)).find(Boolean);
+  if (!sessionCookie) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -36,7 +34,8 @@ export async function GET(
   try {
     pdf = await generateResumePdf({
       printPath: `/print/candidate/resume/${encodeURIComponent(variantId)}`,
-      sessionToken,
+      sessionToken: sessionCookie.value,
+      sessionCookieName: sessionCookie.name,
       templateKey: variant.templateKey,
     });
   } catch {
