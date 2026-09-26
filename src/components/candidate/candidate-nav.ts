@@ -22,7 +22,7 @@ export const CANDIDATE_NAV_PRIMARY: readonly CandidateNavItem[] = [
   { href: "/candidate/resumes", label: "Resumes", icon: FileText },
   { href: "/candidate/ai-review", label: "AI Review", icon: Sparkles },
   { href: "/candidate/templates", label: "Templates", icon: LayoutTemplate },
-  { href: "/candidate/public-profile", label: "Public Profile", icon: Globe },
+  { href: "/candidate/public-profile", label: "Career Card", icon: Globe },
 ];
 
 export const CANDIDATE_NAV_SECONDARY: readonly CandidateNavItem[] = [

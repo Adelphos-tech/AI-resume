@@ -131,11 +131,11 @@ export function PublicProfileSettings({
     return (
       <div className="rounded-2xl border border-stone-200 bg-white p-6">
         <h2 className="text-base font-semibold text-stone-900">
-          Create your Public Profile
+          Create your Career Card
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-stone-600">
-          This creates your public profile and its permanent share link. You can
-          publish and customize it later.
+          This creates your public Career Card page and its permanent share
+          link. You can publish and customize it later.
         </p>
         <Button
           type="button"
@@ -144,7 +144,7 @@ export function PublicProfileSettings({
           className="mt-4 bg-emerald-700 hover:bg-emerald-800"
         >
           <Globe className="size-4" aria-hidden />
-          {isPending ? "Creating…" : "Create Public Profile"}
+          {isPending ? "Creating…" : "Create Career Card"}
         </Button>
         {error && (
           <p role="alert" className="mt-3 text-sm text-red-600">
@@ -173,7 +173,7 @@ export function PublicProfileSettings({
               id="pp-profile"
               className="text-base font-semibold text-stone-900"
             >
-              Public profile
+              Career Card
             </h2>
             <p className="mt-1 flex items-center gap-2 text-sm text-stone-600">
               Status:{" "}
@@ -257,7 +257,7 @@ export function PublicProfileSettings({
             className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 hover:text-emerald-800"
           >
             <ExternalLink className="size-3.5" aria-hidden />
-            Preview public profile
+            Preview Career Card
           </Link>
         )}
       </section>
@@ -349,7 +349,7 @@ export function PublicProfileSettings({
                 Open to opportunities
               </label>
               <p className="text-xs text-stone-500">
-                Shows an availability badge on your public profile.
+                Shows an availability badge on your Career Card.
               </p>
             </div>
             <button
@@ -411,7 +411,7 @@ export function PublicProfileSettings({
                 type="button"
                 role="switch"
                 aria-checked={form[s.key]}
-                aria-label={`Show ${s.label} on public profile`}
+                aria-label={`Show ${s.label} on Career Card`}
                 onClick={() => setForm((f) => ({ ...f, [s.key]: !f[s.key] }))}
                 className={`relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
                   form[s.key] ? "bg-emerald-600" : "bg-stone-300"
@@ -552,7 +552,7 @@ export function PublicProfileSettings({
           </h2>
           <p className="mt-1.5 text-sm leading-relaxed text-stone-600">
             Use this permanent link for your NFC card or QR code. You can update
-            your public profile later without changing this link.
+            your Career Card later without changing this link.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <code className="min-w-0 flex-1 truncate rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-medium text-stone-700">

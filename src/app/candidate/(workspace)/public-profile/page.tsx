@@ -3,7 +3,7 @@ import { prisma } from "@/server/db";
 import { env } from "@/server/env";
 import { getCandidatePublicProfile } from "@/server/public-profile/public-profile";
 
-export const metadata = { title: "Public Profile — RoleRace" };
+export const metadata = { title: "Career Card — RoleRace" };
 
 export default async function CandidatePublicProfilePage() {
   const { candidate, profile } = await getCandidatePublicProfile();
@@ -24,7 +24,7 @@ export default async function CandidatePublicProfilePage() {
     <div className="max-w-4xl space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-          Public Profile
+          Career Card
         </h1>
         <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
           Create a professional page you can share with recruiters, clients, and
