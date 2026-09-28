@@ -313,6 +313,7 @@ export async function updatePublicProfileSettings(
 
 export type PublicCareerProfileDTO = {
   themeId: CareerCardThemeId;
+  profilePhotoUrl: string | null;
   name: string;
   headline: string | null;
   bio: string | null;
@@ -389,7 +390,9 @@ function formatCareerDate(d: string | null): string | null {
 export function buildPublicProfileDTO(
   profile: {
     isPublished: boolean;
+    slug: string;
     themeId: string;
+    profilePhotoKey: string | null;
     publicHeadline: string | null;
     publicBio: string | null;
     publicLocation: string | null;
@@ -437,6 +440,9 @@ export function buildPublicProfileDTO(
     `${profile.candidate.firstName} ${profile.candidate.lastName}`.trim();
   return {
     themeId: resolveCareerCardTheme(profile.themeId),
+    profilePhotoUrl: profile.profilePhotoKey
+      ? `/u/${profile.slug}/photo`
+      : null,
     name,
     initials: name
       .split(/\s+/)

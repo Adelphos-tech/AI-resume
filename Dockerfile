@@ -68,7 +68,8 @@ COPY --from=deps /app/node_modules/.pnpm/playwright@1.63.0/node_modules/playwrig
     ./node_modules/.pnpm/playwright@1.63.0/node_modules/playwright
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 COPY --from=builder --chown=node:node /app/public ./public
-RUN mkdir -p /app/.data/resumes && chown -R node:node /app/.data
+RUN mkdir -p /app/.data/resumes /app/.data/profile-photos \
+  && chown -R node:node /app/.data
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \

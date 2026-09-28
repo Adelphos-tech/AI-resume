@@ -2,7 +2,7 @@
 
 import { Check, Copy, ExternalLink, Globe, Link2, Palette } from "lucide-react";
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 
 import {
   CAREER_CARD_THEMES,
@@ -12,9 +12,11 @@ import {
 import {
   createPublicProfileAction,
   publishPublicProfileAction,
+  removeProfilePhotoAction,
   savePublicProfileSettingsAction,
   unpublishPublicProfileAction,
   updateSlugAction,
+  uploadProfilePhotoAction,
 } from "@/app/candidate/(workspace)/public-profile/actions";
 import { CareerCardNfcWriter } from "@/components/candidate/public-profile/career-card-nfc-writer";
 import { Button } from "@/components/ui/button";
@@ -73,6 +75,8 @@ export function PublicProfileSettings({
   publicUrl,
   initial,
   variants,
+  photoUrl,
+  displayName,
 }: {
   slug: string | null;
   isPublished: boolean;
@@ -82,6 +86,10 @@ export function PublicProfileSettings({
   publicUrl: string | null;
   initial: PublicProfileSettingsState | null;
   variants: VariantOption[];
+  /** Current public photo URL ("/u/<slug>/photo") or null for initials. */
+  photoUrl: string | null;
+  /** Candidate display name — used for photo alt text. */
+  displayName: string;
 }) {
   const [slugValue, setSlugValue] = useState(slug ?? "");
   const [form, setForm] = useState<PublicProfileSettingsState>(
@@ -109,6 +117,11 @@ export function PublicProfileSettings({
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [photo, setPhoto] = useState<string | null>(photoUrl);
+  const [photoMsg, setPhotoMsg] = useState<string | null>(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoV, setPhotoV] = useState(0);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   function run(
     fn: () => Promise<{ success: boolean; message?: string }>,
@@ -121,6 +134,46 @@ export function PublicProfileSettings({
       if (!r.success) setError(r.message ?? "Something went wrong.");
       else if (markSaved) setSaved(true);
     });
+  }
+
+  async function onPhotoSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file
+    if (!file) return;
+    setPhotoMsg(null);
+    setPhotoBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append("photo", file);
+      const r = await uploadProfilePhotoAction(fd);
+      if (!r.success) setPhotoMsg(r.message);
+      else {
+        setPhoto(r.photoUrl);
+        setPhotoV((v) => v + 1); // refresh the preview even at the same URL
+        setPhotoMsg("Profile photo updated");
+      }
+    } catch {
+      setPhotoMsg("Upload failed. Try again.");
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
+
+  async function onRemovePhoto() {
+    setPhotoMsg(null);
+    setPhotoBusy(true);
+    try {
+      const r = await removeProfilePhotoAction();
+      if (!r.success) setPhotoMsg(r.message);
+      else {
+        setPhoto(null);
+        setPhotoMsg("Profile photo removed");
+      }
+    } catch {
+      setPhotoMsg("Upload failed. Try again.");
+    } finally {
+      setPhotoBusy(false);
+    }
   }
 
   async function copyShareLink() {
@@ -562,7 +615,89 @@ export function PublicProfileSettings({
           Choose how your public Career Card looks. Changes apply after Save
           profile — your link and data stay the same.
         </p>
-        <fieldset className="mt-4">
+
+        {/* profile photo — immediate media actions, separate from Save */}
+        <div className="mt-5 border-t border-stone-200 pt-5">
+          <p className="text-sm font-semibold text-stone-900">Profile photo</p>
+          <div className="mt-3 flex items-center gap-4">
+            {photo ? (
+              <img
+                key={photoV}
+                src={`${photo}?v=${photoV}`}
+                alt={`${displayName} profile photo`}
+                width={64}
+                height={64}
+                className="size-16 rounded-full object-cover ring-4 ring-emerald-50"
+              />
+            ) : (
+              <div
+                aria-hidden
+                className="grid size-16 place-items-center rounded-full bg-emerald-700 text-xl font-bold text-white ring-4 ring-emerald-50"
+              >
+                {displayName
+                  .split(/\s+/)
+                  .slice(0, 2)
+                  .map((w) => w[0] ?? "")
+                  .join("")
+                  .toUpperCase()}
+              </div>
+            )}
+            <div className="min-w-0">
+              <p className="text-sm text-stone-500">
+                Add a professional photo to personalize your Career Card.
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  disabled={photoBusy}
+                  onClick={() => fileRef.current?.click()}
+                  className="inline-flex min-h-10 items-center rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 disabled:opacity-50"
+                >
+                  {photoBusy
+                    ? "Uploading…"
+                    : photo
+                      ? "Replace photo"
+                      : "Upload photo"}
+                </button>
+                {photo && (
+                  <button
+                    type="button"
+                    disabled={photoBusy}
+                    onClick={onRemovePhoto}
+                    className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-600 transition-colors hover:border-red-300 hover:text-red-700 disabled:opacity-50"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <p className="mt-1.5 text-xs text-stone-400">
+                JPG, PNG or WebP · up to 8 MB · applies immediately
+              </p>
+              {photoMsg && (
+                <p
+                  role="status"
+                  className={`mt-1.5 text-xs font-medium ${
+                    photoMsg.includes("ed") || photoMsg.includes("removed")
+                      ? "text-emerald-700"
+                      : "text-red-600"
+                  }`}
+                >
+                  {photoMsg}
+                </p>
+              )}
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              aria-label="Choose profile photo"
+              onChange={onPhotoSelected}
+            />
+          </div>
+        </div>
+
+        <fieldset className="mt-5 border-t border-stone-200 pt-5">
           <legend className="sr-only">Career Card theme</legend>
           <div className="grid gap-3 sm:grid-cols-2">
             {CAREER_CARD_THEMES.map((t) => {

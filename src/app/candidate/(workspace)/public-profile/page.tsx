@@ -62,6 +62,8 @@ export default async function CandidatePublicProfilePage() {
             : null
         }
         variants={variants}
+        photoUrl={profile?.profilePhotoKey ? `/u/${profile.slug}/photo` : null}
+        displayName={`${candidate.firstName} ${candidate.lastName}`.trim()}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# RoleRace production backup — database (custom pg_dump) + resume volume.
+# RoleRace production backup — database (custom pg_dump) + the shared
+# application data volume (resumes + profile photos, under /app/.data).
 # Usage:  BACKUP_ROOT=/opt/backups/rolerace \
 #         ./scripts/production/backup.sh /path/to/repo
 #
@@ -21,7 +22,9 @@ echo "[backup] postgres → $DEST/db.dump"
 $COMPOSE exec -T postgres sh -c \
   'exec pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc' > "$DEST/db.dump"
 
-echo "[backup] resume volume → $DEST/resumes.tar.gz"
+# The named volume mounts /app/.data wholesale — this archive covers both
+# resume artifacts and profile-photos/.
+echo "[backup] app data volume (resumes + photos) → $DEST/resumes.tar.gz"
 docker run --rm \
   -v "$VOL:/data:ro" \
   -v "$DEST:/out" \

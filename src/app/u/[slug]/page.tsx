@@ -150,9 +150,19 @@ export default async function PublicProfilePage({
         <section aria-label="Profile" className={`overflow-hidden ${t.card}`}>
           <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-              <div aria-hidden className={`relative ${t.avatar}`}>
-                {dto.initials}
-              </div>
+              {dto.profilePhotoUrl ? (
+                <img
+                  src={dto.profilePhotoUrl}
+                  alt={`${dto.name} profile photo`}
+                  width={112}
+                  height={112}
+                  className={t.avatarImg}
+                />
+              ) : (
+                <div aria-hidden className={`relative ${t.avatar}`}>
+                  {dto.initials}
+                </div>
+              )}
               {dto.openToOpportunities && (
                 <span className={`mt-4 ${t.openBadge}`}>
                   <span

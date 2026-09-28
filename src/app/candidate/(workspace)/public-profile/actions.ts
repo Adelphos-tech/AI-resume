@@ -8,6 +8,10 @@ import {
   updatePublicProfileSettings,
   updatePublicProfileSlug,
 } from "@/server/public-profile/public-profile";
+import {
+  removeProfilePhoto,
+  uploadProfilePhoto,
+} from "@/server/public-profile/photo";
 
 const PATHS = ["/candidate/public-profile"];
 
@@ -41,6 +45,20 @@ export async function unpublishPublicProfileAction() {
 
 export async function savePublicProfileSettingsAction(raw: unknown) {
   const result = await updatePublicProfileSettings(raw);
+  if (result.success) revalidate();
+  return result;
+}
+
+// --- Stage 7A4B1: profile photo (immediate media actions, no Save needed) ---
+
+export async function uploadProfilePhotoAction(formData: FormData) {
+  const result = await uploadProfilePhoto(formData);
+  if (result.success) revalidate();
+  return result;
+}
+
+export async function removeProfilePhotoAction() {
+  const result = await removeProfilePhoto();
   if (result.success) revalidate();
   return result;
 }
