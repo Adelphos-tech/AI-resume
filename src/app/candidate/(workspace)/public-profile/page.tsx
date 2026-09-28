@@ -1,6 +1,7 @@
 import { PublicProfileSettings } from "@/components/candidate/public-profile/public-profile-settings";
 import { prisma } from "@/server/db";
 import { env } from "@/server/env";
+import { resolveCareerCardTheme } from "@/lib/career-card-themes";
 import { getCandidatePublicProfile } from "@/server/public-profile/public-profile";
 
 export const metadata = { title: "Career Card — RoleRace" };
@@ -56,6 +57,7 @@ export default async function CandidatePublicProfilePage() {
                 showCertifications: profile.showCertifications,
                 showLanguages: profile.showLanguages,
                 featuredResumeVariantId: profile.featuredResumeVariantId ?? "",
+                themeId: resolveCareerCardTheme(profile.themeId),
               }
             : null
         }

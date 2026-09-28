@@ -250,6 +250,8 @@ model PublicProfile {
   currentFocus   String?
   workAuthorization String?
   openToOpportunities Boolean @default(false)
+  // Presentation theme — curated app-owned registry, resolved defensively.
+  themeId             String @default("role-race-classic")
   showExperience      Boolean @default(false)
   showEducation       Boolean @default(false)
   showSkills          Boolean @default(false)

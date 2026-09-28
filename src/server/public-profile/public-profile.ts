@@ -188,6 +188,11 @@ export async function setPublicProfilePublished(
 
 import { z } from "zod";
 
+import {
+  isCareerCardThemeId,
+  resolveCareerCardTheme,
+  type CareerCardThemeId,
+} from "@/lib/career-card-themes";
 import { masterCareerProfileSchema } from "@/lib/master-career-profile-schema";
 import { RESUME_TEMPLATES, type ResumeData } from "@/lib/resume-schema";
 
@@ -249,6 +254,11 @@ export const publicProfileSettingsSchema = z.strictObject({
   showCertifications: z.boolean(),
   showLanguages: z.boolean(),
   featuredResumeVariantId: z.string().nullable(),
+  themeId: z
+    .string()
+    .trim()
+    .refine(isCareerCardThemeId)
+    .transform((v) => v as CareerCardThemeId),
 });
 
 export type PublicProfileSettingsInput = z.infer<
@@ -302,6 +312,7 @@ export async function updatePublicProfileSettings(
 }
 
 export type PublicCareerProfileDTO = {
+  themeId: CareerCardThemeId;
   name: string;
   headline: string | null;
   bio: string | null;
@@ -378,6 +389,7 @@ function formatCareerDate(d: string | null): string | null {
 export function buildPublicProfileDTO(
   profile: {
     isPublished: boolean;
+    themeId: string;
     publicHeadline: string | null;
     publicBio: string | null;
     publicLocation: string | null;
@@ -424,6 +436,7 @@ export function buildPublicProfileDTO(
     basics?.fullName ||
     `${profile.candidate.firstName} ${profile.candidate.lastName}`.trim();
   return {
+    themeId: resolveCareerCardTheme(profile.themeId),
     name,
     initials: name
       .split(/\s+/)

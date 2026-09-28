@@ -1,8 +1,13 @@
 "use client";
 
-import { Check, Copy, ExternalLink, Globe, Link2 } from "lucide-react";
+import { Check, Copy, ExternalLink, Globe, Link2, Palette } from "lucide-react";
 import Link from "next/link";
 import { useState, useTransition } from "react";
+
+import {
+  CAREER_CARD_THEMES,
+  type CareerCardThemeId,
+} from "@/lib/career-card-themes";
 
 import {
   createPublicProfileAction,
@@ -38,6 +43,7 @@ export type PublicProfileSettingsState = {
   showCertifications: boolean;
   showLanguages: boolean;
   featuredResumeVariantId: string;
+  themeId: CareerCardThemeId;
 };
 
 const VISIBILITY_SECTIONS: {
@@ -96,6 +102,7 @@ export function PublicProfileSettings({
       showCertifications: false,
       showLanguages: false,
       featuredResumeVariantId: "",
+      themeId: "role-race-classic",
     },
   );
   const [copied, setCopied] = useState(false);
@@ -523,6 +530,7 @@ export function PublicProfileSettings({
                 showCertifications: form.showCertifications,
                 showLanguages: form.showLanguages,
                 featuredResumeVariantId: form.featuredResumeVariantId || null,
+                themeId: form.themeId,
               }),
             )
           }
@@ -537,6 +545,78 @@ export function PublicProfileSettings({
           </p>
         )}
       </div>
+
+      {/* theme selector */}
+      <section
+        aria-labelledby="pp-appearance"
+        className="rounded-2xl border border-stone-200 bg-white p-6"
+      >
+        <h2
+          id="pp-appearance"
+          className="flex items-center gap-2 text-base font-semibold text-stone-900"
+        >
+          <Palette className="size-4 text-emerald-700" aria-hidden />
+          Career Card Appearance
+        </h2>
+        <p className="mt-1 text-sm leading-relaxed text-stone-500">
+          Choose how your public Career Card looks. Changes apply after Save
+          profile — your link and data stay the same.
+        </p>
+        <fieldset className="mt-4">
+          <legend className="sr-only">Career Card theme</legend>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {CAREER_CARD_THEMES.map((t) => {
+              const selected = form.themeId === t.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setForm((f) => ({ ...f, themeId: t.id }))}
+                  className={`group rounded-xl border-2 p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
+                    selected
+                      ? "border-emerald-600 bg-emerald-50/40"
+                      : "border-stone-200 hover:border-emerald-600/40"
+                  }`}
+                >
+                  <ThemeMiniPreview themeId={t.id} />
+                  <div className="mt-3 flex items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-semibold text-stone-900">
+                        {t.label}
+                      </p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
+                        {t.description}
+                      </p>
+                    </div>
+                    <span
+                      className={`mt-0.5 inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                        selected
+                          ? "bg-emerald-700 text-white"
+                          : "bg-stone-100 text-stone-500 group-hover:bg-emerald-50 group-hover:text-emerald-800"
+                      }`}
+                    >
+                      {selected && <Check className="size-3" aria-hidden />}
+                      {selected ? "Selected" : "Use theme"}
+                    </span>
+                  </div>
+                  <ul className="mt-2 flex flex-wrap gap-1">
+                    {t.fits.map((f) => (
+                      <li
+                        key={f}
+                        className="rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-medium text-stone-500"
+                      >
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+      </section>
 
       {/* permanent card link */}
       {shareUrl && (
@@ -586,4 +666,111 @@ export function PublicProfileSettings({
       {shareUrl && <CareerCardNfcWriter careerCardUrl={shareUrl} />}
     </div>
   );
+}
+
+/** CSS-only miniature of the public card — a real skeleton, not a screenshot. */
+function ThemeMiniPreview({ themeId }: { themeId: CareerCardThemeId }) {
+  const bar = (w: string, cls: string) => (
+    <span className={`block h-1.5 rounded-full ${w} ${cls}`} />
+  );
+  switch (themeId) {
+    case "corporate-clean":
+      return (
+        <div aria-hidden className="h-24 w-full rounded-lg bg-stone-100 p-2">
+          <div className="h-full w-full rounded-md border border-stone-200 bg-white p-2.5">
+            <div className="flex items-center gap-2">
+              <span className="size-6 rounded-md bg-stone-900" />
+              <div className="flex-1 space-y-1">
+                {bar("w-2/5", "bg-stone-800")}
+                {bar("w-3/5", "bg-emerald-700/40")}
+              </div>
+            </div>
+            <div className="mt-2 space-y-1">
+              {bar("w-full", "bg-stone-200")}
+              {bar("w-4/5", "bg-stone-200")}
+            </div>
+            <div className="mt-2 flex gap-1">
+              <span className="h-2.5 w-8 rounded-md border border-stone-200 bg-stone-50" />
+              <span className="h-2.5 w-8 rounded-md border border-stone-200 bg-stone-50" />
+            </div>
+          </div>
+        </div>
+      );
+    case "executive-dark":
+      return (
+        <div aria-hidden className="h-24 w-full rounded-lg bg-stone-950 p-2">
+          <div className="h-full w-full rounded-md border border-stone-800 bg-stone-900 p-2.5">
+            <div className="flex items-center gap-2">
+              <span className="size-6 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-800" />
+              <div className="flex-1 space-y-1">
+                {bar("w-2/5", "bg-stone-200")}
+                {bar("w-3/5", "bg-emerald-500/50")}
+              </div>
+            </div>
+            <div className="mt-2 space-y-1">
+              {bar("w-full", "bg-stone-700")}
+              {bar("w-4/5", "bg-stone-700")}
+            </div>
+            <div className="mt-2 flex gap-1">
+              <span className="h-2.5 w-8 rounded-full border border-stone-700 bg-stone-800" />
+              <span className="h-2.5 w-8 rounded-full border border-stone-700 bg-stone-800" />
+            </div>
+          </div>
+        </div>
+      );
+    case "tech-minimal":
+      return (
+        <div
+          aria-hidden
+          className="h-24 w-full rounded-lg bg-white p-2 ring-1 ring-neutral-200"
+        >
+          <div className="h-full w-full rounded-md border border-neutral-200 bg-white p-2.5">
+            <div className="flex items-center gap-2">
+              <span className="grid size-6 place-items-center rounded-md bg-neutral-900 font-mono text-[8px] font-bold text-emerald-400">
+                {"<>"}
+              </span>
+              <div className="flex-1 space-y-1">
+                {bar("w-2/5", "bg-neutral-800")}
+                {bar("w-3/5", "bg-neutral-300")}
+              </div>
+            </div>
+            <div className="mt-2 space-y-1">
+              {bar("w-full", "bg-neutral-200")}
+              {bar("w-4/5", "bg-neutral-200")}
+            </div>
+            <div className="mt-2 flex gap-1">
+              <span className="h-2.5 w-8 rounded-md border border-neutral-200 bg-neutral-50" />
+              <span className="h-2.5 w-8 rounded-md border border-neutral-200 bg-neutral-50" />
+              <span className="h-2.5 w-8 rounded-md border border-neutral-200 bg-neutral-50" />
+            </div>
+          </div>
+        </div>
+      );
+    case "role-race-classic":
+    default:
+      return (
+        <div
+          aria-hidden
+          className="h-24 w-full rounded-lg bg-gradient-to-b from-emerald-50 to-stone-50 p-2"
+        >
+          <div className="h-full w-full rounded-md border border-stone-200 bg-white p-2.5 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="size-6 rounded-full bg-emerald-700 ring-2 ring-emerald-100" />
+              <div className="flex-1 space-y-1">
+                {bar("w-2/5", "bg-stone-800")}
+                {bar("w-3/5", "bg-stone-300")}
+              </div>
+            </div>
+            <div className="mt-2 space-y-1">
+              {bar("w-full", "bg-stone-200")}
+              {bar("w-4/5", "bg-stone-200")}
+            </div>
+            <div className="mt-2 flex gap-1">
+              <span className="h-2.5 w-8 rounded-full border border-emerald-600/20 bg-emerald-50" />
+              <span className="h-2.5 w-8 rounded-full border border-emerald-600/20 bg-emerald-50" />
+            </div>
+          </div>
+        </div>
+      );
+  }
 }
