@@ -14,6 +14,7 @@ import { notFound } from "next/navigation";
 
 import { ResumeMiniPreview } from "@/components/resume/resume-mini-preview";
 import { prisma } from "@/server/db";
+import { getCandidateSession } from "@/server/session";
 import {
   buildPublicProfileDTO,
   formatCareerDate,
@@ -78,7 +79,15 @@ export default async function PublicProfilePage({
     },
   });
 
-  const dto = profile && buildPublicProfileDTO(profile);
+  // Owner preview: the signed-in candidate who owns the profile may view it
+  // before publishing. Everyone else still gets a 404.
+  const isOwner =
+    profile != null &&
+    !profile.isPublished &&
+    (await getCandidateSession())?.candidate.id === profile.candidateId;
+  const dto =
+    profile &&
+    buildPublicProfileDTO(profile, { allowUnpublished: isOwner === true });
   if (!dto) notFound();
 
   const socialLinks = [
@@ -124,6 +133,15 @@ export default async function PublicProfilePage({
       </header>
 
       <div className="mx-auto w-full max-w-6xl space-y-6 px-4 pb-6 sm:px-6">
+        {isOwner === true && (
+          <p
+            role="status"
+            className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800"
+          >
+            Preview — only you can see this. Publish your Career Card to make it
+            live.
+          </p>
+        )}
         {/* hero */}
         <section
           aria-label="Profile"

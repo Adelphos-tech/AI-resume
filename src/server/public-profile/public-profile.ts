@@ -375,37 +375,44 @@ function formatCareerDate(d: string | null): string | null {
  * its candidate's canonical MCP. Never exposes ids, email, phone, or
  * extraction metadata. Returns null when the profile should not render.
  */
-export function buildPublicProfileDTO(profile: {
-  isPublished: boolean;
-  publicHeadline: string | null;
-  publicBio: string | null;
-  publicLocation: string | null;
-  currentFocus: string | null;
-  workAuthorization: string | null;
-  openToOpportunities: boolean;
-  linkedinUrl: string | null;
-  githubUrl: string | null;
-  websiteUrl: string | null;
-  showExperience: boolean;
-  showEducation: boolean;
-  showSkills: boolean;
-  showProjects: boolean;
-  showCertifications: boolean;
-  showLanguages: boolean;
-  featuredResumeVariant: {
-    name: string;
-    targetRole: string;
-    targetCountry: string;
-    templateKey: string;
-    resumeData: unknown;
-  } | null;
-  candidate: {
-    firstName: string;
-    lastName: string;
-    careerProfile: { profileData: unknown } | null;
-  };
-}): PublicCareerProfileDTO | null {
-  if (!profile.isPublished) return null;
+export function buildPublicProfileDTO(
+  profile: {
+    isPublished: boolean;
+    publicHeadline: string | null;
+    publicBio: string | null;
+    publicLocation: string | null;
+    currentFocus: string | null;
+    workAuthorization: string | null;
+    openToOpportunities: boolean;
+    linkedinUrl: string | null;
+    githubUrl: string | null;
+    websiteUrl: string | null;
+    showExperience: boolean;
+    showEducation: boolean;
+    showSkills: boolean;
+    showProjects: boolean;
+    showCertifications: boolean;
+    showLanguages: boolean;
+    featuredResumeVariant: {
+      name: string;
+      targetRole: string;
+      targetCountry: string;
+      templateKey: string;
+      resumeData: unknown;
+    } | null;
+    candidate: {
+      firstName: string;
+      lastName: string;
+      careerProfile: { profileData: unknown } | null;
+    };
+  },
+  /**
+   * Owner preview: when true, an unpublished profile still produces a DTO.
+   * Only callers that have verified the viewer owns the profile may use it.
+   */
+  options?: { allowUnpublished?: boolean },
+): PublicCareerProfileDTO | null {
+  if (!profile.isPublished && !options?.allowUnpublished) return null;
 
   const parsed = masterCareerProfileSchema.safeParse(
     profile.candidate.careerProfile?.profileData ?? {},

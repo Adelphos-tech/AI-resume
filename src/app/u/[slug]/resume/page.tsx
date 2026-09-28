@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ResumeRenderer } from "@/components/resume/resume-renderer";
 import type { ResumeData } from "@/lib/resume-schema";
 import { prisma } from "@/server/db";
+import { getCandidateSession } from "@/server/session";
 
 export const metadata = { title: "Resume — RoleRace" };
 
@@ -36,9 +37,17 @@ export default async function PublicResumePage({
   });
 
   const variant = profile?.featuredResumeVariant;
-  // Fail closed: unpublished, no featured resume, or ownership drift.
+  // Owner preview: the owning candidate may view their featured resume while
+  // the profile is unpublished; everyone else gets a 404.
+  const isOwner =
+    profile != null &&
+    !profile.isPublished &&
+    (await getCandidateSession())?.candidate.id === profile.candidateId;
+  // Fail closed: unpublished (non-owner), no featured resume, or ownership
+  // drift.
   if (
-    !profile?.isPublished ||
+    (!profile?.isPublished && !isOwner) ||
+    !profile ||
     !variant ||
     variant.candidateId !== profile.candidateId
   ) {
