@@ -49,5 +49,9 @@ export async function POST(request: Request) {
       result.message,
     );
   }
-  return NextResponse.json({ success: true, photoUrl: result.photoUrl });
+  return NextResponse.json({
+    success: true,
+    photoUrl: result.photoUrl,
+    photoKey: result.photoKey,
+  });
 }

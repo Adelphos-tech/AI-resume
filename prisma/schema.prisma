@@ -255,6 +255,10 @@ model PublicProfile {
   // Opaque storage key for the normalized profile photo — never a path,
   // filename, or URL. Null → initials avatar.
   profilePhotoKey     String?
+  // Photo presentation metadata — non-destructive; master image unchanged.
+  profilePhotoFocalX  Float  @default(0.5)
+  profilePhotoFocalY  Float  @default(0.5)
+  profilePhotoZoom    Float  @default(1.0)
   showExperience      Boolean @default(false)
   showEducation       Boolean @default(false)
   showSkills          Boolean @default(false)

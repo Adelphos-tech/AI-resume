@@ -8,7 +8,10 @@ import {
   updatePublicProfileSettings,
   updatePublicProfileSlug,
 } from "@/server/public-profile/public-profile";
-import { removeProfilePhoto } from "@/server/public-profile/photo";
+import {
+  removeProfilePhoto,
+  updatePhotoPosition,
+} from "@/server/public-profile/photo";
 
 const PATHS = ["/candidate/public-profile"];
 
@@ -52,6 +55,12 @@ export async function savePublicProfileSettingsAction(raw: unknown) {
 
 export async function removeProfilePhotoAction() {
   const result = await removeProfilePhoto();
+  if (result.success) revalidate();
+  return result;
+}
+
+export async function updatePhotoPositionAction(raw: unknown) {
+  const result = await updatePhotoPosition(raw);
   if (result.success) revalidate();
   return result;
 }

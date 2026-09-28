@@ -13,6 +13,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { cardTheme } from "@/lib/career-card-theme-styles";
+import { CareerCardProfilePhoto } from "@/components/candidate/public-profile/career-card-photo";
 import { ResumeMiniPreview } from "@/components/resume/resume-mini-preview";
 import { prisma } from "@/server/db";
 import { getCandidateSession } from "@/server/session";
@@ -151,12 +152,11 @@ export default async function PublicProfilePage({
           <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
               {dto.profilePhotoUrl ? (
-                <img
+                <CareerCardProfilePhoto
                   src={dto.profilePhotoUrl}
                   alt={`${dto.name} profile photo`}
-                  width={112}
-                  height={112}
-                  className={t.avatarImg}
+                  position={dto.profilePhotoPosition}
+                  frameClassName={t.avatarImg}
                 />
               ) : (
                 <div aria-hidden className={`relative ${t.avatar}`}>

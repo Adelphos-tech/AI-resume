@@ -15,8 +15,15 @@ import {
   removeProfilePhotoAction,
   savePublicProfileSettingsAction,
   unpublishPublicProfileAction,
+  updatePhotoPositionAction,
   updateSlugAction,
 } from "@/app/candidate/(workspace)/public-profile/actions";
+import {
+  CareerCardProfilePhoto,
+  DEFAULT_PHOTO_POSITION,
+  PhotoPositionEditor,
+  type PhotoPosition,
+} from "@/components/candidate/public-profile/career-card-photo";
 import { CareerCardNfcWriter } from "@/components/candidate/public-profile/career-card-nfc-writer";
 import { Button } from "@/components/ui/button";
 
@@ -76,6 +83,8 @@ export function PublicProfileSettings({
   variants,
   photoUrl,
   displayName,
+  photoKey: initialPhotoKey,
+  photoPosition,
 }: {
   slug: string | null;
   isPublished: boolean;
@@ -89,6 +98,10 @@ export function PublicProfileSettings({
   photoUrl: string | null;
   /** Candidate display name — used for photo alt text. */
   displayName: string;
+  /** Opaque photo key — owner-scoped optimistic-concurrency token for the
+   * position editor; never trusted for ownership server-side. */
+  photoKey: string | null;
+  photoPosition: PhotoPosition;
 }) {
   const [slugValue, setSlugValue] = useState(slug ?? "");
   const [form, setForm] = useState<PublicProfileSettingsState>(
@@ -120,7 +133,12 @@ export function PublicProfileSettings({
   const [photoMsg, setPhotoMsg] = useState<string | null>(null);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [photoV, setPhotoV] = useState(0);
+  const [pos, setPos] = useState<PhotoPosition>(photoPosition);
+  const [photoKey, setPhotoKey] = useState<string | null>(initialPhotoKey);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [posMsg, setPosMsg] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const adjustBtnRef = useRef<HTMLButtonElement>(null);
 
   function run(
     fn: () => Promise<{ success: boolean; message?: string }>,
@@ -148,11 +166,17 @@ export function PublicProfileSettings({
         method: "POST",
         body: fd,
       });
-      const r: { success: boolean; photoUrl?: string; message?: string } =
-        await res.json().catch(() => ({ success: false }));
+      const r: {
+        success: boolean;
+        photoUrl?: string;
+        photoKey?: string;
+        message?: string;
+      } = await res.json().catch(() => ({ success: false }));
       if (!r.success) setPhotoMsg(r.message ?? "Upload failed. Try again.");
       else {
         setPhoto(r.photoUrl ?? null);
+        setPhotoKey(r.photoKey ?? null);
+        setPos(DEFAULT_PHOTO_POSITION); // new photo → centered presentation
         setPhotoV((v) => v + 1); // refresh the preview even at the same URL
         setPhotoMsg("Profile photo updated");
       }
@@ -171,6 +195,8 @@ export function PublicProfileSettings({
       if (!r.success) setPhotoMsg(r.message);
       else {
         setPhoto(null);
+        setPhotoKey(null);
+        setPos(DEFAULT_PHOTO_POSITION);
         setPhotoMsg("Profile photo removed");
       }
     } catch {
@@ -349,13 +375,12 @@ export function PublicProfileSettings({
           <p className="text-sm font-semibold text-stone-900">Profile photo</p>
           <div className="mt-3 flex items-center gap-4">
             {photo ? (
-              <img
+              <CareerCardProfilePhoto
                 key={photoV}
                 src={`${photo}?v=${photoV}`}
                 alt={`${displayName} profile photo`}
-                width={64}
-                height={64}
-                className="size-16 rounded-full object-cover ring-4 ring-emerald-50"
+                position={pos}
+                frameClassName="size-16 rounded-full ring-4 ring-emerald-50"
               />
             ) : (
               <div
@@ -387,6 +412,20 @@ export function PublicProfileSettings({
                       ? "Replace photo"
                       : "Upload photo"}
                 </button>
+                {photo && photoKey && (
+                  <button
+                    ref={adjustBtnRef}
+                    type="button"
+                    disabled={photoBusy}
+                    onClick={() => {
+                      setPosMsg(null);
+                      setEditorOpen(true);
+                    }}
+                    className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:border-emerald-600/40 hover:text-emerald-800 disabled:opacity-50"
+                  >
+                    Adjust photo
+                  </button>
+                )}
                 {photo && (
                   <button
                     type="button"
@@ -803,6 +842,45 @@ export function PublicProfileSettings({
 
       {/* program physical NFC card — browser-side only, no server writes */}
       {shareUrl && <CareerCardNfcWriter careerCardUrl={shareUrl} />}
+
+      {/* photo position editor — metadata only, image bytes unchanged */}
+      {editorOpen && photo && photoKey && (
+        <PhotoPositionEditor
+          src={`${photo}?v=${photoV}`}
+          name={displayName}
+          initial={pos}
+          busy={photoBusy}
+          message={posMsg}
+          onClose={() => {
+            setEditorOpen(false);
+            // Conditional mount means Radix focus-restore has no trigger —
+            // return keyboard focus to the opening button explicitly.
+            requestAnimationFrame(() => adjustBtnRef.current?.focus());
+          }}
+          onSave={async (next) => {
+            setPosMsg(null);
+            setPhotoBusy(true);
+            try {
+              const r = await updatePhotoPositionAction({
+                focalX: next.focalX,
+                focalY: next.focalY,
+                zoom: next.zoom,
+                expectedPhotoKey: photoKey,
+              });
+              if (!r.success) setPosMsg(r.message);
+              else {
+                setPos(next);
+                setEditorOpen(false);
+                setPhotoMsg("Photo position updated");
+              }
+            } catch {
+              setPosMsg("Couldn't save position. Try again.");
+            } finally {
+              setPhotoBusy(false);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
