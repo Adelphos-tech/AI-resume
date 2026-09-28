@@ -8,10 +8,7 @@ import {
   updatePublicProfileSettings,
   updatePublicProfileSlug,
 } from "@/server/public-profile/public-profile";
-import {
-  removeProfilePhoto,
-  uploadProfilePhoto,
-} from "@/server/public-profile/photo";
+import { removeProfilePhoto } from "@/server/public-profile/photo";
 
 const PATHS = ["/candidate/public-profile"];
 
@@ -49,13 +46,9 @@ export async function savePublicProfileSettingsAction(raw: unknown) {
   return result;
 }
 
-// --- Stage 7A4B1: profile photo (immediate media actions, no Save needed) ---
-
-export async function uploadProfilePhotoAction(formData: FormData) {
-  const result = await uploadProfilePhoto(formData);
-  if (result.success) revalidate();
-  return result;
-}
+// --- Stage 7A4B1: remove photo — Server Action (no body-size concern) ---
+// Uploads go through POST /api/candidate/public-profile/photo instead, since
+// Server Actions cap request bodies at 1 MB.
 
 export async function removeProfilePhotoAction() {
   const result = await removeProfilePhoto();

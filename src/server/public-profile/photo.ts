@@ -14,29 +14,21 @@ export type PhotoActionResult =
   | { success: false; message: string };
 
 /**
- * Upload / replace the candidate's Career Card photo.
+ * Shared photo pipeline — used by the dedicated multipart upload route.
  * Safe order: validate → normalize → write new → persist key → delete old.
  * On persistence failure the new orphan is removed and the old photo stays.
+ * Ownership comes from the authenticated candidate session — never from a
+ * client-supplied candidateId/profileId.
  */
-export async function uploadProfilePhoto(
-  formData: FormData,
+export async function saveProfilePhoto(
+  candidateId: string,
+  bytes: Buffer,
 ): Promise<PhotoActionResult> {
-  const { candidate } = await requireCandidateSession();
-  const file = formData.get("photo");
-  if (!(file instanceof File) || file.size === 0) {
-    return { success: false, message: "Choose a photo to upload." };
-  }
-  if (file.size > 8 * 1024 * 1024) {
-    return { success: false, message: "Photo is larger than 8 MB." };
-  }
-
-  const normalized = await normalizePhoto(
-    Buffer.from(await file.arrayBuffer()),
-  );
+  const normalized = await normalizePhoto(bytes);
   if (!normalized.ok) return { success: false, message: normalized.message };
 
   const profile = await prisma.publicProfile.findUnique({
-    where: { candidateId: candidate.id },
+    where: { candidateId },
     select: { id: true, slug: true, profilePhotoKey: true },
   });
   if (!profile) {

@@ -16,7 +16,6 @@ import {
   savePublicProfileSettingsAction,
   unpublishPublicProfileAction,
   updateSlugAction,
-  uploadProfilePhotoAction,
 } from "@/app/candidate/(workspace)/public-profile/actions";
 import { CareerCardNfcWriter } from "@/components/candidate/public-profile/career-card-nfc-writer";
 import { Button } from "@/components/ui/button";
@@ -145,10 +144,15 @@ export function PublicProfileSettings({
     try {
       const fd = new FormData();
       fd.append("photo", file);
-      const r = await uploadProfilePhotoAction(fd);
-      if (!r.success) setPhotoMsg(r.message);
+      const res = await fetch("/api/candidate/public-profile/photo", {
+        method: "POST",
+        body: fd,
+      });
+      const r: { success: boolean; photoUrl?: string; message?: string } =
+        await res.json().catch(() => ({ success: false }));
+      if (!r.success) setPhotoMsg(r.message ?? "Upload failed. Try again.");
       else {
-        setPhoto(r.photoUrl);
+        setPhoto(r.photoUrl ?? null);
         setPhotoV((v) => v + 1); // refresh the preview even at the same URL
         setPhotoMsg("Profile photo updated");
       }
@@ -321,6 +325,160 @@ export function PublicProfileSettings({
             Preview Career Card
           </Link>
         )}
+      </section>
+
+      {/* theme selector */}
+      <section
+        aria-labelledby="pp-appearance"
+        className="rounded-2xl border border-stone-200 bg-white p-6"
+      >
+        <h2
+          id="pp-appearance"
+          className="flex items-center gap-2 text-base font-semibold text-stone-900"
+        >
+          <Palette className="size-4 text-emerald-700" aria-hidden />
+          Career Card Appearance
+        </h2>
+        <p className="mt-1 text-sm leading-relaxed text-stone-500">
+          Choose how your public Career Card looks. Changes apply after Save
+          profile — your link and data stay the same.
+        </p>
+
+        {/* profile photo — immediate media actions, separate from Save */}
+        <div className="mt-5 border-t border-stone-200 pt-5">
+          <p className="text-sm font-semibold text-stone-900">Profile photo</p>
+          <div className="mt-3 flex items-center gap-4">
+            {photo ? (
+              <img
+                key={photoV}
+                src={`${photo}?v=${photoV}`}
+                alt={`${displayName} profile photo`}
+                width={64}
+                height={64}
+                className="size-16 rounded-full object-cover ring-4 ring-emerald-50"
+              />
+            ) : (
+              <div
+                aria-hidden
+                className="grid size-16 place-items-center rounded-full bg-emerald-700 text-xl font-bold text-white ring-4 ring-emerald-50"
+              >
+                {displayName
+                  .split(/\s+/)
+                  .slice(0, 2)
+                  .map((w) => w[0] ?? "")
+                  .join("")
+                  .toUpperCase()}
+              </div>
+            )}
+            <div className="min-w-0">
+              <p className="text-sm text-stone-500">
+                Add a professional photo to personalize your Career Card.
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  disabled={photoBusy}
+                  onClick={() => fileRef.current?.click()}
+                  className="inline-flex min-h-10 items-center rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 disabled:opacity-50"
+                >
+                  {photoBusy
+                    ? "Uploading…"
+                    : photo
+                      ? "Replace photo"
+                      : "Upload photo"}
+                </button>
+                {photo && (
+                  <button
+                    type="button"
+                    disabled={photoBusy}
+                    onClick={onRemovePhoto}
+                    className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-600 transition-colors hover:border-red-300 hover:text-red-700 disabled:opacity-50"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <p className="mt-1.5 text-xs text-stone-400">
+                JPG, PNG or WebP · up to 8 MB · applies immediately
+              </p>
+              {photoMsg && (
+                <p
+                  role="status"
+                  className={`mt-1.5 text-xs font-medium ${
+                    photoMsg.includes("ed") || photoMsg.includes("removed")
+                      ? "text-emerald-700"
+                      : "text-red-600"
+                  }`}
+                >
+                  {photoMsg}
+                </p>
+              )}
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              aria-label="Choose profile photo"
+              onChange={onPhotoSelected}
+            />
+          </div>
+        </div>
+
+        <fieldset className="mt-5 border-t border-stone-200 pt-5">
+          <legend className="sr-only">Career Card theme</legend>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {CAREER_CARD_THEMES.map((t) => {
+              const selected = form.themeId === t.id;
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setForm((f) => ({ ...f, themeId: t.id }))}
+                  className={`group rounded-xl border-2 p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
+                    selected
+                      ? "border-emerald-600 bg-emerald-50/40"
+                      : "border-stone-200 hover:border-emerald-600/40"
+                  }`}
+                >
+                  <ThemeMiniPreview themeId={t.id} />
+                  <div className="mt-3 flex items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-semibold text-stone-900">
+                        {t.label}
+                      </p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
+                        {t.description}
+                      </p>
+                    </div>
+                    <span
+                      className={`mt-0.5 inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                        selected
+                          ? "bg-emerald-700 text-white"
+                          : "bg-stone-100 text-stone-500 group-hover:bg-emerald-50 group-hover:text-emerald-800"
+                      }`}
+                    >
+                      {selected && <Check className="size-3" aria-hidden />}
+                      {selected ? "Selected" : "Use theme"}
+                    </span>
+                  </div>
+                  <ul className="mt-2 flex flex-wrap gap-1">
+                    {t.fits.map((f) => (
+                      <li
+                        key={f}
+                        className="rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-medium text-stone-500"
+                      >
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
       </section>
 
       {/* public identity */}
@@ -598,160 +756,6 @@ export function PublicProfileSettings({
           </p>
         )}
       </div>
-
-      {/* theme selector */}
-      <section
-        aria-labelledby="pp-appearance"
-        className="rounded-2xl border border-stone-200 bg-white p-6"
-      >
-        <h2
-          id="pp-appearance"
-          className="flex items-center gap-2 text-base font-semibold text-stone-900"
-        >
-          <Palette className="size-4 text-emerald-700" aria-hidden />
-          Career Card Appearance
-        </h2>
-        <p className="mt-1 text-sm leading-relaxed text-stone-500">
-          Choose how your public Career Card looks. Changes apply after Save
-          profile — your link and data stay the same.
-        </p>
-
-        {/* profile photo — immediate media actions, separate from Save */}
-        <div className="mt-5 border-t border-stone-200 pt-5">
-          <p className="text-sm font-semibold text-stone-900">Profile photo</p>
-          <div className="mt-3 flex items-center gap-4">
-            {photo ? (
-              <img
-                key={photoV}
-                src={`${photo}?v=${photoV}`}
-                alt={`${displayName} profile photo`}
-                width={64}
-                height={64}
-                className="size-16 rounded-full object-cover ring-4 ring-emerald-50"
-              />
-            ) : (
-              <div
-                aria-hidden
-                className="grid size-16 place-items-center rounded-full bg-emerald-700 text-xl font-bold text-white ring-4 ring-emerald-50"
-              >
-                {displayName
-                  .split(/\s+/)
-                  .slice(0, 2)
-                  .map((w) => w[0] ?? "")
-                  .join("")
-                  .toUpperCase()}
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="text-sm text-stone-500">
-                Add a professional photo to personalize your Career Card.
-              </p>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  disabled={photoBusy}
-                  onClick={() => fileRef.current?.click()}
-                  className="inline-flex min-h-10 items-center rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 disabled:opacity-50"
-                >
-                  {photoBusy
-                    ? "Uploading…"
-                    : photo
-                      ? "Replace photo"
-                      : "Upload photo"}
-                </button>
-                {photo && (
-                  <button
-                    type="button"
-                    disabled={photoBusy}
-                    onClick={onRemovePhoto}
-                    className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-600 transition-colors hover:border-red-300 hover:text-red-700 disabled:opacity-50"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-              <p className="mt-1.5 text-xs text-stone-400">
-                JPG, PNG or WebP · up to 8 MB · applies immediately
-              </p>
-              {photoMsg && (
-                <p
-                  role="status"
-                  className={`mt-1.5 text-xs font-medium ${
-                    photoMsg.includes("ed") || photoMsg.includes("removed")
-                      ? "text-emerald-700"
-                      : "text-red-600"
-                  }`}
-                >
-                  {photoMsg}
-                </p>
-              )}
-            </div>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              aria-label="Choose profile photo"
-              onChange={onPhotoSelected}
-            />
-          </div>
-        </div>
-
-        <fieldset className="mt-5 border-t border-stone-200 pt-5">
-          <legend className="sr-only">Career Card theme</legend>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {CAREER_CARD_THEMES.map((t) => {
-              const selected = form.themeId === t.id;
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  onClick={() => setForm((f) => ({ ...f, themeId: t.id }))}
-                  className={`group rounded-xl border-2 p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
-                    selected
-                      ? "border-emerald-600 bg-emerald-50/40"
-                      : "border-stone-200 hover:border-emerald-600/40"
-                  }`}
-                >
-                  <ThemeMiniPreview themeId={t.id} />
-                  <div className="mt-3 flex items-start justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-semibold text-stone-900">
-                        {t.label}
-                      </p>
-                      <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
-                        {t.description}
-                      </p>
-                    </div>
-                    <span
-                      className={`mt-0.5 inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                        selected
-                          ? "bg-emerald-700 text-white"
-                          : "bg-stone-100 text-stone-500 group-hover:bg-emerald-50 group-hover:text-emerald-800"
-                      }`}
-                    >
-                      {selected && <Check className="size-3" aria-hidden />}
-                      {selected ? "Selected" : "Use theme"}
-                    </span>
-                  </div>
-                  <ul className="mt-2 flex flex-wrap gap-1">
-                    {t.fits.map((f) => (
-                      <li
-                        key={f}
-                        className="rounded-full bg-stone-100 px-2 py-0.5 text-[10px] font-medium text-stone-500"
-                      >
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
-      </section>
 
       {/* permanent card link */}
       {shareUrl && (
