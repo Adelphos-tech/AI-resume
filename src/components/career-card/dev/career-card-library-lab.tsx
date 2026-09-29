@@ -5,8 +5,21 @@ import { CinematicHero } from "@/components/career-card/compositions/cinematic-h
 import { SplitHero } from "@/components/career-card/compositions/split-hero";
 import { EditorialHero } from "@/components/career-card/compositions/editorial-hero";
 import { MinimalBentoHero } from "@/components/career-card/compositions/minimal-bento-hero";
+import { ExecutiveCareerSections } from "@/components/career-card/compositions/sections/executive-career-sections";
+import { CorporateCareerSections } from "@/components/career-card/compositions/sections/corporate-career-sections";
+import { EditorialCareerSections } from "@/components/career-card/compositions/sections/editorial-career-sections";
+import { BentoCareerSections } from "@/components/career-card/compositions/sections/bento-career-sections";
 import {
   DEMO_CAREER_PROFILE,
+  DEMO_EXPERIENCE_LONG,
+  DEMO_EXPERIENCE_RICH,
+  DEMO_EXPERIENCE_SPARSE,
+  DEMO_PROJECTS_LONG,
+  DEMO_PROJECTS_RICH,
+  DEMO_PROJECTS_SPARSE,
+  DEMO_SKILLS_LONG,
+  DEMO_SKILLS_RICH,
+  DEMO_SKILLS_SPARSE,
   type DemoMedia,
 } from "@/components/career-card/dev/demo-career-profile";
 
@@ -23,6 +36,24 @@ const MEDIAS: { id: DemoMedia; label: string }[] = [
   { id: "none", label: "No cover" },
 ];
 
+const DATA = {
+  rich: {
+    experience: DEMO_EXPERIENCE_RICH,
+    projects: DEMO_PROJECTS_RICH,
+    skills: DEMO_SKILLS_RICH,
+  },
+  sparse: {
+    experience: DEMO_EXPERIENCE_SPARSE,
+    projects: DEMO_PROJECTS_SPARSE,
+    skills: DEMO_SKILLS_SPARSE,
+  },
+  long: {
+    experience: DEMO_EXPERIENCE_LONG,
+    projects: DEMO_PROJECTS_LONG,
+    skills: DEMO_SKILLS_LONG,
+  },
+} as const;
+
 const btn = (on: boolean) =>
   `rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
     on
@@ -33,7 +64,15 @@ const btn = (on: boolean) =>
 export function CareerCardLibraryLab() {
   const [comp, setComp] = useState<(typeof COMPS)[number]["id"]>("cinematic");
   const [media, setMedia] = useState<DemoMedia>("landscape");
+  const [density, setDensity] = useState<"rich" | "sparse">("rich");
+  const [length, setLength] = useState<"normal" | "long">("normal");
   const d = DEMO_CAREER_PROFILE;
+  const content =
+    length === "long"
+      ? DATA.long
+      : density === "sparse"
+        ? DATA.sparse
+        : DATA.rich;
   const pageBg =
     comp === "cinematic"
       ? "bg-[#0c0a09] bg-[radial-gradient(ellipse_80%_40%_at_50%_-10%,rgba(167,139,250,.20),transparent)]"
@@ -73,14 +112,57 @@ export function CareerCardLibraryLab() {
                 {m.label}
               </button>
             ))}
+            <span className="ml-3 mr-1 text-[10px] font-semibold uppercase tracking-wider text-stone-400">
+              Data
+            </span>
+            {(["rich", "sparse"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setDensity(v)}
+                className={btn(density === v)}
+              >
+                {v[0].toUpperCase() + v.slice(1)}
+              </button>
+            ))}
+            {(["normal", "long"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setLength(v)}
+                className={btn(length === v)}
+              >
+                {v === "normal" ? "Normal" : "Long"}
+              </button>
+            ))}
           </div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-3 py-8 sm:py-12">
-        {comp === "cinematic" && <CinematicHero d={d} media={media} />}
-        {comp === "split" && <SplitHero d={d} media={media} />}
-        {comp === "editorial" && <EditorialHero d={d} media={media} />}
-        {comp === "bento" && <MinimalBentoHero d={d} media={media} />}
+        {comp === "cinematic" && (
+          <>
+            <CinematicHero d={d} media={media} />
+            <ExecutiveCareerSections {...content} />
+          </>
+        )}
+        {comp === "split" && (
+          <>
+            <SplitHero d={d} media={media} />
+            <CorporateCareerSections {...content} />
+          </>
+        )}
+        {comp === "editorial" && (
+          <>
+            <EditorialHero d={d} media={media} />
+            <EditorialCareerSections {...content} />
+          </>
+        )}
+        {comp === "bento" && (
+          <>
+            <MinimalBentoHero d={d} media={media} />
+            <BentoCareerSections {...content} />
+          </>
+        )}
         <p className="mt-10 text-center text-xs text-stone-400">
           Synthetic demo data · development only
         </p>

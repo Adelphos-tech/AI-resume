@@ -81,3 +81,178 @@ export const DEMO_CAREER_PROFILE = {
     website: "https://demo-career.example.com",
   },
 };
+
+/* ── Career content fixtures ─────────────────────────────────────────── */
+
+export type DemoExperience = {
+  position: string;
+  company: string;
+  start: string;
+  end?: string;
+  current?: boolean;
+  location?: string;
+  summary?: string;
+  highlights?: string[];
+};
+
+export type DemoProject = {
+  name: string;
+  description: string;
+  url?: string;
+  role?: string;
+  tags?: string[];
+};
+
+export const DEMO_EXPERIENCE_RICH: DemoExperience[] = [
+  {
+    position: "Senior AI Product Manager",
+    company: "Skyline AI",
+    start: "2022",
+    current: true,
+    location: "San Francisco",
+    summary:
+      "Owns the agentic workflow platform end-to-end — roadmap, eval framework, and enterprise rollouts serving 2M+ users. Partners daily with research and infra leads.",
+    highlights: [
+      "Launched GenAI platform to 2M+ users",
+      "Cut model eval cycle 40%",
+    ],
+  },
+  {
+    position: "Product Manager",
+    company: "Meridian Systems",
+    start: "2020",
+    end: "2022",
+    location: "New York",
+    summary: "Led RAG-powered search product for 300+ enterprise accounts.",
+    highlights: ["Shipped semantic search v2"],
+  },
+  {
+    position: "Associate Product Manager",
+    company: "Corebridge",
+    start: "2018",
+    end: "2019",
+    location: "Boston",
+  },
+];
+
+export const DEMO_PROJECTS_RICH: DemoProject[] = [
+  {
+    name: "Agentic Workflow Platform",
+    description:
+      "Multi-step LLM automation with human review gates, deterministic retries, and tenant-scoped evaluation.",
+    url: "https://demo-career.example.com/agentic",
+    role: "Product Lead",
+    tags: ["LLM", "Platform"],
+  },
+  {
+    name: "LLM Eval Harness",
+    description: "Quality-scoring framework for prompt regression testing.",
+    role: "Owner",
+    tags: ["Evals"],
+  },
+  {
+    name: "Semantic Search",
+    description: "RAG retrieval layer over 40M documents.",
+    url: "https://demo-career.example.com/search",
+    tags: ["RAG", "Search"],
+  },
+  {
+    name: "Onboarding Funnel Revamp",
+    description:
+      "Activation experiments across signup, import, and first-value.",
+    tags: ["Growth"],
+  },
+];
+
+export const DEMO_SKILLS_RICH = [
+  "Product Strategy",
+  "Roadmapping",
+  "LLM Systems",
+  "RAG",
+  "Prompt Engineering",
+  "Eval Design",
+  "Experimentation",
+  "APIs",
+  "SQL",
+  "Python",
+  "Stakeholder Management",
+  "Enterprise Sales Cycles",
+  "OKRs",
+  "Technical Writing",
+];
+
+export const DEMO_EXPERIENCE_SPARSE: DemoExperience[] = [
+  {
+    position: "Product Manager",
+    company: "Skyline AI",
+    start: "2021",
+    current: true,
+    location: "San Francisco",
+    summary: "Building the agentic workflow platform.",
+  },
+];
+export const DEMO_PROJECTS_SPARSE: DemoProject[] = [
+  {
+    name: "LLM Eval Harness",
+    description: "Quality-scoring framework for prompt regression testing.",
+    tags: ["Evals"],
+  },
+];
+export const DEMO_SKILLS_SPARSE = [
+  "Product Strategy",
+  "LLM Systems",
+  "SQL",
+  "Roadmapping",
+];
+
+export const DEMO_EXPERIENCE_LONG: DemoExperience[] = [
+  {
+    position: "Senior Staff Artificial-Intelligence Product Manager",
+    company: "The International Skyline Artificial Intelligence Corporation",
+    start: "2020",
+    current: true,
+    location: "San Francisco Bay Area, California",
+    summary:
+      "Owns the agentic workflow platform end-to-end across roadmap, evaluation frameworks, enterprise onboarding, partner integrations, and cross-regional rollout — coordinating research, infrastructure, design, legal, and sales stakeholders while serving more than two million monthly active users in regulated industries.",
+    highlights: [
+      "Launched the GenAI platform to two million monthly active users across three regulated markets",
+      "Reduced model evaluation cycle time by forty percent through a deterministic regression harness",
+    ],
+  },
+  {
+    position: "Associate Product Manager, Enterprise Integrations",
+    company: "Corebridge Analytics International Holdings",
+    start: "2018",
+    end: "2020",
+    location: "Boston",
+  },
+];
+
+export const DEMO_PROJECTS_LONG: DemoProject[] = [
+  {
+    name: "Multi-Tenant Agentic Workflow Orchestration & Evaluation Platform",
+    description:
+      "Multi-step LLM automation with human review gates, deterministic retries, tenant-scoped evaluation, audit-grade tracing, and regional data residency controls.",
+    url: "https://demo-career.example.com/agentic",
+    role: "Principal Product Lead",
+    tags: ["LLM", "Platform", "Enterprise"],
+  },
+  {
+    name: "Semantic Retrieval-Augmented Generation Search Infrastructure",
+    description: "RAG retrieval layer over forty million documents.",
+    tags: ["RAG", "Search", "Infrastructure"],
+  },
+];
+
+export const DEMO_SKILLS_LONG = [
+  "Cross-Functional Product Strategy",
+  "Enterprise Roadmapping",
+  "Large Language Model Systems",
+  "Retrieval-Augmented Generation",
+  "Prompt Engineering & Evaluation",
+  "Statistical Experimentation",
+  "Public API Design",
+  "Advanced SQL & Analytics",
+  "Executive Stakeholder Management",
+  "Regulated-Market Enterprise Sales Cycles",
+];
