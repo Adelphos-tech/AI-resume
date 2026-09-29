@@ -1,0 +1,83 @@
+/**
+ * Synthetic demo career profile for the development-only Career Card Library
+ * lab. Not connected to PublicProfileDTO; safe representative values only.
+ */
+
+const svg = (body: string, w = 1200, h = 500) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${body}</svg>`,
+  )}`;
+
+/** Wide landscape / city-at-dusk photographic stand-in. */
+export const DEMO_COVER_LANDSCAPE = svg(`
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#2e1065"/><stop offset="0.55" stop-color="#7c3aed"/><stop offset="1" stop-color="#c4b5fd"/>
+</linearGradient>
+</defs>
+<rect width="1200" height="500" fill="url(#sky)"/>
+<circle cx="960" cy="150" r="70" fill="#f5d0fe" opacity="0.9"/>
+<g fill="#1e1b4b" opacity="0.92">
+<rect x="60" y="240" width="90" height="260"/><rect x="180" y="200" width="70" height="300"/>
+<rect x="280" y="280" width="110" height="220"/><rect x="430" y="170" width="80" height="330"/>
+<rect x="540" y="260" width="60" height="240"/><rect x="640" y="220" width="100" height="280"/>
+<rect x="780" y="300" width="80" height="200"/><rect x="900" y="260" width="90" height="240"/>
+<rect x="1030" y="210" width="110" height="290"/>
+</g>
+<g fill="#c4b5fd" opacity="0.5">
+<rect x="200" y="230" width="10" height="10"/><rect x="450" y="200" width="10" height="10"/>
+<rect x="680" y="250" width="10" height="10"/><rect x="1050" y="240" width="10" height="10"/>
+</g>`);
+
+/** Subject-focused cover — person in workspace feel. */
+export const DEMO_COVER_SUBJECT = svg(`
+<defs>
+<linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#4c1d95"/><stop offset="1" stop-color="#312e81"/>
+</linearGradient>
+<radialGradient id="spot2" cx="0.5" cy="0.45" r="0.6">
+  <stop offset="0" stop-color="#a78bfa" stop-opacity="0.85"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/>
+</radialGradient>
+</defs>
+<rect width="1200" height="500" fill="url(#bg2)"/>
+<rect width="1200" height="500" fill="url(#spot2)"/>
+<circle cx="600" cy="190" r="80" fill="#ddd6fe"/>
+<path d="M430 500 Q600 330 770 500 Z" fill="#c7d2fe"/>
+<rect x="820" y="300" width="220" height="140" rx="12" fill="#1e1b4b" opacity="0.8"/>`);
+
+/** Demo portrait — abstract avatar photo stand-in. */
+export const DEMO_PORTRAIT = svg(
+  `
+<defs><radialGradient id="pa" cx="0.5" cy="0.4" r="0.8">
+<stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#2e1065"/></radialGradient></defs>
+<rect width="400" height="400" fill="url(#pa)"/>
+<circle cx="200" cy="160" r="70" fill="#ddd6fe"/>
+<path d="M90 400 Q200 270 310 400 Z" fill="#c7d2fe"/>`,
+  400,
+  400,
+);
+
+export type DemoMedia = "landscape" | "subject" | "none";
+
+export const DEMO_CAREER_PROFILE = {
+  name: "Ava Reyes",
+  headline: "AI Product Manager — GenAI & Agentic Workflows",
+  location: "San Francisco, CA",
+  openToOpportunities: true,
+  portrait: DEMO_PORTRAIT,
+  initials: "AR",
+  covers: {
+    landscape: DEMO_COVER_LANDSCAPE,
+    subject: DEMO_COVER_SUBJECT,
+  } as const,
+  yearsExperience: 8,
+  projectsCount: 3,
+  companiesCount: 3,
+  certificationsCount: 1,
+  hasResume: true,
+  links: {
+    linkedin: "https://www.linkedin.com/in/demo-career",
+    github: "https://github.com/demo-career",
+    website: "https://demo-career.example.com",
+  },
+};
