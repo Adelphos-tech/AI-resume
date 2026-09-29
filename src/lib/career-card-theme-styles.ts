@@ -114,6 +114,8 @@ interface LightAccent {
   /** Premium secondary-action pill foreground/bg. */
   pill: string;
   pillHover: string;
+  /** Premium primary-CTA depth shadow. */
+  ctaGlow: string;
 }
 
 /** Accent fragments consumed by Executive Dark. */
@@ -142,6 +144,8 @@ interface DarkAccent {
   pillHover: string;
   /** Premium-only: subtle accent illumination on the dark page canvas. */
   pageGlow: string;
+  /** Premium primary-CTA depth shadow. */
+  ctaGlow: string;
 }
 
 // ── Curated accent fragments (trusted static classes only) ────────────
@@ -185,6 +189,7 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     edge: "border-t-2 border-t-emerald-600/40",
     pill: "border border-emerald-600/25 bg-emerald-50/60 text-emerald-800",
     pillHover: "hover:bg-emerald-100/70",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(4,120,87,0.35)]",
   },
   navy: {
     text: "text-sky-900",
@@ -224,6 +229,7 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     edge: "border-t-2 border-t-sky-800/40",
     pill: "border border-sky-800/25 bg-sky-50/60 text-sky-900",
     pillHover: "hover:bg-sky-100/70",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(3,105,161,0.35)]",
   },
   blue: {
     text: "text-blue-800",
@@ -263,6 +269,7 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     edge: "border-t-2 border-t-blue-600/40",
     pill: "border border-blue-600/25 bg-blue-50/60 text-blue-800",
     pillHover: "hover:bg-blue-100/70",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(37,99,235,0.35)]",
   },
   violet: {
     text: "text-violet-700",
@@ -302,6 +309,7 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     edge: "border-t-2 border-t-violet-600/40",
     pill: "border border-violet-600/25 bg-violet-50/60 text-violet-800",
     pillHover: "hover:bg-violet-100/70",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(124,58,237,0.35)]",
   },
   amber: {
     // Deep-amber foregrounds keep light-surface text readable — no
@@ -343,6 +351,7 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     edge: "border-t-2 border-t-amber-600/40",
     pill: "border border-amber-700/25 bg-amber-50/60 text-amber-800",
     pillHover: "hover:bg-amber-100/70",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(180,83,9,0.35)]",
   },
   neutral: {
     // Slate/graphite — restrained but keeps hierarchy obvious.
@@ -383,6 +392,7 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     edge: "border-t-2 border-t-stone-500/50",
     pill: "border border-stone-400/40 bg-stone-100/70 text-stone-800",
     pillHover: "hover:bg-stone-200/70",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(68,64,60,0.30)]",
   },
 };
 
@@ -411,7 +421,8 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     pill: "border border-emerald-500/30 bg-emerald-500/10 text-emerald-200",
     pillHover: "hover:bg-emerald-500/20",
     pageGlow:
-      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(16,185,129,0.10),transparent)]",
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(16,185,129,0.14),transparent)]",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(52,211,153,0.45)]",
   },
   navy: {
     // Steel-blue interpretation — readable against dark charcoal.
@@ -438,7 +449,8 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     pill: "border border-sky-500/30 bg-sky-500/10 text-sky-200",
     pillHover: "hover:bg-sky-500/20",
     pageGlow:
-      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(56,189,248,0.10),transparent)]",
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(56,189,248,0.14),transparent)]",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(56,189,248,0.45)]",
   },
   blue: {
     text: "text-blue-300",
@@ -463,8 +475,9 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     edge: "border-t-2 border-t-blue-500/50",
     pill: "border border-blue-500/30 bg-blue-500/10 text-blue-200",
     pillHover: "hover:bg-blue-500/20",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(96,165,250,0.45)]",
     pageGlow:
-      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(96,165,250,0.10),transparent)]",
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(96,165,250,0.14),transparent)]",
   },
   violet: {
     text: "text-violet-300",
@@ -488,9 +501,10 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     heroTint: "from-violet-500/15 via-stone-900/60",
     edge: "border-t-2 border-t-violet-500/50",
     pill: "border border-violet-500/30 bg-violet-500/10 text-violet-200",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(139,92,246,0.45)]",
     pillHover: "hover:bg-violet-500/20",
     pageGlow:
-      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(167,139,250,0.10),transparent)]",
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(167,139,250,0.14),transparent)]",
   },
   amber: {
     // Gold treatment — premium, not bright yellow.
@@ -514,10 +528,11 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
       "ring-4 ring-amber-400/40 ring-offset-4 ring-offset-stone-900 shadow-[0_0_32px_-8px_rgba(251,191,36,0.30)]",
     heroTint: "from-amber-400/15 via-stone-900/60",
     edge: "border-t-2 border-t-amber-400/50",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(251,191,36,0.45)]",
     pill: "border border-amber-400/30 bg-amber-400/10 text-amber-200",
     pillHover: "hover:bg-amber-400/20",
     pageGlow:
-      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(251,191,36,0.08),transparent)]",
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(251,191,36,0.12),transparent)]",
   },
   neutral: {
     text: "text-stone-300",
@@ -538,6 +553,7 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     footer: "bg-stone-200 text-stone-950",
     ringAccent:
       "ring-4 ring-stone-400/40 ring-offset-4 ring-offset-stone-900 shadow-[0_0_32px_-8px_rgba(214,211,209,0.25)]",
+    ctaGlow: "shadow-[0_8px_24px_-6px_rgba(120,113,108,0.45)]",
     heroTint: "from-stone-500/15 via-stone-900/60",
     edge: "border-t-2 border-t-stone-400/50",
     pill: "border border-stone-400/30 bg-stone-500/10 text-stone-200",
@@ -765,12 +781,18 @@ export interface CardStyleTokens {
   factLabel: string;
   /** Skill / language chip. */
   chip: string;
+  /** Card subtitle/descriptor line. */
+  cardSub: string;
+  /** Divider above expanded card detail. */
+  detailBorder: string;
+  /** Gradient that fades the cover into the hero surface. */
+  coverShade: string;
 }
 
 type AccentForPremium = Pick<
   DarkAccent,
   "ringAccent" | "heroTint" | "edge" | "pill" | "pillHover" | "cta"
-> & { pageGlow?: string };
+> & { pageGlow?: string; ctaGlow: string };
 
 function premiumLight(
   t: CardThemeTokens,
@@ -792,22 +814,25 @@ function premiumLight(
     contentMax: "max-w-[980px]",
     heroCard: opts.heroCard,
     coverWrap: "relative z-0 h-40 w-full overflow-hidden sm:h-52 lg:h-60",
+    coverShade: "bg-gradient-to-t from-black/10 to-transparent",
     heroBand: `h-28 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-32`,
     avatarPull: "-mt-10 sm:-mt-16",
     avatar: `grid ${avatarSz} place-items-center ${a.cta} text-3xl font-bold ${a.ringAccent} shadow-lg`,
     avatarImg: `${avatarSz} object-cover ${a.ringAccent} shadow-lg`,
-    identityPanel: `relative z-20 -mt-8 w-full max-w-2xl ${opts.radius} border border-stone-200 bg-white px-4 pt-11 pb-5 text-center shadow-md sm:-mt-10 sm:px-8 sm:pt-14`,
+    identityPanel: `relative z-20 -mt-8 w-full max-w-2xl ${opts.radius} border border-stone-200 bg-white px-4 pt-11 pb-5 text-center shadow-xl shadow-stone-900/10 sm:-mt-10 sm:px-8 sm:pt-14`,
     card: `${opts.cardRadius} border ${opts.edge} bg-white p-4 shadow-sm sm:p-5`,
     cardTitle: `${mono}text-base font-semibold ${t.strong}`,
-    cardIcon: `mt-0.5 grid size-9 shrink-0 place-items-center ${opts.cardRadius} ${a.pill}`,
-    toggle: `${mono}inline-flex min-h-9 shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-stone-600 hover:text-stone-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400`,
+    cardIcon: `mt-0.5 grid size-10 shrink-0 place-items-center ${opts.cardRadius} ${a.pill} shadow-sm`,
+    toggle: `${mono}flex shrink-0 flex-col items-center gap-0.5 self-center rounded-md px-2 py-1 text-[11px] font-medium text-stone-600 hover:text-stone-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400`,
     actionPill: `${mono}inline-flex min-h-10 items-center gap-2 ${opts.mono ? "rounded-md" : "rounded-full"} ${a.pill} px-3.5 text-sm font-medium transition-colors`,
     actionPillHover: a.pillHover,
-    primaryCta: "w-full justify-center sm:w-auto",
-    factsRow: `mt-4 flex justify-center gap-6 border-t border-stone-200 pt-4`,
-    factValue: `${mono}text-lg font-bold leading-none ${t.strong}`,
-    factLabel: `${mono}mt-1 text-[10px] font-medium tracking-[0.12em] uppercase ${t.faint}`,
+    primaryCta: `w-full justify-center sm:w-auto ${a.ctaGlow}`,
+    factsRow: `mt-4 flex justify-center divide-x divide-stone-200 border-t border-stone-200 pt-4`,
+    factValue: `${mono}text-xl font-bold leading-none ${t.accent}`,
+    factLabel: `${mono}mt-1.5 text-[10px] font-medium tracking-[0.14em] uppercase ${t.faint}`,
     chip: t.skillChip,
+    cardSub: `mt-0.5 text-sm leading-relaxed ${t.subtle}`,
+    detailBorder: `mt-3 border-t border-stone-200 pt-3`,
   };
 }
 
@@ -821,23 +846,28 @@ function premiumExecutive(
     heroCard:
       "overflow-hidden rounded-2xl border border-stone-800 bg-stone-900 shadow-xl",
     coverWrap: "relative z-0 h-40 w-full overflow-hidden sm:h-56 lg:h-64",
+    coverShade:
+      "bg-gradient-to-t from-stone-950/80 via-stone-950/20 to-transparent",
     heroBand: `h-28 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-36`,
     avatarPull: "-mt-10 sm:-mt-16 lg:-mt-20",
     avatar: `grid size-28 place-items-center rounded-full sm:size-32 lg:size-36 ${a.cta} text-3xl font-bold ${a.ringAccent} shadow-xl sm:text-4xl`,
     avatarImg: `size-28 rounded-full object-cover sm:size-32 lg:size-36 ${a.ringAccent} shadow-xl`,
     identityPanel:
-      "relative z-20 -mt-8 w-full max-w-2xl rounded-2xl border border-stone-700/70 bg-stone-950/70 px-4 pt-11 pb-5 text-center shadow-xl backdrop-blur-sm sm:-mt-10 sm:px-8 sm:pt-14",
-    card: `rounded-xl border ${a.edge} border-stone-800 bg-stone-900/80 p-4 shadow-lg sm:p-5`,
-    cardTitle: `text-base font-semibold ${t.strong}`,
-    cardIcon: `mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg ${a.pill}`,
-    toggle: `inline-flex min-h-9 shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-stone-400 hover:text-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-500`,
+      "relative z-20 -mt-8 w-full max-w-2xl rounded-2xl border border-stone-700/80 bg-stone-950/80 px-4 pt-11 pb-5 text-center shadow-[0_24px_48px_-16px_rgba(0,0,0,0.7)] backdrop-blur-md sm:-mt-10 sm:px-8 sm:pt-14",
+    card: `rounded-xl border ${a.edge} border-stone-800 bg-gradient-to-b from-stone-900/90 to-stone-950/95 p-4 shadow-lg shadow-black/30 sm:p-5`,
+    cardTitle: `text-[15px] font-bold ${t.strong}`,
+    cardIcon: `mt-0.5 grid size-10 shrink-0 place-items-center rounded-lg ${a.pill} shadow-sm`,
+    toggle: `flex shrink-0 flex-col items-center gap-0.5 self-center rounded-md px-2 py-1 text-[11px] font-medium text-stone-400 hover:text-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-500`,
     actionPill: `inline-flex min-h-10 items-center gap-2 rounded-full ${a.pill} px-3.5 text-sm font-medium transition-colors`,
     actionPillHover: a.pillHover,
-    primaryCta: "w-full justify-center sm:w-auto",
-    factsRow: "mt-4 flex justify-center gap-6 border-t border-stone-800 pt-4",
-    factValue: `text-lg font-bold leading-none ${t.strong}`,
-    factLabel: `mt-1 text-[10px] font-medium tracking-[0.12em] uppercase ${t.faint}`,
+    primaryCta: `w-full justify-center sm:w-auto ${a.ctaGlow}`,
+    factsRow:
+      "mt-4 flex justify-center divide-x divide-stone-800 border-t border-stone-800 pt-4",
+    factValue: `text-xl font-bold leading-none ${t.accent}`,
+    factLabel: `mt-1.5 text-[10px] font-medium tracking-[0.14em] uppercase ${t.faint}`,
     chip: t.skillChip,
+    cardSub: `mt-0.5 text-sm leading-relaxed ${t.subtle}`,
+    detailBorder: `mt-3 border-t border-stone-800 pt-3`,
   };
 }
 

@@ -85,8 +85,7 @@ function completedYearsOfExperience(
   return Math.floor(total / 12);
 }
 
-const ABOUT_PREVIEW = 220;
-const SKILL_PREVIEW = 8;
+const ABOUT_PREVIEW = 150;
 
 export function PremiumCareerCard({
   dto,
@@ -119,23 +118,18 @@ export function PremiumCareerCard({
     facts.push({ v: `${dto.certifications.length}`, l: "Certifications" });
 
   const allSkills = dto.skills.flatMap((g) => g.keywords);
-  const skillPreview = allSkills.slice(0, SKILL_PREVIEW);
-  const skillRest = allSkills.length - skillPreview.length;
-
   const bioLong = (dto.bio?.length ?? 0) > ABOUT_PREVIEW;
-  const [firstRole, ...restRoles] = dto.experience;
-  const [firstProject, ...restProjects] = dto.projects;
-  const [firstEdu, ...restEdu] = dto.education;
-  const [firstCert, ...restCerts] = dto.certifications;
 
   const cardProps = {
     cardClassName: p.card,
     titleClassName: p.cardTitle,
     iconClassName: p.cardIcon,
     toggleClassName: p.toggle,
+    subClassName: p.cardSub,
+    detailClassName: p.detailBorder,
   };
   const body = `text-sm leading-relaxed ${t.body}`;
-  const meta = `text-xs ${t.faint}`;
+  const hint = `text-xs ${t.subtle}`;
 
   const roleBlock = (w: PublicCareerProfileDTO["experience"][number]) => (
     <div>
@@ -205,16 +199,14 @@ export function PremiumCareerCard({
     <div className="space-y-3">{items}</div>
   );
 
-  // Cards render only when real content exists; pairs collapse to one
-  // column when a partner is absent.
   const aboutCard = dto.bio ? (
     <CompactCard
       id="pp-about"
-      title="About"
+      title="Professional Summary"
       icon={<UserRound className="size-4" />}
       {...cardProps}
       summary={
-        <p className={body}>
+        <p>
           {bioLong ? `${dto.bio.slice(0, ABOUT_PREVIEW).trimEnd()}…` : dto.bio}
         </p>
       }
@@ -223,41 +215,50 @@ export function PremiumCareerCard({
     />
   ) : null;
 
+  const firstRole = dto.experience[0];
   const expCard = firstRole ? (
     <CompactCard
       id="pp-exp"
       title="Experience"
       icon={<Briefcase className="size-4" />}
       {...cardProps}
-      summary={roleBlock(firstRole)}
-      detail={
-        restRoles.length > 0
-          ? stack(restRoles.map((w, i) => <div key={i}>{roleBlock(w)}</div>))
-          : undefined
+      summary={
+        <>
+          <p>Career highlights and key roles</p>
+          <p className={hint}>
+            Latest: {firstRole.position} · {firstRole.company}
+          </p>
+        </>
       }
-      moreLabel={`+${restRoles.length} more role${restRoles.length === 1 ? "" : "s"}`}
+      detail={stack(
+        dto.experience.map((w, i) => <div key={i}>{roleBlock(w)}</div>),
+      )}
+      moreLabel="View all experience"
     />
   ) : null;
 
-  const projCard = firstProject ? (
-    <CompactCard
-      id="pp-proj"
-      title="Projects"
-      icon={<FolderKanban className="size-4" />}
-      {...cardProps}
-      summary={projectBlock(firstProject)}
-      detail={
-        restProjects.length > 0
-          ? stack(
-              restProjects.map((pr, i) => (
-                <div key={i}>{projectBlock(pr)}</div>
-              )),
-            )
-          : undefined
-      }
-      moreLabel={`+${restProjects.length} more project${restProjects.length === 1 ? "" : "s"}`}
-    />
-  ) : null;
+  const projCard =
+    dto.projects.length > 0 ? (
+      <CompactCard
+        id="pp-proj"
+        title="Projects"
+        icon={<FolderKanban className="size-4" />}
+        {...cardProps}
+        summary={
+          <>
+            <p>Selected products and work</p>
+            <p className={hint}>
+              {dto.projects.length} project
+              {dto.projects.length === 1 ? "" : "s"}
+            </p>
+          </>
+        }
+        detail={stack(
+          dto.projects.map((pr, i) => <div key={i}>{projectBlock(pr)}</div>),
+        )}
+        moreLabel="View all projects"
+      />
+    ) : null;
 
   const skillsCard =
     allSkills.length > 0 ? (
@@ -267,58 +268,52 @@ export function PremiumCareerCard({
         icon={<Award className="size-4" />}
         {...cardProps}
         summary={
+          <p className="truncate">{allSkills.slice(0, 6).join(" · ")}</p>
+        }
+        detail={
           <ul className="flex flex-wrap gap-1.5">
-            {skillPreview.map((k) => (
+            {allSkills.map((k) => (
               <li key={k} className={p.chip}>
                 {k}
               </li>
             ))}
           </ul>
         }
-        detail={
-          skillRest > 0 ? (
-            <ul className="flex flex-wrap gap-1.5">
-              {allSkills.slice(SKILL_PREVIEW).map((k) => (
-                <li key={k} className={p.chip}>
-                  {k}
-                </li>
-              ))}
-            </ul>
-          ) : undefined
-        }
-        moreLabel={`+${skillRest} more`}
+        moreLabel="All skills"
       />
     ) : null;
 
+  const firstEdu = dto.education[0];
   const eduCard = firstEdu ? (
     <CompactCard
       id="pp-edu"
       title="Education"
       icon={<GraduationCap className="size-4" />}
       {...cardProps}
-      summary={eduBlock(firstEdu)}
-      detail={
-        restEdu.length > 0
-          ? stack(restEdu.map((e, i) => <div key={i}>{eduBlock(e)}</div>))
-          : undefined
+      summary={
+        <p>
+          {[firstEdu.degree, firstEdu.institution].filter(Boolean).join(" · ")}
+        </p>
       }
-      moreLabel={`+${restEdu.length} more`}
+      detail={stack(
+        dto.education.map((e, i) => <div key={i}>{eduBlock(e)}</div>),
+      )}
+      moreLabel="View all education"
     />
   ) : null;
 
+  const firstCert = dto.certifications[0];
   const certCard = firstCert ? (
     <CompactCard
       id="pp-cert"
       title="Certifications"
       icon={<Award className="size-4" />}
       {...cardProps}
-      summary={certBlock(firstCert)}
-      detail={
-        restCerts.length > 0
-          ? stack(restCerts.map((c, i) => <div key={i}>{certBlock(c)}</div>))
-          : undefined
-      }
-      moreLabel={`+${restCerts.length} more`}
+      summary={<p>Professional credentials · {firstCert.name}</p>}
+      detail={stack(
+        dto.certifications.map((c, i) => <div key={i}>{certBlock(c)}</div>),
+      )}
+      moreLabel="View all credentials"
     />
   ) : null;
 
@@ -330,14 +325,11 @@ export function PremiumCareerCard({
         icon={<Languages className="size-4" />}
         {...cardProps}
         summary={
-          <ul className="flex flex-wrap gap-1.5">
-            {dto.languages.map((l) => (
-              <li key={l.language} className={p.chip}>
-                {l.language}
-                {l.fluency ? ` · ${l.fluency}` : ""}
-              </li>
-            ))}
-          </ul>
+          <p>
+            {dto.languages
+              .map((l) => l.language + (l.fluency ? ` · ${l.fluency}` : ""))
+              .join("   ·   ")}
+          </p>
         }
       />
     ) : null;
@@ -351,9 +343,9 @@ export function PremiumCareerCard({
         <FileText className="size-4" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className={`block ${p.cardTitle}`}>Resume</span>
-        <span className={`block ${meta}`}>
-          {dto.featuredResume.name} · {dto.featuredResume.targetRole}
+        <span className={`block ${p.cardTitle}`}>Résumé</span>
+        <span className={`block ${p.cardSub}`}>
+          View my professional résumé
         </span>
       </span>
       <span aria-hidden className={`text-lg ${t.faint}`}>
@@ -414,6 +406,10 @@ export function PremiumCareerCard({
                   className={`pointer-events-none absolute inset-0 ${t.coverOverlay}`}
                 />
               )}
+              <div
+                aria-hidden
+                className={`pointer-events-none absolute inset-0 ${p.coverShade}`}
+              />
             </div>
           ) : (
             <div aria-hidden className={p.heroBand} />
@@ -463,7 +459,7 @@ export function PremiumCareerCard({
               {facts.length > 0 && (
                 <dl className={p.factsRow}>
                   {facts.map((f) => (
-                    <div key={f.l} className="text-center">
+                    <div key={f.l} className="px-6 text-center">
                       <dd className={p.factValue}>{f.v}</dd>
                       <dt className={p.factLabel}>{f.l}</dt>
                     </div>
@@ -505,29 +501,6 @@ export function PremiumCareerCard({
         {pair(projCard, skillsCard)}
         {pair(eduCard, certCard)}
         {pair(langCard, resumeCard)}
-
-        {socialLinks.length > 0 && (
-          <section aria-labelledby="pp-connect" className={p.card}>
-            <h2 id="pp-connect" className={p.cardTitle}>
-              Connect professionally
-            </h2>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {socialLinks.map((l) => (
-                <a
-                  key={l.label}
-                  href={l.href!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${l.label} profile`}
-                  className={`${p.actionPill} ${p.actionPillHover}`}
-                >
-                  <l.icon className="size-4" aria-hidden />
-                  {l.label}
-                </a>
-              ))}
-            </div>
-          </section>
-        )}
       </div>
 
       <footer
