@@ -358,7 +358,7 @@ export function PremiumCareerCard({
     if (!a && !b) return null;
     if (!a || !b) return a ?? b;
     return (
-      <div className="grid gap-3 lg:grid-cols-2 lg:items-start">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:items-start">
         {a}
         {b}
       </div>
