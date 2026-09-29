@@ -1178,28 +1178,30 @@ export function PublicProfileSettings({
         <Button
           type="button"
           onClick={() =>
-            run(() =>
-              savePublicProfileSettingsAction({
-                publicHeadline: form.publicHeadline,
-                publicBio: form.publicBio,
-                publicLocation: form.publicLocation,
-                currentFocus: form.currentFocus,
-                workAuthorization: form.workAuthorization,
-                openToOpportunities: form.openToOpportunities,
-                linkedinUrl: form.linkedinUrl,
-                githubUrl: form.githubUrl,
-                websiteUrl: form.websiteUrl,
-                showExperience: form.showExperience,
-                showEducation: form.showEducation,
-                showSkills: form.showSkills,
-                showProjects: form.showProjects,
-                showCertifications: form.showCertifications,
-                showLanguages: form.showLanguages,
-                featuredResumeVariantId: form.featuredResumeVariantId || null,
-                themeId: form.themeId,
-                accentColorId: form.accentColorId,
-                cardStyleId: form.cardStyleId,
-              }),
+            run(
+              () =>
+                savePublicProfileSettingsAction({
+                  publicHeadline: form.publicHeadline,
+                  publicBio: form.publicBio,
+                  publicLocation: form.publicLocation,
+                  currentFocus: form.currentFocus,
+                  workAuthorization: form.workAuthorization,
+                  openToOpportunities: form.openToOpportunities,
+                  linkedinUrl: form.linkedinUrl,
+                  githubUrl: form.githubUrl,
+                  websiteUrl: form.websiteUrl,
+                  showExperience: form.showExperience,
+                  showEducation: form.showEducation,
+                  showSkills: form.showSkills,
+                  showProjects: form.showProjects,
+                  showCertifications: form.showCertifications,
+                  showLanguages: form.showLanguages,
+                  featuredResumeVariantId: form.featuredResumeVariantId || null,
+                  themeId: form.themeId,
+                  accentColorId: form.accentColorId,
+                  cardStyleId: form.cardStyleId,
+                }),
+              true,
             )
           }
           disabled={isPending}
@@ -1210,6 +1212,11 @@ export function PublicProfileSettings({
         {saved && (
           <p role="status" className="text-sm font-medium text-emerald-700">
             Saved
+          </p>
+        )}
+        {error && (
+          <p role="alert" className="text-sm text-red-600">
+            {error}
           </p>
         )}
       </div>
