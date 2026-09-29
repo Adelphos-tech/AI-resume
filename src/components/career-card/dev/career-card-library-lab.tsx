@@ -174,7 +174,10 @@ export function CareerCardLibraryLab() {
         )}
         {comp === "split" && (
           <>
-            <SplitHero d={d} media={media} />
+            <SplitHero
+              d={d}
+              cover={media === "none" ? undefined : { src: d.covers[media] }}
+            />
             <CorporateCareerSections {...content} />
           </>
         )}

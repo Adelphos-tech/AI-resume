@@ -23,6 +23,7 @@ import {
 } from "@/components/candidate/public-profile/career-card-photo";
 import { CompactCard } from "@/components/public-profile/compact-card";
 import { ExecutiveLibraryCard } from "@/components/career-card/production/executive-library-card";
+import { CorporateLibraryCard } from "@/components/career-card/production/corporate-library-card";
 import {
   BlurFade,
   BorderBeam,
@@ -105,6 +106,9 @@ export function PremiumCareerCard({
 }) {
   if (dto.themeId === "executive-dark") {
     return <ExecutiveLibraryCard dto={dto} slug={slug} t={t} p={p} />;
+  }
+  if (dto.themeId === "corporate-clean") {
+    return <CorporateLibraryCard dto={dto} slug={slug} t={t} p={p} />;
   }
   const socialLinks = [
     { href: dto.links.linkedin, label: "LinkedIn", icon: AtSign },

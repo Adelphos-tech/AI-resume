@@ -18,6 +18,10 @@ import {
 import { credentialMeta } from "@/components/career-card/modules/certifications-content";
 import { languageLine } from "@/components/career-card/modules/languages-content";
 import { FileText } from "lucide-react";
+import {
+  CORPORATE_ACCENT_VARS,
+  type CorporateAccent,
+} from "@/components/career-card/primitives/corporate-accent";
 
 const sectionTitle =
   "border-b border-stone-200 pb-2 text-xs font-bold uppercase tracking-widest text-slate-500";
@@ -35,6 +39,7 @@ export function CorporateCareerSections({
   certifications = [],
   languages = [],
   resume,
+  accent = "neutral",
 }: {
   experience: DemoExperience[];
   projects: DemoProject[];
@@ -43,9 +48,13 @@ export function CorporateCareerSections({
   certifications?: DemoCertification[];
   languages?: DemoLanguage[];
   resume?: DemoResume;
+  accent?: CorporateAccent;
 }) {
   return (
-    <div className="mx-auto mt-6 max-w-4xl space-y-6 px-3 pb-10">
+    <div
+      className="mx-auto mt-6 max-w-4xl space-y-6 px-3 pb-10"
+      style={CORPORATE_ACCENT_VARS[accent]}
+    >
       {experience.length > 0 && (
         <section
           aria-labelledby="corp-exp"
@@ -131,7 +140,7 @@ export function CorporateCareerSections({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Open ${p.name}`}
-                    className="shrink-0 rounded-md border border-stone-200 p-1.5 text-slate-500 transition hover:border-slate-400"
+                    className="shrink-0 rounded-md border border-stone-200 p-1.5 text-[color:var(--cc-c-accent)] transition hover:border-[color:var(--cc-c-btn-hover)]"
                   >
                     <ArrowUpRight className="size-4" aria-hidden />
                   </a>
@@ -229,7 +238,7 @@ export function CorporateCareerSections({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`View ${c.name} credential`}
-                    className="shrink-0 rounded-md border border-stone-200 p-1.5 text-slate-500 transition hover:border-slate-400"
+                    className="shrink-0 rounded-md border border-stone-200 p-1.5 text-[color:var(--cc-c-accent)] transition hover:border-[color:var(--cc-c-btn-hover)]"
                   >
                     <ArrowUpRight className="size-4" aria-hidden />
                   </a>
@@ -268,13 +277,13 @@ export function CorporateCareerSections({
                 Résumé
               </h2>
               <a
-                href="#resume"
-                className="group mt-3 flex items-center justify-between gap-3 rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 transition hover:border-slate-400"
+                href={resume.href ?? "#resume"}
+                className="group mt-3 flex items-center justify-between gap-3 rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 transition hover:border-[color:var(--cc-c-btn-hover)]"
               >
                 <span className="flex min-w-0 items-center gap-3">
                   <FileText
                     aria-hidden
-                    className="size-4 shrink-0 text-slate-600"
+                    className="size-4 shrink-0 text-[color:var(--cc-c-accent)]"
                   />
                   <span className="truncate text-sm font-semibold text-stone-800">
                     {resume.title ?? "View my professional résumé"}
@@ -282,7 +291,7 @@ export function CorporateCareerSections({
                 </span>
                 <ArrowUpRight
                   aria-hidden
-                  className="size-4 shrink-0 text-slate-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  className="size-4 shrink-0 text-[color:var(--cc-c-accent)] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 />
               </a>
             </section>

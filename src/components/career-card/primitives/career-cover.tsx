@@ -48,19 +48,21 @@ export function CareerCover({
     return <div aria-hidden className={`${className} ${fallbackClassName}`} />;
   }
   return (
-    <div className={`relative overflow-hidden ${className}`}>
-      <img
-        src={src}
-        alt=""
-        className="size-full object-cover"
-        style={
-          {
-            objectPosition: `${focalX * 100}% ${focalY * 100}%`,
-            transform: `scale(${zoom})`,
-          } as CSSProperties
-        }
-      />
-      <div aria-hidden className={SHADES[mode]} />
+    <div className={className}>
+      <div className="relative size-full overflow-hidden rounded-[inherit]">
+        <img
+          src={src}
+          alt=""
+          className="size-full object-cover"
+          style={
+            {
+              objectPosition: `${focalX * 100}% ${focalY * 100}%`,
+              transform: `scale(${zoom})`,
+            } as CSSProperties
+          }
+        />
+        <div aria-hidden className={SHADES[mode]} />
+      </div>
     </div>
   );
 }
