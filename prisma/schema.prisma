@@ -262,6 +262,10 @@ model PublicProfile {
   // Opaque storage key for the normalized cover photo — never a path,
   // filename, or URL. Null → theme's existing no-cover hero.
   coverPhotoKey       String?
+  // Cover presentation metadata — non-destructive; master image unchanged.
+  coverPhotoFocalX    Float  @default(0.5)
+  coverPhotoFocalY    Float  @default(0.5)
+  coverPhotoZoom      Float  @default(1.0)
   showExperience      Boolean @default(false)
   showEducation       Boolean @default(false)
   showSkills          Boolean @default(false)

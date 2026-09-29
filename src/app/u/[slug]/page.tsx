@@ -13,7 +13,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { cardTheme } from "@/lib/career-card-theme-styles";
-import { CareerCardProfilePhoto } from "@/components/candidate/public-profile/career-card-photo";
+import {
+  CareerCardCoverPhoto,
+  CareerCardProfilePhoto,
+} from "@/components/candidate/public-profile/career-card-photo";
 import { ResumeMiniPreview } from "@/components/resume/resume-mini-preview";
 import { prisma } from "@/server/db";
 import { getCandidateSession } from "@/server/session";
@@ -153,18 +156,16 @@ export default async function PublicProfilePage({
               master keeps its aspect ratio, object-fit crops visually */}
           {dto.coverPhotoUrl && (
             <div className={t.coverWrap}>
-              {/* eslint-disable-next-line @next/next/no-img-element -- decorative
-                  cover; object-fit cover inside a themed frame */}
-              <img
+              <CareerCardCoverPhoto
                 src={dto.coverPhotoUrl}
                 alt=""
-                aria-hidden="true"
-                className="absolute inset-0 size-full object-cover object-center"
+                position={dto.coverPhotoPosition}
+                frameClassName="absolute inset-0 size-full"
               />
               {t.coverOverlay && (
                 <div
                   aria-hidden
-                  className={`absolute inset-0 ${t.coverOverlay}`}
+                  className={`pointer-events-none absolute inset-0 ${t.coverOverlay}`}
                 />
               )}
             </div>

@@ -12,7 +12,10 @@ import {
   removeProfilePhoto,
   updatePhotoPosition,
 } from "@/server/public-profile/photo";
-import { removeCoverPhoto } from "@/server/public-profile/cover";
+import {
+  removeCoverPhoto,
+  updateCoverPosition,
+} from "@/server/public-profile/cover";
 
 const PATHS = ["/candidate/public-profile"];
 
@@ -71,6 +74,12 @@ export async function updatePhotoPositionAction(raw: unknown) {
 
 export async function removeCoverPhotoAction() {
   const result = await removeCoverPhoto();
+  if (result.success) revalidate();
+  return result;
+}
+
+export async function updateCoverPositionAction(raw: unknown) {
+  const result = await updateCoverPosition(raw);
   if (result.success) revalidate();
   return result;
 }

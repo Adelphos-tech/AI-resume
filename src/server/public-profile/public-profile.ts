@@ -315,6 +315,11 @@ export type PublicCareerProfileDTO = {
   themeId: CareerCardThemeId;
   profilePhotoUrl: string | null;
   coverPhotoUrl: string | null;
+  coverPhotoPosition: {
+    focalX: number;
+    focalY: number;
+    zoom: number;
+  };
   profilePhotoPosition: {
     focalX: number;
     focalY: number;
@@ -400,6 +405,9 @@ export function buildPublicProfileDTO(
     themeId: string;
     profilePhotoKey: string | null;
     coverPhotoKey: string | null;
+    coverPhotoFocalX: number;
+    coverPhotoFocalY: number;
+    coverPhotoZoom: number;
     profilePhotoFocalX: number;
     profilePhotoFocalY: number;
     profilePhotoZoom: number;
@@ -454,6 +462,11 @@ export function buildPublicProfileDTO(
       ? `/u/${profile.slug}/photo`
       : null,
     coverPhotoUrl: profile.coverPhotoKey ? `/u/${profile.slug}/cover` : null,
+    coverPhotoPosition: {
+      focalX: profile.coverPhotoFocalX,
+      focalY: profile.coverPhotoFocalY,
+      zoom: profile.coverPhotoZoom,
+    },
     profilePhotoPosition: {
       focalX: profile.profilePhotoFocalX,
       focalY: profile.profilePhotoFocalY,

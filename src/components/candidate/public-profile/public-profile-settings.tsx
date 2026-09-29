@@ -14,13 +14,16 @@ import {
   publishPublicProfileAction,
   removeCoverPhotoAction,
   removeProfilePhotoAction,
+  updateCoverPositionAction,
   savePublicProfileSettingsAction,
   unpublishPublicProfileAction,
   updatePhotoPositionAction,
   updateSlugAction,
 } from "@/app/candidate/(workspace)/public-profile/actions";
 import {
+  CareerCardCoverPhoto,
   CareerCardProfilePhoto,
+  CoverPositionEditor,
   DEFAULT_PHOTO_POSITION,
   PhotoPositionEditor,
   type PhotoPosition,
@@ -88,6 +91,8 @@ export function PublicProfileSettings({
   photoKey: initialPhotoKey,
   photoPosition,
   coverUrl,
+  coverKey: initialCoverKey,
+  coverPosition,
 }: {
   slug: string | null;
   isPublished: boolean;
@@ -107,6 +112,10 @@ export function PublicProfileSettings({
   photoPosition: PhotoPosition;
   /** Current public cover URL ("/u/<slug>/cover") or null for no cover. */
   coverUrl: string | null;
+  /** Opaque cover key — owner-scoped optimistic-concurrency token for the
+   * cover editor; never trusted for ownership server-side. */
+  coverKey: string | null;
+  coverPosition: PhotoPosition;
 }) {
   const [slugValue, setSlugValue] = useState(slug ?? "");
   const [form, setForm] = useState<PublicProfileSettingsState>(
@@ -145,6 +154,10 @@ export function PublicProfileSettings({
   const [coverBusy, setCoverBusy] = useState(false);
   const [coverV, setCoverV] = useState(0);
   const coverRef = useRef<HTMLInputElement>(null);
+  const [coverKey, setCoverKey] = useState<string | null>(initialCoverKey);
+  const [coverPos, setCoverPos] = useState<PhotoPosition>(coverPosition);
+  const [coverEditorOpen, setCoverEditorOpen] = useState(false);
+  const adjustCoverBtnRef = useRef<HTMLButtonElement>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [posMsg, setPosMsg] = useState<string | null>(null);
   const [reco, setReco] = useState<ThemeRecommendation | null>(null);
@@ -232,12 +245,18 @@ export function PublicProfileSettings({
         method: "POST",
         body: fd,
       });
-      const r: { success: boolean; coverUrl?: string; message?: string } =
-        await res.json().catch(() => ({ success: false }));
+      const r: {
+        success: boolean;
+        coverUrl?: string;
+        coverKey?: string;
+        message?: string;
+      } = await res.json().catch(() => ({ success: false }));
       if (!r.success) setCoverMsg(r.message ?? "Upload failed. Try again.");
       else {
         setCover(r.coverUrl ?? null);
+        setCoverKey(r.coverKey ?? null);
         setCoverV((v) => v + 1); // refresh the preview even at the same URL
+        setCoverPos(DEFAULT_PHOTO_POSITION); // new cover → centered framing
         setCoverMsg("Cover photo updated");
       }
     } catch {
@@ -255,6 +274,8 @@ export function PublicProfileSettings({
       if (!r.success) setCoverMsg(r.message);
       else {
         setCover(null);
+        setCoverKey(null);
+        setCoverPos(DEFAULT_PHOTO_POSITION);
         setCoverMsg("Cover photo removed");
       }
     } catch {
@@ -527,14 +548,12 @@ export function PublicProfileSettings({
         <div className="mt-5 border-t border-stone-200 pt-5">
           <p className={labelCls}>Cover photo</p>
           {cover ? (
-            <div className="relative mt-2 aspect-2/1 w-full overflow-hidden rounded-xl border border-stone-200 bg-stone-100">
-              {/* eslint-disable-next-line @next/next/no-img-element -- preview of
-                  the candidate's current cover via the same public route */}
-              <img
+            <div className="mt-2 rounded-xl border border-stone-200 bg-stone-100">
+              <CareerCardCoverPhoto
                 src={`${cover}${cover.includes("?") ? "&" : "?"}v=${coverV}`}
                 alt=""
-                aria-hidden="true"
-                className="absolute inset-0 size-full object-cover object-center"
+                position={coverPos}
+                frameClassName="aspect-2/1 w-full rounded-xl"
               />
             </div>
           ) : (
@@ -554,6 +573,20 @@ export function PublicProfileSettings({
             >
               {coverBusy ? "Uploading…" : cover ? "Replace" : "Upload cover"}
             </button>
+            {cover && coverKey && (
+              <button
+                ref={adjustCoverBtnRef}
+                type="button"
+                disabled={coverBusy}
+                onClick={() => {
+                  setCoverMsg(null);
+                  setCoverEditorOpen(true);
+                }}
+                className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:border-emerald-600/40 hover:text-emerald-800 disabled:opacity-50"
+              >
+                Adjust cover
+              </button>
+            )}
             {cover && (
               <button
                 type="button"
@@ -1077,6 +1110,43 @@ export function PublicProfileSettings({
       {shareUrl && <CareerCardNfcWriter careerCardUrl={shareUrl} />}
 
       {/* photo position editor — metadata only, image bytes unchanged */}
+      {coverEditorOpen && cover && coverKey && (
+        <CoverPositionEditor
+          src={`${cover}?v=${coverV}`}
+          name={displayName}
+          initial={coverPos}
+          busy={coverBusy}
+          message={coverMsg}
+          onClose={() => {
+            setCoverEditorOpen(false);
+            // Conditional mount means Radix focus-restore has no trigger —
+            // return keyboard focus to the opening button explicitly.
+            requestAnimationFrame(() => adjustCoverBtnRef.current?.focus());
+          }}
+          onSave={async (next) => {
+            setCoverMsg(null);
+            setCoverBusy(true);
+            try {
+              const r = await updateCoverPositionAction({
+                focalX: next.focalX,
+                focalY: next.focalY,
+                zoom: next.zoom,
+                expectedCoverPhotoKey: coverKey,
+              });
+              if (!r.success) setCoverMsg(r.message);
+              else {
+                setCoverPos(next);
+                setCoverEditorOpen(false);
+                setCoverMsg("Cover position updated");
+              }
+            } catch {
+              setCoverMsg("Couldn't save position. Try again.");
+            } finally {
+              setCoverBusy(false);
+            }
+          }}
+        />
+      )}
       {editorOpen && photo && photoKey && (
         <PhotoPositionEditor
           src={`${photo}?v=${photoV}`}
