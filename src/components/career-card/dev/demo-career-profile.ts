@@ -285,6 +285,7 @@ export type DemoLanguage = {
 export type DemoResume = {
   hasResume: boolean;
   title?: string;
+  href?: string;
 };
 
 export const DEMO_EDUCATION_RICH: DemoEducation[] = [

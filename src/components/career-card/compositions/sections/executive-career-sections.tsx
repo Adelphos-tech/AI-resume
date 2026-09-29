@@ -19,6 +19,10 @@ import {
 import { credentialMeta } from "@/components/career-card/modules/certifications-content";
 import { languageLine } from "@/components/career-card/modules/languages-content";
 import { FileText } from "lucide-react";
+import {
+  CINEMATIC_ACCENT_VARS,
+  type CinematicAccent,
+} from "@/components/career-card/primitives/cinematic-accent";
 
 /**
  * Executive career sections — career-story vertical timeline + selected-work
@@ -32,6 +36,7 @@ export function ExecutiveCareerSections({
   certifications = [],
   languages = [],
   resume,
+  accent = "violet",
 }: {
   experience: DemoExperience[];
   projects: DemoProject[];
@@ -40,26 +45,30 @@ export function ExecutiveCareerSections({
   certifications?: DemoCertification[];
   languages?: DemoLanguage[];
   resume?: DemoResume;
+  accent?: CinematicAccent;
 }) {
   const [featured, ...rest] = projects;
   return (
-    <div className="mx-auto mt-10 max-w-5xl space-y-12 px-3 pb-10">
+    <div
+      className="mx-auto mt-10 max-w-5xl space-y-12 px-3 pb-10"
+      style={CINEMATIC_ACCENT_VARS[accent]}
+    >
       {/* ── Career timeline ─────────────────────────────────────────── */}
       {experience.length > 0 && (
         <section aria-labelledby="exec-exp">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--cc-label)]">
             Career Path
           </p>
           <h2 id="exec-exp" className="mt-1 text-xl font-bold text-white">
             Experience
           </h2>
-          <div className="relative mt-6 ml-2 space-y-8 border-l-2 border-violet-500/25 pl-6">
+          <div className="relative mt-6 ml-2 space-y-8 border-l-2 border-[color:var(--cc-edge)] pl-6">
             {experience.map((r, i) => (
               <div key={i} className="relative">
                 <span
                   aria-hidden
                   className={`absolute -left-[31px] top-1 size-3 rounded-full ring-4 ring-[#0c0a09] ${
-                    r.current ? "bg-violet-400" : "bg-stone-600"
+                    r.current ? "bg-[var(--cc-accent)]" : "bg-stone-600"
                   }`}
                 />
                 <div className="flex flex-wrap items-baseline gap-x-3">
@@ -69,10 +78,10 @@ export function ExecutiveCareerSections({
                     {r.location ? ` · ${r.location}` : ""}
                   </span>
                 </div>
-                <p className="mt-0.5 font-mono text-[11px] text-violet-300/80">
+                <p className="mt-0.5 font-mono text-[11px] text-[color:var(--cc-text)]">
                   {formatRange(r)}
                   {r.current && (
-                    <span className="ml-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
+                    <span className="ml-2 rounded-full border border-[color:var(--cc-edge)] bg-[var(--cc-tint)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
                       Current
                     </span>
                   )}
@@ -86,7 +95,7 @@ export function ExecutiveCareerSections({
                   <ExperienceBullets
                     items={r.highlights}
                     className="mt-2 space-y-1 text-sm text-stone-400"
-                    markerClassName="bg-violet-400/70"
+                    markerClassName="bg-[var(--cc-accent)]"
                   />
                 )}
               </div>
@@ -98,7 +107,7 @@ export function ExecutiveCareerSections({
       {/* ── Selected Work ───────────────────────────────────────────── */}
       {projects.length > 0 && (
         <section aria-labelledby="exec-proj">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--cc-label)]">
             Selected Work
           </p>
           <h2 id="exec-proj" className="mt-1 text-xl font-bold text-white">
@@ -107,7 +116,7 @@ export function ExecutiveCareerSections({
           {featured && (
             <a
               href={featured.url ?? "#"}
-              className="group relative mt-5 block overflow-hidden rounded-xl border border-violet-500/25 bg-gradient-to-br from-violet-950/50 to-stone-900/60 p-5 transition hover:border-violet-500/50"
+              className="group relative mt-5 block overflow-hidden rounded-xl border border-[color:var(--cc-edge)] bg-gradient-to-br from-[var(--cc-feature)] to-stone-900/60 p-5 transition hover:border-[color:var(--cc-edge-hi)]"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -115,7 +124,7 @@ export function ExecutiveCareerSections({
                     {featured.name}
                   </h3>
                   {featured.role && (
-                    <p className="mt-0.5 text-xs font-medium text-violet-300/80">
+                    <p className="mt-0.5 text-xs font-medium text-[color:var(--cc-text)]">
                       {featured.role}
                     </p>
                   )}
@@ -125,7 +134,7 @@ export function ExecutiveCareerSections({
                 </div>
                 <ArrowUpRight
                   aria-hidden
-                  className="size-5 shrink-0 text-violet-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  className="size-5 shrink-0 text-[color:var(--cc-accent)] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 />
               </div>
             </a>
@@ -162,10 +171,10 @@ export function ExecutiveCareerSections({
       {/* ── Expertise rail ──────────────────────────────────────────── */}
       {skills.length > 0 && (
         <section aria-labelledby="exec-skills">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--cc-label)]">
             Expertise
           </p>
-          <div className="mt-3 border-t border-violet-500/25 pt-4">
+          <div className="mt-3 border-t border-[color:var(--cc-edge)] pt-4">
             <p className="text-[15px] font-medium leading-relaxed text-stone-200">
               {skillLine(skills, "  ·  ")}
             </p>
@@ -178,7 +187,7 @@ export function ExecutiveCareerSections({
         <section className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {education.length > 0 && (
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--cc-label)]">
                 Education
               </p>
               <div className="mt-4 space-y-4">
@@ -201,14 +210,14 @@ export function ExecutiveCareerSections({
           )}
           {certifications.length > 0 && (
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--cc-label)]">
                 Credentials
               </p>
               <div className="mt-4 space-y-4">
                 {certifications.map((c) => (
                   <div
                     key={c.name}
-                    className="border-l-2 border-violet-500/40 pl-4"
+                    className="border-l-2 border-[color:var(--cc-edge-hi)] pl-4"
                   >
                     <h3 className="text-sm font-semibold text-white">
                       {c.name}
@@ -227,7 +236,7 @@ export function ExecutiveCareerSections({
       {/* ── Languages — compact ─────────────────────────────────────── */}
       {languages.length > 0 && (
         <section aria-labelledby="exec-langs">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--cc-label)]">
             Languages
           </p>
           <p className="mt-3 text-sm text-stone-300">
@@ -240,15 +249,15 @@ export function ExecutiveCareerSections({
       {resume?.hasResume && (
         <section>
           <a
-            href="#resume"
-            className="group flex items-center justify-between gap-4 border-t-2 border-violet-500/40 pt-5"
+            href={resume.href ?? "#resume"}
+            className="group flex items-center justify-between gap-4 border-t-2 border-[color:var(--cc-edge-hi)] pt-5"
           >
             <div className="flex items-center gap-3">
-              <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-[color:var(--cc-edge)] bg-[var(--cc-tint)] text-[color:var(--cc-text)]">
                 <FileText className="size-4" aria-hidden />
               </span>
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--cc-label)]">
                   Résumé
                 </p>
                 <p className="mt-0.5 text-sm font-semibold text-white">
@@ -258,7 +267,7 @@ export function ExecutiveCareerSections({
             </div>
             <ArrowUpRight
               aria-hidden
-              className="size-5 shrink-0 text-violet-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              className="size-5 shrink-0 text-[color:var(--cc-accent)] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
             />
           </a>
         </section>

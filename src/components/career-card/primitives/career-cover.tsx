@@ -27,15 +27,15 @@ const SHADES: Record<Exclude<CareerCoverMode, "none">, string> = {
 export function CareerCover({
   src,
   mode,
-  focalX = 50,
-  focalY = 50,
+  focalX = 0.5,
+  focalY = 0.5,
   zoom = 1,
   className = "",
   fallbackClassName = "bg-gradient-to-br from-violet-950 via-violet-900 to-stone-950",
 }: {
   src?: string;
   mode: CareerCoverMode;
-  /** 0–100, percentage object-position. */
+  /** Normalized 0..1 object-position (production media contract). */
   focalX?: number;
   focalY?: number;
   /** >= 1, transform scale — non-destructive. */
@@ -55,7 +55,7 @@ export function CareerCover({
         className="size-full object-cover"
         style={
           {
-            objectPosition: `${focalX}% ${focalY}%`,
+            objectPosition: `${focalX * 100}% ${focalY * 100}%`,
             transform: `scale(${zoom})`,
           } as CSSProperties
         }

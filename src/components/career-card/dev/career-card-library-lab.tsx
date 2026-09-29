@@ -165,7 +165,10 @@ export function CareerCardLibraryLab() {
       <main className="mx-auto max-w-6xl px-3 py-8 sm:py-12">
         {comp === "cinematic" && (
           <>
-            <CinematicHero d={d} media={media} />
+            <CinematicHero
+              d={d}
+              cover={media === "none" ? undefined : { src: d.covers[media] }}
+            />
             <ExecutiveCareerSections {...content} />
           </>
         )}

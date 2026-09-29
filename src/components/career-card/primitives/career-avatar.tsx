@@ -17,6 +17,9 @@ export type CareerAvatarSize = keyof typeof SIZES;
 
 export function CareerAvatar({
   src,
+  focalX = 0.5,
+  focalY = 0.35,
+  zoom = 1,
   initials,
   name,
   size = "lg",
@@ -26,6 +29,10 @@ export function CareerAvatar({
   className = "",
 }: {
   src?: string;
+  /** Normalized 0..1 object-position; >= 1 transform scale (non-destructive). */
+  focalX?: number;
+  focalY?: number;
+  zoom?: number;
   initials: string;
   name: string;
   size?: CareerAvatarSize;
@@ -36,31 +43,36 @@ export function CareerAvatar({
   className?: string;
 }) {
   return (
-    <div className={`relative shrink-0 ${className}`}>
-      {haloClassName && (
-        <span
-          aria-hidden
-          className={`absolute -inset-2 rounded-full blur-md ${haloClassName}`}
-        />
-      )}
-      <div
-        className={`relative grid place-items-center overflow-hidden rounded-full ${SIZES[size]} ${ringClassName}`}
-      >
-        {src ? (
-          <img
-            src={src}
-            alt={name}
-            className="size-full object-cover"
-            style={{ objectPosition: "50% 35%" }}
-          />
-        ) : (
+    <div className={`shrink-0 ${className}`}>
+      <div className="relative">
+        {haloClassName && (
           <span
             aria-hidden
-            className={`grid size-full place-items-center font-bold ${fallbackClassName}`}
-          >
-            {initials}
-          </span>
+            className={`absolute -inset-2 rounded-full blur-md ${haloClassName}`}
+          />
         )}
+        <div
+          className={`relative grid place-items-center overflow-hidden rounded-full ${SIZES[size]} ${ringClassName}`}
+        >
+          {src ? (
+            <img
+              src={src}
+              alt={name}
+              className="size-full object-cover"
+              style={{
+                objectPosition: `${focalX * 100}% ${focalY * 100}%`,
+                transform: `scale(${zoom})`,
+              }}
+            />
+          ) : (
+            <span
+              aria-hidden
+              className={`grid size-full place-items-center font-bold ${fallbackClassName}`}
+            >
+              {initials}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

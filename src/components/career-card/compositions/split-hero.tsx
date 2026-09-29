@@ -26,7 +26,7 @@ export function SplitHero({ d, media }: { d: P; media: DemoMedia }) {
           <CareerCover
             src={cover}
             mode={cover ? "split" : "none"}
-            focalY={45}
+            focalY={0.45}
             zoom={1.1}
             className="absolute inset-0"
             fallbackClassName="bg-gradient-to-br from-slate-700/40 to-slate-900"

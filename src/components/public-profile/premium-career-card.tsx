@@ -22,6 +22,7 @@ import {
   CareerCardProfilePhoto,
 } from "@/components/candidate/public-profile/career-card-photo";
 import { CompactCard } from "@/components/public-profile/compact-card";
+import { ExecutiveLibraryCard } from "@/components/career-card/production/executive-library-card";
 import {
   BlurFade,
   BorderBeam,
@@ -47,7 +48,7 @@ function dateRange(
  * gaps are excluded and overlapping roles aren't double-counted. Uses
  * completed years only; <1 year → no fact.
  */
-function completedYearsOfExperience(
+export function completedYearsOfExperience(
   experience: PublicCareerProfileDTO["experience"],
 ): number {
   const toMonth = (d: string | null): number | null => {
@@ -102,6 +103,9 @@ export function PremiumCareerCard({
   t: CardThemeTokens;
   p: CardStyleTokens;
 }) {
+  if (dto.themeId === "executive-dark") {
+    return <ExecutiveLibraryCard dto={dto} slug={slug} t={t} p={p} />;
+  }
   const socialLinks = [
     { href: dto.links.linkedin, label: "LinkedIn", icon: AtSign },
     { href: dto.links.github, label: "GitHub", icon: FolderGit2 },

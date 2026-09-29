@@ -28,7 +28,7 @@ export function MinimalBentoHero({ d, media }: { d: P; media: DemoMedia }) {
             <CareerCover
               src={cover}
               mode="ambient"
-              focalY={40}
+              focalY={0.4}
               className="absolute inset-0"
             />
           )}

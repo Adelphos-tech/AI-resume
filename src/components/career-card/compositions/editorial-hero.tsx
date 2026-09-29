@@ -30,7 +30,7 @@ export function EditorialHero({ d, media }: { d: P; media: DemoMedia }) {
         <CareerCover
           src={cover}
           mode="banner"
-          focalY={35}
+          focalY={0.35}
           zoom={1.05}
           className="h-14 rounded-t sm:h-16"
         />
