@@ -23,6 +23,10 @@ import {
 } from "@/components/candidate/public-profile/career-card-photo";
 import { CompactCard } from "@/components/public-profile/compact-card";
 import {
+  BlurFade,
+  BorderBeam,
+} from "@/components/public-profile/premium-effects";
+import {
   formatCareerDate,
   type PublicCareerProfileDTO,
 } from "@/server/public-profile/public-profile";
@@ -85,7 +89,7 @@ function completedYearsOfExperience(
   return Math.floor(total / 12);
 }
 
-const ABOUT_PREVIEW = 150;
+const ABOUT_PREVIEW = 95;
 
 export function PremiumCareerCard({
   dto,
@@ -120,6 +124,15 @@ export function PremiumCareerCard({
   const allSkills = dto.skills.flatMap((g) => g.keywords);
   const bioLong = (dto.bio?.length ?? 0) > ABOUT_PREVIEW;
 
+  const cnt = (n: number, noun: string) =>
+    n > 1 ? `+${n - 1} ${noun}` : "View details";
+  const expMore = cnt(dto.experience.length, "roles");
+  const projMore = cnt(dto.projects.length, "projects");
+  const skillsMore =
+    allSkills.length > 6 ? `+${allSkills.length - 6} skills` : "All skills";
+  const eduMore = cnt(dto.education.length, "entries");
+  const certMore = cnt(dto.certifications.length, "credentials");
+
   const cardProps = {
     cardClassName: p.card,
     titleClassName: p.cardTitle,
@@ -127,6 +140,8 @@ export function PremiumCareerCard({
     toggleClassName: p.toggle,
     subClassName: p.cardSub,
     detailClassName: p.detailBorder,
+    edgeClassName: p.cardGlow || undefined,
+    spotColor: p.spot,
   };
   const body = `text-sm leading-relaxed ${t.body}`;
   const hint = `text-xs ${t.subtle}`;
@@ -206,7 +221,7 @@ export function PremiumCareerCard({
       icon={<UserRound className="size-4" />}
       {...cardProps}
       summary={
-        <p>
+        <p className="line-clamp-3">
           {bioLong ? `${dto.bio.slice(0, ABOUT_PREVIEW).trimEnd()}…` : dto.bio}
         </p>
       }
@@ -233,7 +248,7 @@ export function PremiumCareerCard({
       detail={stack(
         dto.experience.map((w, i) => <div key={i}>{roleBlock(w)}</div>),
       )}
-      moreLabel="View all experience"
+      moreLabel={expMore}
     />
   ) : null;
 
@@ -256,7 +271,7 @@ export function PremiumCareerCard({
         detail={stack(
           dto.projects.map((pr, i) => <div key={i}>{projectBlock(pr)}</div>),
         )}
-        moreLabel="View all projects"
+        moreLabel={projMore}
       />
     ) : null;
 
@@ -279,7 +294,7 @@ export function PremiumCareerCard({
             ))}
           </ul>
         }
-        moreLabel="All skills"
+        moreLabel={skillsMore}
       />
     ) : null;
 
@@ -298,7 +313,7 @@ export function PremiumCareerCard({
       detail={stack(
         dto.education.map((e, i) => <div key={i}>{eduBlock(e)}</div>),
       )}
-      moreLabel="View all education"
+      moreLabel={eduMore}
     />
   ) : null;
 
@@ -313,7 +328,7 @@ export function PremiumCareerCard({
       detail={stack(
         dto.certifications.map((c, i) => <div key={i}>{certBlock(c)}</div>),
       )}
-      moreLabel="View all credentials"
+      moreLabel={certMore}
     />
   ) : null;
 
@@ -415,7 +430,7 @@ export function PremiumCareerCard({
             <div aria-hidden className={p.heroBand} />
           )}
           <div className="flex flex-col items-center px-4 pb-5 sm:px-6">
-            <div className={`relative z-30 ${p.avatarPull}`}>
+            <BlurFade delay={0.05} className={`relative z-30 ${p.avatarPull}`}>
               {dto.profilePhotoUrl ? (
                 <CareerCardProfilePhoto
                   src={dto.profilePhotoUrl}
@@ -428,56 +443,79 @@ export function PremiumCareerCard({
                   {dto.initials}
                 </div>
               )}
-            </div>
-            <div className={p.identityPanel}>
-              <h1
-                className={`text-2xl font-bold tracking-tight sm:text-3xl ${t.strong}`}
-              >
-                {dto.name}
-              </h1>
-              {dto.headline && (
-                <p className={`mt-1 text-base font-medium ${t.headline}`}>
-                  {dto.headline}
-                </p>
-              )}
-              {(dto.location || dto.openToOpportunities) && (
-                <p className="mt-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm">
-                  {dto.location && (
-                    <span className={t.subtle}>{dto.location}</span>
-                  )}
-                  {dto.openToOpportunities && (
-                    <span className={t.openBadge}>
-                      <span
-                        aria-hidden
-                        className="size-1.5 rounded-full bg-emerald-500"
-                      />
-                      Open to opportunities
-                    </span>
-                  )}
-                </p>
-              )}
-              {facts.length > 0 && (
-                <dl className={p.factsRow}>
-                  {facts.map((f) => (
-                    <div key={f.l} className="px-6 text-center">
-                      <dd className={p.factValue}>{f.v}</dd>
-                      <dt className={p.factLabel}>{f.l}</dt>
-                    </div>
-                  ))}
-                </dl>
-              )}
-            </div>
+            </BlurFade>
+            <BlurFade delay={0.15} className="w-full max-w-2xl">
+              <div className={`relative overflow-hidden ${p.identityPanel}`}>
+                {p.panelGlow && (
+                  <span
+                    aria-hidden
+                    className={`pointer-events-none absolute inset-x-0 top-0 h-px ${p.panelGlow}`}
+                  />
+                )}
+                <h1
+                  className={`text-2xl font-bold tracking-tight sm:text-3xl ${t.strong}`}
+                >
+                  {dto.name}
+                </h1>
+                {dto.headline && (
+                  <p className={`mt-1 text-base font-medium ${t.headline}`}>
+                    {dto.headline}
+                  </p>
+                )}
+                {(dto.location || dto.openToOpportunities) && (
+                  <p className="mt-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm">
+                    {dto.location && (
+                      <span className={t.subtle}>{dto.location}</span>
+                    )}
+                    {dto.openToOpportunities && (
+                      <span className={t.openBadge}>
+                        <span
+                          aria-hidden
+                          className="size-1.5 rounded-full bg-emerald-500"
+                        />
+                        Open to opportunities
+                      </span>
+                    )}
+                  </p>
+                )}
+                {facts.length > 0 && (
+                  <dl className={p.factsRow}>
+                    {facts.map((f) => (
+                      <div key={f.l} className="px-6 text-center">
+                        <dd className={p.factValue}>{f.v}</dd>
+                        <dt className={p.factLabel}>{f.l}</dt>
+                      </div>
+                    ))}
+                  </dl>
+                )}
+              </div>
+            </BlurFade>
             {(dto.featuredResume || socialLinks.length > 0) && (
               <div className="mt-3 flex w-full max-w-2xl flex-wrap items-stretch justify-center gap-2 sm:items-center">
                 {dto.featuredResume && (
-                  <Link
-                    href={`/u/${slug}/resume`}
-                    className={`inline-flex min-h-11 items-center gap-2 ${p.primaryCta} ${t.button}`}
+                  <BlurFade
+                    delay={0.28}
+                    className="relative w-full overflow-hidden rounded-lg sm:w-auto"
                   >
-                    <FileText className="size-4" aria-hidden />
-                    View Resume
-                  </Link>
+                    <span className="relative inline-flex w-full overflow-hidden rounded-lg sm:w-auto">
+                      <Link
+                        href={`/u/${slug}/resume`}
+                        className={`inline-flex min-h-11 w-full items-center justify-center gap-2 sm:w-auto ${p.primaryCta} ${t.button}`}
+                      >
+                        <FileText className="size-4" aria-hidden />
+                        View Resume
+                      </Link>
+                      <BorderBeam color={p.beam} />
+                    </span>
+                  </BlurFade>
                 )}
+              </div>
+            )}
+            {socialLinks.length > 0 && (
+              <BlurFade
+                delay={0.36}
+                className="mt-3 flex w-full max-w-2xl flex-wrap items-center justify-center gap-2"
+              >
                 {socialLinks.map((l) => (
                   <a
                     key={l.label}
@@ -491,16 +529,28 @@ export function PremiumCareerCard({
                     {l.label}
                   </a>
                 ))}
-              </div>
+              </BlurFade>
             )}
           </div>
         </section>
 
         {/* compact career cards */}
-        {pair(aboutCard, expCard)}
-        {pair(projCard, skillsCard)}
-        {pair(eduCard, certCard)}
-        {pair(langCard, resumeCard)}
+        {pair(
+          aboutCard && <BlurFade delay={0.42}>{aboutCard}</BlurFade>,
+          expCard && <BlurFade delay={0.48}>{expCard}</BlurFade>,
+        )}
+        {pair(
+          projCard && <BlurFade delay={0.54}>{projCard}</BlurFade>,
+          skillsCard && <BlurFade delay={0.6}>{skillsCard}</BlurFade>,
+        )}
+        {pair(
+          eduCard && <BlurFade delay={0.66}>{eduCard}</BlurFade>,
+          certCard && <BlurFade delay={0.72}>{certCard}</BlurFade>,
+        )}
+        {pair(
+          langCard && <BlurFade delay={0.78}>{langCard}</BlurFade>,
+          resumeCard && <BlurFade delay={0.84}>{resumeCard}</BlurFade>,
+        )}
       </div>
 
       <footer
@@ -515,9 +565,11 @@ export function PremiumCareerCard({
           >
             R
           </span>
-          RoleRace · Built for meaningful careers
+          RoleRace
         </span>
-        <span className={`text-xs ${t.footer}`}>Built with RoleRace</span>
+        <span className={`text-xs ${t.footer}`}>
+          Built for meaningful careers
+        </span>
       </footer>
     </main>
   );

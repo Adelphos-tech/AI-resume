@@ -218,3 +218,91 @@
     animation: none;
   }
 }
+
+/* ── Premium Career Card motion system (zero-dependency) ────────────── */
+@keyframes pm-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+.pm-fade {
+  opacity: 0;
+  animation: pm-fade 0.55s cubic-bezier(0.2, 0.6, 0.3, 1) var(--pm-delay, 0s)
+    both;
+}
+
+@keyframes pm-beam {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+.pm-beam {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.pm-beam::before {
+  content: "";
+  position: absolute;
+  width: var(--pm-beam-size, 70px);
+  aspect-ratio: 1;
+  offset-path: rect(0 100% 100% 0 round 10px);
+  offset-rotate: 0deg;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--pm-beam-color),
+    transparent 70%
+  );
+  animation: pm-beam var(--pm-beam-duration, 10s) linear infinite;
+}
+
+.pm-magic {
+  position: relative;
+  height: 100%;
+}
+
+.pm-magic::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  background: radial-gradient(
+    180px circle at var(--pm-mx, -100px) var(--pm-my, -100px),
+    var(--pm-spot-color),
+    transparent 70%
+  );
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pm-magic:hover::after {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pm-fade {
+    opacity: 1;
+    animation: none;
+  }
+  .pm-beam {
+    display: none;
+  }
+  .pm-magic::after {
+    display: none;
+  }
+}

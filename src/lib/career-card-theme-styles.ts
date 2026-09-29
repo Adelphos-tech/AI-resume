@@ -116,6 +116,11 @@ interface LightAccent {
   pillHover: string;
   /** Premium primary-CTA depth shadow. */
   ctaGlow: string;
+  /** Border-Beam color + Magic-Card spotlight color (rgba strings). */
+  beam: string;
+  spot: string;
+  /** Premium card top accent hairline gradient. */
+  hairline: string;
 }
 
 /** Accent fragments consumed by Executive Dark. */
@@ -146,6 +151,11 @@ interface DarkAccent {
   pageGlow: string;
   /** Premium primary-CTA depth shadow. */
   ctaGlow: string;
+  /** Border-Beam color + Magic-Card spotlight color (rgba strings). */
+  beam: string;
+  spot: string;
+  /** Premium card top accent hairline gradient. */
+  hairline: string;
 }
 
 // ── Curated accent fragments (trusted static classes only) ────────────
@@ -190,6 +200,10 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     pill: "border border-emerald-600/25 bg-emerald-50/60 text-emerald-800",
     pillHover: "hover:bg-emerald-100/70",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(4,120,87,0.35)]",
+    beam: "rgba(4,120,87,0.75)",
+    spot: "rgba(4,120,87,0.10)",
+    hairline:
+      "bg-gradient-to-r from-transparent via-emerald-600/60 to-transparent",
   },
   navy: {
     text: "text-sky-900",
@@ -230,6 +244,9 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     pill: "border border-sky-800/25 bg-sky-50/60 text-sky-900",
     pillHover: "hover:bg-sky-100/70",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(3,105,161,0.35)]",
+    beam: "rgba(3,105,161,0.75)",
+    spot: "rgba(3,105,161,0.10)",
+    hairline: "bg-gradient-to-r from-transparent via-sky-800/60 to-transparent",
   },
   blue: {
     text: "text-blue-800",
@@ -270,6 +287,10 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     pill: "border border-blue-600/25 bg-blue-50/60 text-blue-800",
     pillHover: "hover:bg-blue-100/70",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(37,99,235,0.35)]",
+    beam: "rgba(37,99,235,0.75)",
+    spot: "rgba(37,99,235,0.10)",
+    hairline:
+      "bg-gradient-to-r from-transparent via-blue-600/60 to-transparent",
   },
   violet: {
     text: "text-violet-700",
@@ -310,6 +331,10 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     pill: "border border-violet-600/25 bg-violet-50/60 text-violet-800",
     pillHover: "hover:bg-violet-100/70",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(124,58,237,0.35)]",
+    beam: "rgba(124,58,237,0.75)",
+    spot: "rgba(124,58,237,0.10)",
+    hairline:
+      "bg-gradient-to-r from-transparent via-violet-600/60 to-transparent",
   },
   amber: {
     // Deep-amber foregrounds keep light-surface text readable — no
@@ -352,6 +377,10 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     pill: "border border-amber-700/25 bg-amber-50/60 text-amber-800",
     pillHover: "hover:bg-amber-100/70",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(180,83,9,0.35)]",
+    beam: "rgba(180,83,9,0.70)",
+    spot: "rgba(180,83,9,0.10)",
+    hairline:
+      "bg-gradient-to-r from-transparent via-amber-700/60 to-transparent",
   },
   neutral: {
     // Slate/graphite — restrained but keeps hierarchy obvious.
@@ -393,6 +422,10 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     pill: "border border-stone-400/40 bg-stone-100/70 text-stone-800",
     pillHover: "hover:bg-stone-200/70",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(68,64,60,0.30)]",
+    beam: "rgba(87,83,78,0.60)",
+    spot: "rgba(87,83,78,0.10)",
+    hairline:
+      "bg-gradient-to-r from-transparent via-stone-700/50 to-transparent",
   },
 };
 
@@ -423,6 +456,10 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     pageGlow:
       "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(16,185,129,0.14),transparent)]",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(52,211,153,0.45)]",
+    beam: "rgba(52,211,153,0.85)",
+    spot: "rgba(52,211,153,0.10)",
+    hairline:
+      "bg-gradient-to-r from-transparent via-emerald-500/60 to-transparent",
   },
   navy: {
     // Steel-blue interpretation — readable against dark charcoal.
@@ -451,6 +488,9 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     pageGlow:
       "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(56,189,248,0.14),transparent)]",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(56,189,248,0.45)]",
+    beam: "rgba(56,189,248,0.85)",
+    spot: "rgba(56,189,248,0.10)",
+    hairline: "bg-gradient-to-r from-transparent via-sky-500/60 to-transparent",
   },
   blue: {
     text: "text-blue-300",
@@ -476,6 +516,10 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     pill: "border border-blue-500/30 bg-blue-500/10 text-blue-200",
     pillHover: "hover:bg-blue-500/20",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(96,165,250,0.45)]",
+    beam: "rgba(96,165,250,0.85)",
+    spot: "rgba(96,165,250,0.10)",
+    hairline:
+      "bg-gradient-to-r from-transparent via-blue-500/60 to-transparent",
     pageGlow:
       "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(96,165,250,0.14),transparent)]",
   },
@@ -502,6 +546,10 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     edge: "border-t-2 border-t-violet-500/50",
     pill: "border border-violet-500/30 bg-violet-500/10 text-violet-200",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(139,92,246,0.45)]",
+    beam: "rgba(167,139,250,0.9)",
+    spot: "rgba(167,139,250,0.10)",
+    hairline:
+      "bg-gradient-to-r from-transparent via-violet-500/60 to-transparent",
     pillHover: "hover:bg-violet-500/20",
     pageGlow:
       "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(167,139,250,0.14),transparent)]",
@@ -529,6 +577,10 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     heroTint: "from-amber-400/15 via-stone-900/60",
     edge: "border-t-2 border-t-amber-400/50",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(251,191,36,0.45)]",
+    beam: "rgba(251,191,36,0.8)",
+    spot: "rgba(251,191,36,0.10)",
+    hairline:
+      "bg-gradient-to-r from-transparent via-amber-400/60 to-transparent",
     pill: "border border-amber-400/30 bg-amber-400/10 text-amber-200",
     pillHover: "hover:bg-amber-400/20",
     pageGlow:
@@ -554,6 +606,10 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     ringAccent:
       "ring-4 ring-stone-400/40 ring-offset-4 ring-offset-stone-900 shadow-[0_0_32px_-8px_rgba(214,211,209,0.25)]",
     ctaGlow: "shadow-[0_8px_24px_-6px_rgba(120,113,108,0.45)]",
+    beam: "rgba(214,211,209,0.6)",
+    spot: "rgba(214,211,209,0.08)",
+    hairline:
+      "bg-gradient-to-r from-transparent via-stone-400/50 to-transparent",
     heroTint: "from-stone-500/15 via-stone-900/60",
     edge: "border-t-2 border-t-stone-400/50",
     pill: "border border-stone-400/30 bg-stone-500/10 text-stone-200",
@@ -787,12 +843,26 @@ export interface CardStyleTokens {
   detailBorder: string;
   /** Gradient that fades the cover into the hero surface. */
   coverShade: string;
+  /** Card top accent hairline (empty = no hairline). */
+  cardGlow: string;
+  /** Identity-panel top accent hairline (empty = no hairline). */
+  panelGlow: string;
+  /** Border-Beam color on the primary CTA (accent rgba). */
+  beam: string;
+  /** Magic-Card spotlight color (accent rgba). */
+  spot: string;
 }
 
 type AccentForPremium = Pick<
   DarkAccent,
   "ringAccent" | "heroTint" | "edge" | "pill" | "pillHover" | "cta"
-> & { pageGlow?: string; ctaGlow: string };
+> & {
+  pageGlow?: string;
+  ctaGlow: string;
+  beam: string;
+  spot: string;
+  hairline: string;
+};
 
 function premiumLight(
   t: CardThemeTokens,
@@ -833,6 +903,10 @@ function premiumLight(
     chip: t.skillChip,
     cardSub: `mt-0.5 text-sm leading-relaxed ${t.subtle}`,
     detailBorder: `mt-3 border-t border-stone-200 pt-3`,
+    cardGlow: "",
+    panelGlow: "",
+    beam: a.beam,
+    spot: a.spot,
   };
 }
 
@@ -854,7 +928,7 @@ function premiumExecutive(
     avatarImg: `size-28 rounded-full object-cover sm:size-32 lg:size-36 ${a.ringAccent} shadow-xl`,
     identityPanel:
       "relative z-20 -mt-8 w-full max-w-2xl rounded-2xl border border-stone-700/80 bg-stone-950/80 px-4 pt-11 pb-5 text-center shadow-[0_24px_48px_-16px_rgba(0,0,0,0.7)] backdrop-blur-md sm:-mt-10 sm:px-8 sm:pt-14",
-    card: `rounded-xl border ${a.edge} border-stone-800 bg-gradient-to-b from-stone-900/90 to-stone-950/95 p-4 shadow-lg shadow-black/30 sm:p-5`,
+    card: `rounded-xl border border-stone-800 bg-gradient-to-b from-stone-900/90 to-stone-950/95 p-4 shadow-lg shadow-black/30 sm:p-5`,
     cardTitle: `text-[15px] font-bold ${t.strong}`,
     cardIcon: `mt-0.5 grid size-10 shrink-0 place-items-center rounded-lg ${a.pill} shadow-sm`,
     toggle: `flex shrink-0 flex-col items-center gap-0.5 self-center rounded-md px-2 py-1 text-[11px] font-medium text-stone-400 hover:text-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-500`,
@@ -868,6 +942,10 @@ function premiumExecutive(
     chip: t.skillChip,
     cardSub: `mt-0.5 text-sm leading-relaxed ${t.subtle}`,
     detailBorder: `mt-3 border-t border-stone-800 pt-3`,
+    cardGlow: a.hairline,
+    panelGlow: a.hairline,
+    beam: a.beam,
+    spot: a.spot,
   };
 }
 
