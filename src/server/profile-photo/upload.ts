@@ -8,6 +8,8 @@ import Busboy from "busboy";
 export const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
 /** Request ceiling: file limit + multipart framing margin. */
 export const MAX_PHOTO_REQUEST_BYTES = MAX_PHOTO_BYTES + 512 * 1024;
+/** Same limits for cover uploads. */
+export const MAX_COVER_REQUEST_BYTES = MAX_PHOTO_REQUEST_BYTES;
 
 export class PhotoUploadError extends Error {
   constructor(
@@ -24,12 +26,17 @@ export class PhotoUploadError extends Error {
  * Mirrors the proven resume-upload parser; Content-Length is only a cheap
  * early rejection — these limits are the security boundary.
  */
-export function parsePhotoUpload(request: Request): Promise<Buffer> {
+export function parseMultipartImage(
+  request: Request,
+  opts: { field: string; noun: string },
+): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const body = request.body;
     const contentType = request.headers.get("content-type") ?? "";
     if (!body || !contentType.toLowerCase().startsWith("multipart/form-data")) {
-      reject(new PhotoUploadError(400, "Upload a photo file."));
+      reject(
+        new PhotoUploadError(400, `Upload a ${opts.noun.toLowerCase()} file.`),
+      );
       return;
     }
 
@@ -62,22 +69,27 @@ export function parsePhotoUpload(request: Request): Promise<Buffer> {
     };
 
     busboy.on("file", (name, stream) => {
-      if (name !== "photo" || sawFile) {
+      if (name !== opts.field || sawFile) {
         stream.resume();
-        stop(new PhotoUploadError(400, "Upload a single photo file."));
+        stop(
+          new PhotoUploadError(
+            400,
+            `Upload a single ${opts.noun.toLowerCase()} file.`,
+          ),
+        );
         return;
       }
       sawFile = true;
       stream.on("data", (chunk: Buffer) => {
         totalBytes += chunk.length;
         if (totalBytes > MAX_PHOTO_BYTES) {
-          stop(new PhotoUploadError(413, "Photo is larger than 8 MB."));
+          stop(new PhotoUploadError(413, `${opts.noun} is larger than 8 MB.`));
         } else {
           chunks.push(chunk);
         }
       });
       stream.on("limit", () =>
-        stop(new PhotoUploadError(413, "Photo is larger than 8 MB.")),
+        stop(new PhotoUploadError(413, `${opts.noun} is larger than 8 MB.`)),
       );
       stream.on("error", () =>
         stop(new PhotoUploadError(400, "Upload failed. Try again.")),
@@ -85,7 +97,12 @@ export function parsePhotoUpload(request: Request): Promise<Buffer> {
     });
 
     busboy.on("filesLimit", () =>
-      stop(new PhotoUploadError(400, "Upload a single photo file.")),
+      stop(
+        new PhotoUploadError(
+          400,
+          `Upload a single ${opts.noun.toLowerCase()} file.`,
+        ),
+      ),
     );
     busboy.on("fieldsLimit", () =>
       stop(new PhotoUploadError(400, "Upload failed. Try again.")),
@@ -102,7 +119,12 @@ export function parsePhotoUpload(request: Request): Promise<Buffer> {
 
     busboy.on("finish", () => {
       if (!sawFile || totalBytes === 0) {
-        stop(new PhotoUploadError(400, "Upload a photo file."));
+        stop(
+          new PhotoUploadError(
+            400,
+            `Upload a ${opts.noun.toLowerCase()} file.`,
+          ),
+        );
         return;
       }
       stop(null);
@@ -110,4 +132,9 @@ export function parsePhotoUpload(request: Request): Promise<Buffer> {
 
     source.pipe(busboy);
   });
+}
+
+/** Profile-photo upload (field "photo"). */
+export function parsePhotoUpload(request: Request): Promise<Buffer> {
+  return parseMultipartImage(request, { field: "photo", noun: "Photo" });
 }

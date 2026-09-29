@@ -314,6 +314,7 @@ export async function updatePublicProfileSettings(
 export type PublicCareerProfileDTO = {
   themeId: CareerCardThemeId;
   profilePhotoUrl: string | null;
+  coverPhotoUrl: string | null;
   profilePhotoPosition: {
     focalX: number;
     focalY: number;
@@ -398,6 +399,7 @@ export function buildPublicProfileDTO(
     slug: string;
     themeId: string;
     profilePhotoKey: string | null;
+    coverPhotoKey: string | null;
     profilePhotoFocalX: number;
     profilePhotoFocalY: number;
     profilePhotoZoom: number;
@@ -451,6 +453,7 @@ export function buildPublicProfileDTO(
     profilePhotoUrl: profile.profilePhotoKey
       ? `/u/${profile.slug}/photo`
       : null,
+    coverPhotoUrl: profile.coverPhotoKey ? `/u/${profile.slug}/cover` : null,
     profilePhotoPosition: {
       focalX: profile.profilePhotoFocalX,
       focalY: profile.profilePhotoFocalY,

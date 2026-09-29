@@ -42,6 +42,12 @@ export type CardThemeTokens = {
   avatar: string;
   /** Hero avatar photo <img> — object-cover, centered; shape matches theme. */
   avatarImg: string;
+  /** Optional cover banner — theme controls height + framing only. */
+  coverWrap: string;
+  /** Trusted theme-owned readability overlay on the cover ("" if none). */
+  coverOverlay: string;
+  /** Negative margin pulling the avatar up to overlap the cover bottom edge. */
+  coverAvatarPull: string;
   /** "Open to opportunities" badge. */
   openBadge: string;
   /** Career facts aside. */
@@ -85,6 +91,9 @@ const THEMES: Record<CareerCardThemeId, CardThemeTokens> = {
     avatar:
       "grid size-24 place-items-center rounded-full bg-emerald-700 text-3xl font-bold text-white ring-8 ring-emerald-50",
     avatarImg: "size-24 rounded-full object-cover ring-8 ring-emerald-50",
+    coverWrap: "relative h-40 w-full sm:h-48",
+    coverOverlay: "",
+    coverAvatarPull: "-mt-14 sm:-mt-16",
     openBadge:
       "inline-flex items-center gap-1.5 rounded-full border border-emerald-600/25 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800",
     factsPanel: "rounded-xl border border-stone-100 bg-stone-50/70 p-5",
@@ -121,6 +130,9 @@ const THEMES: Record<CareerCardThemeId, CardThemeTokens> = {
     avatar:
       "grid size-24 place-items-center rounded-md bg-stone-900 text-3xl font-semibold text-emerald-100 ring-4 ring-emerald-700/15",
     avatarImg: "size-24 rounded-md object-cover ring-4 ring-emerald-700/15",
+    coverWrap: "relative h-24 w-full sm:h-28",
+    coverOverlay: "",
+    coverAvatarPull: "-mt-10",
     openBadge:
       "inline-flex items-center gap-1.5 rounded-md border border-emerald-700/30 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900",
     factsPanel: "rounded-lg border-l-2 border-emerald-700/50 bg-stone-50 p-5",
@@ -158,6 +170,10 @@ const THEMES: Record<CareerCardThemeId, CardThemeTokens> = {
     avatar:
       "grid size-28 place-items-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-800 text-4xl font-bold text-stone-950 ring-4 ring-stone-800",
     avatarImg: "size-28 rounded-full object-cover ring-4 ring-emerald-400/25",
+    coverWrap: "relative h-44 w-full sm:h-60",
+    coverOverlay:
+      "bg-gradient-to-t from-stone-950/80 via-stone-950/25 to-transparent",
+    coverAvatarPull: "-mt-16 sm:-mt-20",
     openBadge:
       "inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300",
     factsPanel: "rounded-xl border border-stone-800 bg-stone-950/60 p-5",
@@ -194,6 +210,9 @@ const THEMES: Record<CareerCardThemeId, CardThemeTokens> = {
     avatar:
       "grid size-20 place-items-center rounded-lg bg-neutral-900 font-mono text-2xl font-bold text-emerald-400 ring-1 ring-neutral-200",
     avatarImg: "size-20 rounded-lg object-cover ring-1 ring-neutral-200",
+    coverWrap: "relative h-20 w-full sm:h-24",
+    coverOverlay: "",
+    coverAvatarPull: "-mt-10",
     openBadge:
       "inline-flex items-center gap-1.5 rounded-md border border-emerald-600/30 bg-emerald-50 px-3 py-1 font-mono text-xs font-medium text-emerald-800",
     factsPanel: "rounded-lg border border-neutral-200 bg-neutral-50 p-5",

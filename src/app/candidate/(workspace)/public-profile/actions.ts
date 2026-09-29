@@ -12,6 +12,7 @@ import {
   removeProfilePhoto,
   updatePhotoPosition,
 } from "@/server/public-profile/photo";
+import { removeCoverPhoto } from "@/server/public-profile/cover";
 
 const PATHS = ["/candidate/public-profile"];
 
@@ -61,6 +62,15 @@ export async function removeProfilePhotoAction() {
 
 export async function updatePhotoPositionAction(raw: unknown) {
   const result = await updatePhotoPosition(raw);
+  if (result.success) revalidate();
+  return result;
+}
+
+// --- Stage 7A4D1: remove cover — Server Action (no body-size concern) ---
+// Cover uploads go through POST /api/candidate/public-profile/cover-photo.
+
+export async function removeCoverPhotoAction() {
+  const result = await removeCoverPhoto();
   if (result.success) revalidate();
   return result;
 }

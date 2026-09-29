@@ -149,20 +149,42 @@ export default async function PublicProfilePage({
         )}
         {/* hero */}
         <section aria-label="Profile" className={`overflow-hidden ${t.card}`}>
+          {/* optional cover — decorative presentation image; the stored
+              master keeps its aspect ratio, object-fit crops visually */}
+          {dto.coverPhotoUrl && (
+            <div className={t.coverWrap}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- decorative
+                  cover; object-fit cover inside a themed frame */}
+              <img
+                src={dto.coverPhotoUrl}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 size-full object-cover object-center"
+              />
+              {t.coverOverlay && (
+                <div
+                  aria-hidden
+                  className={`absolute inset-0 ${t.coverOverlay}`}
+                />
+              )}
+            </div>
+          )}
           <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-              {dto.profilePhotoUrl ? (
-                <CareerCardProfilePhoto
-                  src={dto.profilePhotoUrl}
-                  alt={`${dto.name} profile photo`}
-                  position={dto.profilePhotoPosition}
-                  frameClassName={t.avatarImg}
-                />
-              ) : (
-                <div aria-hidden className={`relative ${t.avatar}`}>
-                  {dto.initials}
-                </div>
-              )}
+              <div className={dto.coverPhotoUrl ? t.coverAvatarPull : ""}>
+                {dto.profilePhotoUrl ? (
+                  <CareerCardProfilePhoto
+                    src={dto.profilePhotoUrl}
+                    alt={`${dto.name} profile photo`}
+                    position={dto.profilePhotoPosition}
+                    frameClassName={t.avatarImg}
+                  />
+                ) : (
+                  <div aria-hidden className={`relative ${t.avatar}`}>
+                    {dto.initials}
+                  </div>
+                )}
+              </div>
               {dto.openToOpportunities && (
                 <span className={`mt-4 ${t.openBadge}`}>
                   <span

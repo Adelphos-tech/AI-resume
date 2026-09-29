@@ -12,6 +12,7 @@ import {
 import {
   createPublicProfileAction,
   publishPublicProfileAction,
+  removeCoverPhotoAction,
   removeProfilePhotoAction,
   savePublicProfileSettingsAction,
   unpublishPublicProfileAction,
@@ -86,6 +87,7 @@ export function PublicProfileSettings({
   displayName,
   photoKey: initialPhotoKey,
   photoPosition,
+  coverUrl,
 }: {
   slug: string | null;
   isPublished: boolean;
@@ -103,6 +105,8 @@ export function PublicProfileSettings({
    * position editor; never trusted for ownership server-side. */
   photoKey: string | null;
   photoPosition: PhotoPosition;
+  /** Current public cover URL ("/u/<slug>/cover") or null for no cover. */
+  coverUrl: string | null;
 }) {
   const [slugValue, setSlugValue] = useState(slug ?? "");
   const [form, setForm] = useState<PublicProfileSettingsState>(
@@ -136,6 +140,11 @@ export function PublicProfileSettings({
   const [photoV, setPhotoV] = useState(0);
   const [pos, setPos] = useState<PhotoPosition>(photoPosition);
   const [photoKey, setPhotoKey] = useState<string | null>(initialPhotoKey);
+  const [cover, setCover] = useState<string | null>(coverUrl);
+  const [coverMsg, setCoverMsg] = useState<string | null>(null);
+  const [coverBusy, setCoverBusy] = useState(false);
+  const [coverV, setCoverV] = useState(0);
+  const coverRef = useRef<HTMLInputElement>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [posMsg, setPosMsg] = useState<string | null>(null);
   const [reco, setReco] = useState<ThemeRecommendation | null>(null);
@@ -207,6 +216,51 @@ export function PublicProfileSettings({
       setPhotoMsg("Upload failed. Try again.");
     } finally {
       setPhotoBusy(false);
+    }
+  }
+
+  async function onCoverSelected(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file
+    if (!file) return;
+    setCoverMsg(null);
+    setCoverBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append("cover", file);
+      const res = await fetch("/api/candidate/public-profile/cover-photo", {
+        method: "POST",
+        body: fd,
+      });
+      const r: { success: boolean; coverUrl?: string; message?: string } =
+        await res.json().catch(() => ({ success: false }));
+      if (!r.success) setCoverMsg(r.message ?? "Upload failed. Try again.");
+      else {
+        setCover(r.coverUrl ?? null);
+        setCoverV((v) => v + 1); // refresh the preview even at the same URL
+        setCoverMsg("Cover photo updated");
+      }
+    } catch {
+      setCoverMsg("Upload failed. Try again.");
+    } finally {
+      setCoverBusy(false);
+    }
+  }
+
+  async function onRemoveCover() {
+    setCoverMsg(null);
+    setCoverBusy(true);
+    try {
+      const r = await removeCoverPhotoAction();
+      if (!r.success) setCoverMsg(r.message);
+      else {
+        setCover(null);
+        setCoverMsg("Cover photo removed");
+      }
+    } catch {
+      setCoverMsg("Upload failed. Try again.");
+    } finally {
+      setCoverBusy(false);
     }
   }
 
@@ -466,6 +520,74 @@ export function PublicProfileSettings({
               onChange={onPhotoSelected}
             />
           </div>
+        </div>
+
+        {/* cover photo — presentation only; independent of the profile
+            photo. Uploads go through the dedicated multipart route. */}
+        <div className="mt-5 border-t border-stone-200 pt-5">
+          <p className={labelCls}>Cover photo</p>
+          {cover ? (
+            <div className="relative mt-2 aspect-2/1 w-full overflow-hidden rounded-xl border border-stone-200 bg-stone-100">
+              {/* eslint-disable-next-line @next/next/no-img-element -- preview of
+                  the candidate's current cover via the same public route */}
+              <img
+                src={`${cover}${cover.includes("?") ? "&" : "?"}v=${coverV}`}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 size-full object-cover object-center"
+              />
+            </div>
+          ) : (
+            <div className="mt-2 grid aspect-2/1 w-full place-items-center rounded-xl border border-dashed border-stone-300 bg-stone-50 text-sm text-stone-400">
+              Add a cover photo
+            </div>
+          )}
+          <p className="mt-2 text-sm text-stone-500">
+            Add a wide image to personalize your Career Card.
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              disabled={coverBusy}
+              onClick={() => coverRef.current?.click()}
+              className="inline-flex min-h-10 items-center rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 disabled:opacity-50"
+            >
+              {coverBusy ? "Uploading…" : cover ? "Replace" : "Upload cover"}
+            </button>
+            {cover && (
+              <button
+                type="button"
+                disabled={coverBusy}
+                onClick={onRemoveCover}
+                className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-600 transition-colors hover:border-red-300 hover:text-red-700 disabled:opacity-50"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+          <p className="mt-1.5 text-xs text-stone-400">
+            JPG, PNG or WebP · up to 8 MB · applies immediately
+          </p>
+          {coverMsg && (
+            <p
+              role="status"
+              className={`mt-1.5 text-xs font-medium ${
+                coverMsg.includes("updated") || coverMsg.includes("removed")
+                  ? "text-emerald-700"
+                  : "text-red-600"
+              }`}
+            >
+              {coverMsg}
+            </p>
+          )}
+          <input
+            ref={coverRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            aria-label="Choose cover photo"
+            onChange={onCoverSelected}
+          />
         </div>
 
         <fieldset className="mt-5 border-t border-stone-200 pt-5">

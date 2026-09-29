@@ -63,6 +63,7 @@ export default async function CandidatePublicProfilePage() {
         }
         variants={variants}
         photoUrl={profile?.profilePhotoKey ? `/u/${profile.slug}/photo` : null}
+        coverUrl={profile?.coverPhotoKey ? `/u/${profile.slug}/cover` : null}
         photoKey={profile?.profilePhotoKey ?? null}
         photoPosition={
           profile
