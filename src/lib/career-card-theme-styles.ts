@@ -1,62 +1,55 @@
-import {
-  resolveCareerCardTheme,
-  type CareerCardThemeId,
-} from "@/lib/career-card-themes";
-
 /**
- * Presentation tokens per Career Card theme. These are trusted,
- * application-authored class bundles keyed by theme id — never derived
- * from user input. role-race-classic intentionally reproduces the
- * original presentation exactly.
+ * Career Card theme styles — composed tokens.
+ *
+ * Theme = layout/typography/frame tokens (builder functions below).
+ * Accent = trusted presentation fragments resolved from the curated
+ * CAREER_CARD_ACCENT_COLORS registry. The two are composed at lookup
+ * time; no theme object is duplicated per accent.
+ *
+ * Emerald token values are a regression anchor — they reproduce the
+ * exact pre-7A4E classes.
  */
+
+import { resolveCareerCardTheme } from "@/lib/career-card-themes";
+import {
+  resolveCareerCardAccent,
+  type CareerCardAccentColorId,
+} from "@/lib/career-card-accent-colors";
+
 export type CardThemeTokens = {
-  /** Page background. */
   page: string;
-  /** Section card shell. */
   card: string;
-  /** Hero name. */
   h1: string;
-  /** Hero headline. */
   headline: string;
-  /** Body copy. */
   body: string;
-  /** Primary text (names, positions, institutions). */
   strong: string;
-  /** Secondary text (companies, dates). */
   subtle: string;
-  /** Faint text (timestamps, small captions). */
   faint: string;
-  /** Inner nested card (project tiles). */
   innerCard: string;
-  /** Small uppercase meta labels. */
   meta: string;
-  /** Section headings. */
   h2: string;
-  /** Accent text (eyebrow labels, links). */
+  /** Accent text (open-to-work line, section markers). */
   accent: string;
-  /** Accent icon color. */
   accentIcon: string;
-  /** Primary CTA button. */
+  /** Meta label rendered as an accent section marker — same tracking as
+   * `meta` but with the accent foreground (fixes a cascade collision where
+   * the neutral meta color won over `accent`). */
+  accentMeta: string;
   button: string;
-  /** Avatar/initials circle. */
   avatar: string;
-  /** Hero avatar photo <img> — object-cover, centered; shape matches theme. */
   avatarImg: string;
-  /** Optional cover banner — theme controls height + framing only. */
+  /** Cover photo frame — theme-controlled shape/size. */
   coverWrap: string;
-  /** Trusted theme-owned readability overlay on the cover ("" if none). */
+  /** Optional theme-owned overlay over the cover (executive gradient). */
   coverOverlay: string;
-  /** Negative margin pulling the avatar up to overlap the cover bottom edge. */
+  /** Pull that overlaps the avatar into the cover. */
   coverAvatarPull: string;
-  /** "Open to opportunities" badge. */
+  /** "Open to opportunities" pill. */
   openBadge: string;
-  /** Career facts aside. */
   factsPanel: string;
   factLabel: string;
   factValue: string;
-  /** Small pills (languages, project tags, resume meta). */
   chip: string;
-  /** Keyword chips under skills. */
   skillChip: string;
   /** Timeline dot + connector for experience. */
   timelineDot: string;
@@ -70,168 +63,565 @@ export type CardThemeTokens = {
   footerBrand: string;
 };
 
-const THEMES: Record<CareerCardThemeId, CardThemeTokens> = {
-  // ── Regression anchor: exact current presentation ──────────────────
-  "role-race-classic": {
-    page: "bg-gradient-to-b from-emerald-50/60 via-stone-50 to-stone-50",
-    card: "rounded-2xl border border-stone-200 bg-white shadow-sm",
-    h1: "mt-4 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl",
-    headline: "mt-2 text-lg leading-relaxed font-medium text-stone-600",
-    body: "text-stone-600",
-    strong: "text-stone-900",
-    subtle: "text-stone-600",
-    faint: "text-stone-500",
-    innerCard: "rounded-xl border border-stone-200 bg-stone-50/50",
-    meta: "text-xs font-semibold tracking-widest text-stone-500 uppercase",
-    h2: "text-xl font-bold tracking-tight text-stone-900",
-    accent: "text-emerald-700",
-    accentIcon: "text-emerald-700",
-    button:
-      "rounded-xl bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-800",
-    avatar:
-      "grid size-24 place-items-center rounded-full bg-emerald-700 text-3xl font-bold text-white ring-8 ring-emerald-50",
-    avatarImg: "size-24 rounded-full object-cover ring-8 ring-emerald-50",
-    coverWrap: "relative h-40 w-full sm:h-48",
-    coverOverlay: "",
-    coverAvatarPull: "-mt-14 sm:-mt-16",
-    openBadge:
-      "inline-flex items-center gap-1.5 rounded-full border border-emerald-600/25 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800",
-    factsPanel: "rounded-xl border border-stone-100 bg-stone-50/70 p-5",
-    factLabel: "text-xs font-medium text-stone-400",
-    factValue: "mt-0.5 text-sm font-semibold text-stone-800",
-    chip: "rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-600",
-    skillChip:
-      "rounded-full border border-emerald-600/20 bg-emerald-50/50 px-3 py-1 text-xs font-medium text-stone-700",
-    timelineDot: "bg-emerald-600",
-    timelineLine: "bg-emerald-600/15",
-    socialBtn:
-      "border-stone-200 text-stone-500 hover:border-emerald-600/40 hover:text-emerald-700",
-    link: "text-xs font-semibold text-emerald-700 hover:text-emerald-800",
-    footer: "text-stone-400",
-    footerBrand: "bg-emerald-700 text-white",
+// ── Accent token contracts ────────────────────────────────────────────
+
+/** Accent fragments consumed by the light-surface themes. */
+interface LightAccent {
+  text: string;
+  textHover: string;
+  textStrong: string;
+  textStrongHover: string;
+  /** Deepest badge text (corporate openBadge). */
+  textBadge: string;
+  /** Accent text rendered on structural dark surfaces (tech mono). */
+  textOnDark: string;
+  /** Pale accent text for corporate avatar initials. */
+  textAvatar: string;
+  cta: string;
+  ctaHover: string;
+  ctaDeep: string;
+  ctaDeepHover: string;
+  /** Tech's deliberately monochrome-leaning CTA. */
+  ctaMono: string;
+  ctaMonoHover: string;
+  softBg: string;
+  softBgSoft: string;
+  softBgSofter: string;
+  borderSoft: string;
+  borderSofter: string;
+  borderMed: string;
+  borderMedDeep: string;
+  borderSoftDeep: string;
+  borderStrong: string;
+  ringSoft: string;
+  ringDim: string;
+  dot: string;
+  dotDeep: string;
+  line: string;
+  hoverBorder: string;
+  hoverBorderDeep: string;
+  hoverText: string;
+  hoverTextDeep: string;
+  /** Classic's subtle page-gradient tint. */
+  pageTint: string;
+}
+
+/** Accent fragments consumed by Executive Dark. */
+interface DarkAccent {
+  text: string;
+  textHover: string;
+  textSoft: string;
+  headline: string;
+  chipText: string;
+  cta: string;
+  ctaHover: string;
+  avatarGradFrom: string;
+  avatarGradTo: string;
+  ring: string;
+  softBg: string;
+  borderSoft: string;
+  borderSofter: string;
+  dot: string;
+  hoverBorder: string;
+  footer: string;
+}
+
+// ── Curated accent fragments (trusted static classes only) ────────────
+
+const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
+  emerald: {
+    text: "text-emerald-700",
+    textHover: "hover:text-emerald-800",
+    textStrong: "text-emerald-800",
+    textStrongHover: "hover:text-emerald-900",
+    textBadge: "text-emerald-900",
+    textOnDark: "text-emerald-400",
+    textAvatar: "text-emerald-100",
+    cta: "bg-emerald-700 text-white",
+    ctaHover: "hover:bg-emerald-800",
+    ctaDeep: "bg-emerald-800 text-white",
+    ctaDeepHover: "hover:bg-emerald-900",
+    ctaMono: "bg-neutral-900 text-white",
+    ctaMonoHover: "hover:bg-neutral-700",
+    softBg: "bg-emerald-50",
+    softBgSoft: "bg-emerald-50/50",
+    softBgSofter: "bg-emerald-50/60",
+    borderSoft: "border-emerald-600/25",
+    borderSofter: "border-emerald-600/20",
+    borderMed: "border-emerald-600/30",
+    borderMedDeep: "border-emerald-700/30",
+    borderSoftDeep: "border-emerald-800/20",
+    borderStrong: "border-emerald-700/50",
+    ringSoft: "ring-emerald-50",
+    ringDim: "ring-emerald-700/15",
+    dot: "bg-emerald-600",
+    dotDeep: "bg-emerald-800",
+    line: "bg-emerald-600/15",
+    hoverBorder: "hover:border-emerald-600/40",
+    hoverBorderDeep: "hover:border-emerald-700/50",
+    hoverText: "hover:text-emerald-700",
+    hoverTextDeep: "hover:text-emerald-800",
+    pageTint: "from-emerald-50/60",
   },
-  // ── Structured, professional, white-dominant ───────────────────────
-  "corporate-clean": {
-    page: "bg-stone-100",
-    card: "rounded-lg border border-stone-200 bg-white",
-    h1: "mt-4 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl",
-    headline: "mt-2 text-base leading-relaxed font-medium text-stone-500",
-    body: "text-stone-600",
-    strong: "text-stone-900",
-    subtle: "text-stone-500",
-    faint: "text-stone-400",
-    innerCard: "rounded-md border border-stone-200 bg-stone-50",
-    meta: "text-[11px] font-semibold tracking-[0.16em] text-stone-400 uppercase",
-    h2: "text-lg font-semibold tracking-tight text-stone-900",
-    accent: "text-emerald-800",
-    accentIcon: "text-emerald-700",
-    button:
-      "rounded-md bg-emerald-800 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-900",
-    avatar:
-      "grid size-24 place-items-center rounded-md bg-stone-900 text-3xl font-semibold text-emerald-100 ring-4 ring-emerald-700/15",
-    avatarImg: "size-24 rounded-md object-cover ring-4 ring-emerald-700/15",
-    coverWrap: "relative h-24 w-full sm:h-28",
-    coverOverlay: "",
-    coverAvatarPull: "-mt-10",
-    openBadge:
-      "inline-flex items-center gap-1.5 rounded-md border border-emerald-700/30 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900",
-    factsPanel: "rounded-lg border-l-2 border-emerald-700/50 bg-stone-50 p-5",
-    factLabel:
-      "text-[11px] font-semibold tracking-wider text-stone-400 uppercase",
-    factValue: "mt-0.5 text-sm font-semibold text-stone-900",
-    chip: "rounded-md border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-600",
-    skillChip:
-      "rounded-md border border-emerald-800/20 bg-emerald-50/60 px-3 py-1 text-xs font-medium text-stone-700",
-    timelineDot: "bg-emerald-800",
-    timelineLine: "bg-stone-300/70",
-    socialBtn:
-      "border-stone-300 text-stone-500 hover:border-emerald-700/50 hover:text-emerald-800",
-    link: "text-xs font-semibold text-emerald-800 hover:text-emerald-900",
-    footer: "text-stone-400",
-    footerBrand: "bg-emerald-800 text-white",
+  navy: {
+    text: "text-sky-900",
+    textHover: "hover:text-sky-950",
+    textStrong: "text-sky-900",
+    textStrongHover: "hover:text-sky-950",
+    textBadge: "text-sky-950",
+    textOnDark: "text-sky-400",
+    textAvatar: "text-sky-100",
+    cta: "bg-sky-900 text-white",
+    ctaHover: "hover:bg-sky-950",
+    ctaDeep: "bg-sky-900 text-white",
+    ctaDeepHover: "hover:bg-sky-950",
+    ctaMono: "bg-sky-900 text-white",
+    ctaMonoHover: "hover:bg-sky-950",
+    softBg: "bg-sky-50",
+    softBgSoft: "bg-sky-50/50",
+    softBgSofter: "bg-sky-50/60",
+    borderSoft: "border-sky-800/25",
+    borderSofter: "border-sky-800/20",
+    borderMed: "border-sky-800/30",
+    borderMedDeep: "border-sky-800/30",
+    borderSoftDeep: "border-sky-800/20",
+    borderStrong: "border-sky-800/50",
+    ringSoft: "ring-sky-50",
+    ringDim: "ring-sky-800/15",
+    dot: "bg-sky-800",
+    dotDeep: "bg-sky-900",
+    line: "bg-sky-800/15",
+    hoverBorder: "hover:border-sky-800/40",
+    hoverBorderDeep: "hover:border-sky-800/50",
+    hoverText: "hover:text-sky-900",
+    hoverTextDeep: "hover:text-sky-900",
+    pageTint: "from-sky-50/70",
   },
-  // ── Premium dark charcoal for leadership ───────────────────────────
-  "executive-dark": {
-    page: "bg-stone-950",
-    card: "rounded-2xl border border-stone-800 bg-stone-900",
-    h1: "mt-5 text-4xl font-bold tracking-tight text-white sm:text-5xl",
-    headline: "mt-3 text-xl leading-relaxed font-medium text-emerald-300/90",
-    body: "text-stone-400",
-    strong: "text-white",
-    subtle: "text-stone-400",
-    faint: "text-stone-500",
-    innerCard: "rounded-xl border border-stone-800 bg-stone-950/40",
-    meta: "text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase",
-    h2: "text-2xl font-bold tracking-tight text-white",
-    accent: "text-emerald-400",
-    accentIcon: "text-emerald-400",
-    button:
-      "rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-stone-950 transition-colors hover:bg-emerald-400",
-    avatar:
-      "grid size-28 place-items-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-800 text-4xl font-bold text-stone-950 ring-4 ring-stone-800",
-    avatarImg: "size-28 rounded-full object-cover ring-4 ring-emerald-400/25",
-    coverWrap: "relative h-44 w-full sm:h-60",
-    coverOverlay:
-      "bg-gradient-to-t from-stone-950/80 via-stone-950/25 to-transparent",
-    coverAvatarPull: "-mt-16 sm:-mt-20",
-    openBadge:
-      "inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300",
-    factsPanel: "rounded-xl border border-stone-800 bg-stone-950/60 p-5",
-    factLabel: "text-xs font-medium text-stone-500",
-    factValue: "mt-0.5 text-sm font-semibold text-stone-200",
-    chip: "rounded-full border border-stone-700 bg-stone-800/60 px-3 py-1 text-xs font-medium text-stone-300",
-    skillChip:
-      "rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-200",
-    timelineDot: "bg-emerald-500",
-    timelineLine: "bg-stone-800",
-    socialBtn:
-      "border-stone-700 text-stone-400 hover:border-emerald-500/50 hover:text-emerald-300",
-    link: "text-xs font-semibold text-emerald-400 hover:text-emerald-300",
-    footer: "text-stone-600",
-    footerBrand: "bg-emerald-500 text-stone-950",
+  blue: {
+    text: "text-blue-800",
+    textHover: "hover:text-blue-900",
+    textStrong: "text-blue-800",
+    textStrongHover: "hover:text-blue-900",
+    textBadge: "text-blue-900",
+    textOnDark: "text-blue-400",
+    textAvatar: "text-blue-100",
+    cta: "bg-blue-600 text-white",
+    ctaHover: "hover:bg-blue-700",
+    ctaDeep: "bg-blue-700 text-white",
+    ctaDeepHover: "hover:bg-blue-800",
+    ctaMono: "bg-blue-600 text-white",
+    ctaMonoHover: "hover:bg-blue-700",
+    softBg: "bg-blue-50",
+    softBgSoft: "bg-blue-50/50",
+    softBgSofter: "bg-blue-50/60",
+    borderSoft: "border-blue-600/25",
+    borderSofter: "border-blue-600/20",
+    borderMed: "border-blue-600/30",
+    borderMedDeep: "border-blue-700/30",
+    borderSoftDeep: "border-blue-700/20",
+    borderStrong: "border-blue-600/50",
+    ringSoft: "ring-blue-50",
+    ringDim: "ring-blue-700/15",
+    dot: "bg-blue-600",
+    dotDeep: "bg-blue-700",
+    line: "bg-blue-600/15",
+    hoverBorder: "hover:border-blue-600/40",
+    hoverBorderDeep: "hover:border-blue-700/50",
+    hoverText: "hover:text-blue-800",
+    hoverTextDeep: "hover:text-blue-800",
+    pageTint: "from-blue-50/60",
   },
-  // ── Compact technical clarity ──────────────────────────────────────
-  "tech-minimal": {
-    page: "bg-white",
-    card: "rounded-lg border border-neutral-200 bg-white",
-    h1: "mt-4 text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl",
-    headline: "mt-2 text-base leading-relaxed font-medium text-neutral-500",
-    body: "text-neutral-600",
-    strong: "text-neutral-900",
-    subtle: "text-neutral-600",
-    faint: "text-neutral-500",
-    innerCard: "rounded-md border border-neutral-200 bg-neutral-50",
-    meta: "font-mono text-[11px] font-medium tracking-[0.14em] text-neutral-400 uppercase",
-    h2: "font-mono text-lg font-bold tracking-tight text-neutral-900",
-    accent: "text-emerald-700",
-    accentIcon: "text-emerald-700",
-    button:
-      "rounded-md bg-neutral-900 px-5 py-2.5 font-mono text-sm font-semibold text-white transition-colors hover:bg-neutral-700",
-    avatar:
-      "grid size-20 place-items-center rounded-lg bg-neutral-900 font-mono text-2xl font-bold text-emerald-400 ring-1 ring-neutral-200",
-    avatarImg: "size-20 rounded-lg object-cover ring-1 ring-neutral-200",
-    coverWrap: "relative h-20 w-full sm:h-24",
-    coverOverlay: "",
-    coverAvatarPull: "-mt-10",
-    openBadge:
-      "inline-flex items-center gap-1.5 rounded-md border border-emerald-600/30 bg-emerald-50 px-3 py-1 font-mono text-xs font-medium text-emerald-800",
-    factsPanel: "rounded-lg border border-neutral-200 bg-neutral-50 p-5",
-    factLabel: "font-mono text-[11px] font-medium text-neutral-400 uppercase",
-    factValue: "mt-0.5 text-sm font-semibold text-neutral-900",
-    chip: "rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 font-mono text-[11px] font-medium text-neutral-600",
-    skillChip:
-      "rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 font-mono text-[11px] font-medium text-neutral-700",
-    timelineDot: "bg-emerald-600",
-    timelineLine: "bg-neutral-200",
-    socialBtn:
-      "border-neutral-200 text-neutral-500 hover:border-neutral-900 hover:text-neutral-900",
-    link: "font-mono text-xs font-semibold text-emerald-700 hover:text-emerald-800",
-    footer: "text-neutral-400",
-    footerBrand: "bg-neutral-900 text-emerald-400",
+  violet: {
+    text: "text-violet-700",
+    textHover: "hover:text-violet-800",
+    textStrong: "text-violet-800",
+    textStrongHover: "hover:text-violet-900",
+    textBadge: "text-violet-900",
+    textOnDark: "text-violet-400",
+    textAvatar: "text-violet-100",
+    cta: "bg-violet-600 text-white",
+    ctaHover: "hover:bg-violet-700",
+    ctaDeep: "bg-violet-700 text-white",
+    ctaDeepHover: "hover:bg-violet-800",
+    ctaMono: "bg-violet-600 text-white",
+    ctaMonoHover: "hover:bg-violet-700",
+    softBg: "bg-violet-50",
+    softBgSoft: "bg-violet-50/50",
+    softBgSofter: "bg-violet-50/60",
+    borderSoft: "border-violet-600/25",
+    borderSofter: "border-violet-600/20",
+    borderMed: "border-violet-600/30",
+    borderMedDeep: "border-violet-700/30",
+    borderSoftDeep: "border-violet-700/20",
+    borderStrong: "border-violet-600/50",
+    ringSoft: "ring-violet-50",
+    ringDim: "ring-violet-700/15",
+    dot: "bg-violet-600",
+    dotDeep: "bg-violet-700",
+    line: "bg-violet-600/15",
+    hoverBorder: "hover:border-violet-600/40",
+    hoverBorderDeep: "hover:border-violet-700/50",
+    hoverText: "hover:text-violet-700",
+    hoverTextDeep: "hover:text-violet-800",
+    pageTint: "from-violet-50/60",
+  },
+  amber: {
+    // Deep-amber foregrounds keep light-surface text readable — no
+    // low-contrast yellow-on-white.
+    text: "text-amber-800",
+    textHover: "hover:text-amber-900",
+    textStrong: "text-amber-900",
+    textStrongHover: "hover:text-amber-950",
+    textBadge: "text-amber-950",
+    textOnDark: "text-amber-400",
+    textAvatar: "text-amber-100",
+    cta: "bg-amber-700 text-white",
+    ctaHover: "hover:bg-amber-800",
+    ctaDeep: "bg-amber-800 text-white",
+    ctaDeepHover: "hover:bg-amber-900",
+    ctaMono: "bg-amber-700 text-white",
+    ctaMonoHover: "hover:bg-amber-800",
+    softBg: "bg-amber-50",
+    softBgSoft: "bg-amber-50/50",
+    softBgSofter: "bg-amber-50/60",
+    borderSoft: "border-amber-700/25",
+    borderSofter: "border-amber-700/20",
+    borderMed: "border-amber-700/30",
+    borderMedDeep: "border-amber-700/30",
+    borderSoftDeep: "border-amber-700/20",
+    borderStrong: "border-amber-700/50",
+    ringSoft: "ring-amber-50",
+    ringDim: "ring-amber-700/15",
+    dot: "bg-amber-600",
+    dotDeep: "bg-amber-700",
+    line: "bg-amber-600/15",
+    hoverBorder: "hover:border-amber-600/40",
+    hoverBorderDeep: "hover:border-amber-700/50",
+    hoverText: "hover:text-amber-800",
+    hoverTextDeep: "hover:text-amber-900",
+    pageTint: "from-amber-50/60",
+  },
+  neutral: {
+    // Slate/graphite — restrained but keeps hierarchy obvious.
+    text: "text-stone-700",
+    textHover: "hover:text-stone-800",
+    textStrong: "text-stone-800",
+    textStrongHover: "hover:text-stone-900",
+    textBadge: "text-stone-900",
+    textOnDark: "text-stone-300",
+    textAvatar: "text-stone-200",
+    cta: "bg-stone-800 text-white",
+    ctaHover: "hover:bg-stone-900",
+    ctaDeep: "bg-stone-900 text-white",
+    ctaDeepHover: "hover:bg-stone-950",
+    ctaMono: "bg-stone-800 text-white",
+    ctaMonoHover: "hover:bg-stone-900",
+    softBg: "bg-stone-100",
+    softBgSoft: "bg-stone-100/70",
+    softBgSofter: "bg-stone-100/80",
+    borderSoft: "border-stone-400/40",
+    borderSofter: "border-stone-300",
+    borderMed: "border-stone-400/50",
+    borderMedDeep: "border-stone-500/40",
+    borderSoftDeep: "border-stone-400/30",
+    borderStrong: "border-stone-500/60",
+    ringSoft: "ring-stone-100",
+    ringDim: "ring-stone-500/20",
+    dot: "bg-stone-500",
+    dotDeep: "bg-stone-700",
+    line: "bg-stone-500/20",
+    hoverBorder: "hover:border-stone-500/50",
+    hoverBorderDeep: "hover:border-stone-600/60",
+    hoverText: "hover:text-stone-700",
+    hoverTextDeep: "hover:text-stone-800",
+    pageTint: "from-stone-50",
   },
 };
 
-/** Resolve an arbitrary stored id to a full token set — never throws. */
-export function cardTheme(themeId: unknown): CardThemeTokens {
-  return THEMES[resolveCareerCardTheme(themeId)];
+const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
+  emerald: {
+    text: "text-emerald-400",
+    textHover: "hover:text-emerald-300",
+    textSoft: "text-emerald-300",
+    headline: "text-emerald-300/90",
+    chipText: "text-emerald-200",
+    cta: "bg-emerald-500 text-stone-950",
+    ctaHover: "hover:bg-emerald-400",
+    avatarGradFrom: "from-emerald-500",
+    avatarGradTo: "to-emerald-800",
+    ring: "ring-emerald-400/25",
+    softBg: "bg-emerald-500/10",
+    borderSoft: "border-emerald-500/30",
+    borderSofter: "border-emerald-500/25",
+    dot: "bg-emerald-500",
+    hoverBorder: "hover:border-emerald-500/50",
+    footer: "bg-emerald-500 text-stone-950",
+  },
+  navy: {
+    // Steel-blue interpretation — readable against dark charcoal.
+    text: "text-sky-300",
+    textHover: "hover:text-sky-200",
+    textSoft: "text-sky-300",
+    headline: "text-sky-300/90",
+    chipText: "text-sky-200",
+    cta: "bg-sky-700 text-white",
+    ctaHover: "hover:bg-sky-600",
+    avatarGradFrom: "from-sky-500",
+    avatarGradTo: "to-sky-800",
+    ring: "ring-sky-400/25",
+    softBg: "bg-sky-500/10",
+    borderSoft: "border-sky-500/30",
+    borderSofter: "border-sky-500/25",
+    dot: "bg-sky-400",
+    hoverBorder: "hover:border-sky-500/50",
+    footer: "bg-sky-700 text-white",
+  },
+  blue: {
+    text: "text-blue-300",
+    textHover: "hover:text-blue-200",
+    textSoft: "text-blue-300",
+    headline: "text-blue-300/90",
+    chipText: "text-blue-200",
+    cta: "bg-blue-500 text-stone-950",
+    ctaHover: "hover:bg-blue-400",
+    avatarGradFrom: "from-blue-500",
+    avatarGradTo: "to-blue-800",
+    ring: "ring-blue-400/25",
+    softBg: "bg-blue-500/10",
+    borderSoft: "border-blue-500/30",
+    borderSofter: "border-blue-500/25",
+    dot: "bg-blue-400",
+    hoverBorder: "hover:border-blue-500/50",
+    footer: "bg-blue-500 text-stone-950",
+  },
+  violet: {
+    text: "text-violet-300",
+    textHover: "hover:text-violet-200",
+    textSoft: "text-violet-300",
+    headline: "text-violet-300/90",
+    chipText: "text-violet-200",
+    cta: "bg-violet-600 text-white",
+    ctaHover: "hover:bg-violet-500",
+    avatarGradFrom: "from-violet-500",
+    avatarGradTo: "to-violet-800",
+    ring: "ring-violet-400/25",
+    softBg: "bg-violet-500/10",
+    borderSoft: "border-violet-500/30",
+    borderSofter: "border-violet-500/25",
+    dot: "bg-violet-400",
+    hoverBorder: "hover:border-violet-500/50",
+    footer: "bg-violet-600 text-white",
+  },
+  amber: {
+    // Gold treatment — premium, not bright yellow.
+    text: "text-amber-300",
+    textHover: "hover:text-amber-200",
+    textSoft: "text-amber-300",
+    headline: "text-amber-300/90",
+    chipText: "text-amber-200",
+    cta: "bg-amber-400 text-stone-950",
+    ctaHover: "hover:bg-amber-300",
+    avatarGradFrom: "from-amber-400",
+    avatarGradTo: "to-amber-700",
+    ring: "ring-amber-400/25",
+    softBg: "bg-amber-400/10",
+    borderSoft: "border-amber-400/30",
+    borderSofter: "border-amber-400/25",
+    dot: "bg-amber-400",
+    hoverBorder: "hover:border-amber-400/50",
+    footer: "bg-amber-400 text-stone-950",
+  },
+  neutral: {
+    text: "text-stone-300",
+    textHover: "hover:text-stone-200",
+    textSoft: "text-stone-300",
+    headline: "text-stone-300/90",
+    chipText: "text-stone-200",
+    cta: "bg-stone-200 text-stone-950",
+    ctaHover: "hover:bg-white",
+    avatarGradFrom: "from-stone-300",
+    avatarGradTo: "to-stone-500",
+    ring: "ring-stone-400/25",
+    softBg: "bg-stone-400/10",
+    borderSoft: "border-stone-400/30",
+    borderSofter: "border-stone-400/25",
+    dot: "bg-stone-400",
+    hoverBorder: "hover:border-stone-400/50",
+    footer: "bg-stone-200 text-stone-950",
+  },
+};
+
+// ── Theme builders ────────────────────────────────────────────────────
+// Theme supplies layout/typography; accent fragments supply color.
+
+// ── Regression anchor: exact current presentation ──────────────────
+const classicTheme = (a: LightAccent): CardThemeTokens => ({
+  page: `bg-gradient-to-b ${a.pageTint} via-stone-50 to-stone-50`,
+  card: "rounded-2xl border border-stone-200 bg-white shadow-sm",
+  h1: "mt-4 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl",
+  headline: "mt-2 text-lg leading-relaxed font-medium text-stone-600",
+  body: "text-stone-600",
+  strong: "text-stone-900",
+  subtle: "text-stone-600",
+  faint: "text-stone-500",
+  innerCard: "rounded-xl border border-stone-200 bg-stone-50/50",
+  meta: "text-xs font-semibold tracking-widest text-stone-500 uppercase",
+  h2: "text-xl font-bold tracking-tight text-stone-900",
+  accent: a.text,
+  accentIcon: a.text,
+  accentMeta: `text-xs font-semibold tracking-widest ${a.text} uppercase`,
+  button: `rounded-xl ${a.cta} px-5 py-2.5 text-sm font-semibold transition-colors ${a.ctaHover}`,
+  avatar: `grid size-24 place-items-center rounded-full ${a.cta} text-3xl font-bold ring-8 ${a.ringSoft}`,
+  avatarImg: `size-24 rounded-full object-cover ring-8 ${a.ringSoft}`,
+  coverWrap: "relative h-40 w-full sm:h-48",
+  coverOverlay: "",
+  coverAvatarPull: "-mt-14 sm:-mt-16",
+  openBadge: `inline-flex items-center gap-1.5 rounded-full border ${a.borderSoft} ${a.softBg} px-3 py-1 text-xs font-semibold ${a.textStrong}`,
+  factsPanel: "rounded-xl border border-stone-100 bg-stone-50/70 p-5",
+  factLabel: "text-xs font-medium text-stone-400",
+  factValue: "mt-0.5 text-sm font-semibold text-stone-800",
+  chip: "rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-600",
+  skillChip: `rounded-full border ${a.borderSofter} ${a.softBgSoft} px-3 py-1 text-xs font-medium text-stone-700`,
+  timelineDot: a.dot,
+  timelineLine: a.line,
+  socialBtn: `border-stone-200 text-stone-500 ${a.hoverBorder} ${a.hoverText}`,
+  link: `text-xs font-semibold ${a.text} ${a.textHover}`,
+  footer: "text-stone-400",
+  footerBrand: a.cta,
+});
+
+// ── Structured, professional, white-dominant ───────────────────────
+const corporateTheme = (a: LightAccent): CardThemeTokens => ({
+  page: "bg-stone-100",
+  card: "rounded-lg border border-stone-200 bg-white",
+  h1: "mt-4 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl",
+  headline: "mt-2 text-base leading-relaxed font-medium text-stone-500",
+  body: "text-stone-600",
+  strong: "text-stone-900",
+  subtle: "text-stone-500",
+  faint: "text-stone-400",
+  innerCard: "rounded-md border border-stone-200 bg-stone-50",
+  meta: "text-[11px] font-semibold tracking-[0.16em] text-stone-400 uppercase",
+  h2: "text-lg font-semibold tracking-tight text-stone-900",
+  accent: a.textStrong,
+  accentIcon: a.text,
+  accentMeta: `text-[11px] font-semibold tracking-[0.16em] ${a.textStrong} uppercase`,
+  button: `rounded-md ${a.ctaDeep} px-5 py-2.5 text-sm font-semibold transition-colors ${a.ctaDeepHover}`,
+  avatar: `grid size-24 place-items-center rounded-md bg-stone-900 text-3xl font-semibold ${a.textAvatar} ring-4 ${a.ringDim}`,
+  avatarImg: `size-24 rounded-md object-cover ring-4 ${a.ringDim}`,
+  coverWrap: "relative h-24 w-full sm:h-28",
+  coverOverlay: "",
+  coverAvatarPull: "-mt-10",
+  openBadge: `inline-flex items-center gap-1.5 rounded-md border ${a.borderMedDeep} ${a.softBg} px-3 py-1 text-xs font-semibold ${a.textBadge}`,
+  factsPanel: `rounded-lg border-l-2 ${a.borderStrong} bg-stone-50 p-5`,
+  factLabel:
+    "text-[11px] font-semibold tracking-wider text-stone-400 uppercase",
+  factValue: "mt-0.5 text-sm font-semibold text-stone-900",
+  chip: "rounded-md border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-600",
+  skillChip: `rounded-md border ${a.borderSoftDeep} ${a.softBgSofter} px-3 py-1 text-xs font-medium text-stone-700`,
+  timelineDot: a.dotDeep,
+  timelineLine: "bg-stone-300/70",
+  socialBtn: `border-stone-300 text-stone-500 ${a.hoverBorderDeep} ${a.hoverTextDeep}`,
+  link: `text-xs font-semibold ${a.textStrong} ${a.textStrongHover}`,
+  footer: "text-stone-400",
+  footerBrand: a.ctaDeep,
+});
+
+// ── Compact technical clarity ──────────────────────────────────────
+const techTheme = (a: LightAccent): CardThemeTokens => ({
+  page: "bg-white",
+  card: "rounded-lg border border-neutral-200 bg-white",
+  h1: "mt-4 text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl",
+  headline: "mt-2 text-base leading-relaxed font-medium text-neutral-500",
+  body: "text-neutral-600",
+  strong: "text-neutral-900",
+  subtle: "text-neutral-600",
+  faint: "text-neutral-500",
+  innerCard: "rounded-md border border-neutral-200 bg-neutral-50",
+  meta: "font-mono text-[11px] font-medium tracking-[0.14em] text-neutral-400 uppercase",
+  h2: "font-mono text-lg font-bold tracking-tight text-neutral-900",
+  accent: a.text,
+  accentIcon: a.text,
+  accentMeta: `font-mono text-[11px] font-medium tracking-[0.14em] ${a.text} uppercase`,
+  button: `rounded-md ${a.ctaMono} px-5 py-2.5 font-mono text-sm font-semibold transition-colors ${a.ctaMonoHover}`,
+  avatar: `grid size-20 place-items-center rounded-lg bg-neutral-900 font-mono text-2xl font-bold ${a.textOnDark} ring-1 ring-neutral-200`,
+  avatarImg: "size-20 rounded-lg object-cover ring-1 ring-neutral-200",
+  coverWrap: "relative h-20 w-full sm:h-24",
+  coverOverlay: "",
+  coverAvatarPull: "-mt-10",
+  openBadge: `inline-flex items-center gap-1.5 rounded-md border ${a.borderMed} ${a.softBg} px-3 py-1 font-mono text-xs font-medium ${a.textStrong}`,
+  factsPanel: "rounded-lg border border-neutral-200 bg-neutral-50 p-5",
+  factLabel: "font-mono text-[11px] font-medium text-neutral-400 uppercase",
+  factValue: "mt-0.5 text-sm font-semibold text-neutral-900",
+  chip: "rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 font-mono text-[11px] font-medium text-neutral-600",
+  skillChip:
+    "rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 font-mono text-[11px] font-medium text-neutral-700",
+  timelineDot: a.dot,
+  timelineLine: "bg-neutral-200",
+  socialBtn:
+    "border-neutral-200 text-neutral-500 hover:border-neutral-900 hover:text-neutral-900",
+  link: `font-mono text-xs font-semibold ${a.text} ${a.textHover}`,
+  footer: "text-neutral-400",
+  footerBrand: `bg-neutral-900 ${a.textOnDark}`,
+});
+
+// ── Premium dark charcoal for leadership ───────────────────────────
+const executiveTheme = (a: DarkAccent): CardThemeTokens => ({
+  page: "bg-stone-950",
+  card: "rounded-2xl border border-stone-800 bg-stone-900",
+  h1: "mt-5 text-4xl font-bold tracking-tight text-white sm:text-5xl",
+  headline: `mt-3 text-xl leading-relaxed font-medium ${a.headline}`,
+  body: "text-stone-400",
+  strong: "text-white",
+  subtle: "text-stone-400",
+  faint: "text-stone-500",
+  innerCard: "rounded-xl border border-stone-800 bg-stone-950/40",
+  meta: "text-xs font-semibold tracking-[0.18em] text-stone-500 uppercase",
+  h2: "text-2xl font-bold tracking-tight text-white",
+  accent: a.text,
+  accentIcon: a.text,
+  accentMeta: `text-xs font-semibold tracking-[0.18em] ${a.text} uppercase`,
+  button: `rounded-xl ${a.cta} px-5 py-2.5 text-sm font-semibold transition-colors ${a.ctaHover}`,
+  avatar: `grid size-28 place-items-center rounded-full bg-gradient-to-br ${a.avatarGradFrom} ${a.avatarGradTo} text-4xl font-bold text-stone-950 ring-4 ring-stone-800`,
+  avatarImg: `size-28 rounded-full object-cover ring-4 ${a.ring}`,
+  coverWrap: "relative h-44 w-full sm:h-60",
+  coverOverlay:
+    "bg-gradient-to-t from-stone-950/80 via-stone-950/25 to-transparent",
+  coverAvatarPull: "-mt-16 sm:-mt-20",
+  openBadge: `inline-flex items-center gap-1.5 rounded-full border ${a.borderSoft} ${a.softBg} px-3 py-1 text-xs font-semibold ${a.textSoft}`,
+  factsPanel: "rounded-xl border border-stone-800 bg-stone-950/60 p-5",
+  factLabel: "text-xs font-medium text-stone-500",
+  factValue: "mt-0.5 text-sm font-semibold text-stone-200",
+  chip: "rounded-full border border-stone-700 bg-stone-800/60 px-3 py-1 text-xs font-medium text-stone-300",
+  skillChip: `rounded-full border ${a.borderSofter} ${a.softBg} px-3 py-1 text-xs font-medium ${a.chipText}`,
+  timelineDot: a.dot,
+  timelineLine: "bg-stone-800",
+  socialBtn: `border-stone-700 text-stone-400 ${a.hoverBorder} ${a.textHover}`,
+  link: `text-xs font-semibold ${a.text} ${a.textHover}`,
+  footer: "text-stone-600",
+  footerBrand: a.footer,
+});
+
+const LIGHT_BUILDERS: Record<
+  "role-race-classic" | "corporate-clean" | "tech-minimal",
+  (a: LightAccent) => CardThemeTokens
+> = {
+  "role-race-classic": classicTheme,
+  "corporate-clean": corporateTheme,
+  "tech-minimal": techTheme,
+};
+
+/**
+ * Resolve arbitrary stored ids to a full token set — never throws.
+ * Unknown/unset accent falls back to Emerald (pre-7A4E appearance).
+ */
+export function cardTheme(
+  themeId: unknown,
+  accentId: unknown = "emerald",
+): CardThemeTokens {
+  const theme = resolveCareerCardTheme(themeId);
+  const accent = resolveCareerCardAccent(accentId);
+  return theme === "executive-dark"
+    ? executiveTheme(DARK_ACCENTS[accent])
+    : LIGHT_BUILDERS[theme](LIGHT_ACCENTS[accent]);
 }

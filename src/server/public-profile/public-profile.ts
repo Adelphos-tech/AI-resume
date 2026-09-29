@@ -189,6 +189,11 @@ export async function setPublicProfilePublished(
 import { z } from "zod";
 
 import {
+  isCareerCardAccentColorId,
+  resolveCareerCardAccent,
+  type CareerCardAccentColorId,
+} from "@/lib/career-card-accent-colors";
+import {
   isCareerCardThemeId,
   resolveCareerCardTheme,
   type CareerCardThemeId,
@@ -259,6 +264,11 @@ export const publicProfileSettingsSchema = z.strictObject({
     .trim()
     .refine(isCareerCardThemeId)
     .transform((v) => v as CareerCardThemeId),
+  accentColorId: z
+    .string()
+    .trim()
+    .refine(isCareerCardAccentColorId)
+    .transform((v) => v as CareerCardAccentColorId),
 });
 
 export type PublicProfileSettingsInput = z.infer<
@@ -313,6 +323,7 @@ export async function updatePublicProfileSettings(
 
 export type PublicCareerProfileDTO = {
   themeId: CareerCardThemeId;
+  accentColorId: CareerCardAccentColorId;
   profilePhotoUrl: string | null;
   coverPhotoUrl: string | null;
   coverPhotoPosition: {
@@ -403,6 +414,7 @@ export function buildPublicProfileDTO(
     isPublished: boolean;
     slug: string;
     themeId: string;
+    accentColorId: string;
     profilePhotoKey: string | null;
     coverPhotoKey: string | null;
     coverPhotoFocalX: number;
@@ -458,6 +470,7 @@ export function buildPublicProfileDTO(
     `${profile.candidate.firstName} ${profile.candidate.lastName}`.trim();
   return {
     themeId: resolveCareerCardTheme(profile.themeId),
+    accentColorId: resolveCareerCardAccent(profile.accentColorId),
     profilePhotoUrl: profile.profilePhotoKey
       ? `/u/${profile.slug}/photo`
       : null,

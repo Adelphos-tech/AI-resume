@@ -8,6 +8,10 @@ import {
   CAREER_CARD_THEMES,
   type CareerCardThemeId,
 } from "@/lib/career-card-themes";
+import {
+  CAREER_CARD_ACCENT_COLORS,
+  type CareerCardAccentColorId,
+} from "@/lib/career-card-accent-colors";
 
 import {
   createPublicProfileAction,
@@ -57,6 +61,7 @@ export type PublicProfileSettingsState = {
   showLanguages: boolean;
   featuredResumeVariantId: string;
   themeId: CareerCardThemeId;
+  accentColorId: CareerCardAccentColorId;
 };
 
 const VISIBILITY_SECTIONS: {
@@ -137,6 +142,7 @@ export function PublicProfileSettings({
       showLanguages: false,
       featuredResumeVariantId: "",
       themeId: "role-race-classic",
+      accentColorId: "emerald",
     },
   );
   const [copied, setCopied] = useState(false);
@@ -784,6 +790,65 @@ export function PublicProfileSettings({
             })}
           </div>
         </fieldset>
+
+        {/* ── Accent color ── */}
+        <fieldset>
+          <legend className="text-sm font-semibold text-stone-900">
+            Accent color
+          </legend>
+          <p className="mt-1 mb-3 text-xs text-stone-500">
+            Choose the accent used for buttons, highlights, and details on your
+            Career Card.
+          </p>
+          <div
+            role="radiogroup"
+            aria-label="Accent color"
+            className="grid gap-2 sm:grid-cols-3"
+          >
+            {CAREER_CARD_ACCENT_COLORS.map((a) => {
+              const selected = form.accentColorId === a.id;
+              return (
+                <button
+                  key={a.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() =>
+                    setForm((f) => ({ ...f, accentColorId: a.id }))
+                  }
+                  className={`group flex items-center gap-3 rounded-xl border-2 p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
+                    selected
+                      ? "border-emerald-600 bg-emerald-50/40"
+                      : "border-stone-200 hover:border-stone-300"
+                  }`}
+                >
+                  <span
+                    aria-hidden
+                    className={`size-6 shrink-0 rounded-full ${a.swatchClass}`}
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold text-stone-900">
+                      {a.label}
+                    </span>
+                    <span className="block truncate text-xs text-stone-500">
+                      {a.description}
+                    </span>
+                  </span>
+                  <span
+                    className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                      selected
+                        ? "bg-emerald-700 text-white"
+                        : "bg-stone-100 text-stone-500 group-hover:bg-stone-200"
+                    }`}
+                  >
+                    {selected && <Check className="size-3" aria-hidden />}
+                    {selected ? "Selected" : "Use"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
       </section>
 
       {/* public identity */}
@@ -1047,6 +1112,7 @@ export function PublicProfileSettings({
                 showLanguages: form.showLanguages,
                 featuredResumeVariantId: form.featuredResumeVariantId || null,
                 themeId: form.themeId,
+                accentColorId: form.accentColorId,
               }),
             )
           }

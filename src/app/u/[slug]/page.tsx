@@ -95,7 +95,7 @@ export default async function PublicProfilePage({
     buildPublicProfileDTO(profile, { allowUnpublished: isOwner === true });
   if (!dto) notFound();
 
-  const t = cardTheme(dto.themeId);
+  const t = cardTheme(dto.themeId, dto.accentColorId);
   const sectionCls = `${t.card} p-6 sm:p-8`;
 
   const socialLinks = [
@@ -268,7 +268,7 @@ export default async function PublicProfilePage({
         {/* featured resume */}
         {dto.featuredResume && (
           <section aria-labelledby="pp-fr" className={sectionCls}>
-            <p className={`${t.meta} ${t.accent}`}>Featured resume</p>
+            <p className={t.accentMeta}>Featured resume</p>
             <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
               <div className="hidden w-36 shrink-0 overflow-hidden rounded-lg border border-stone-200 bg-stone-50 sm:block">
                 <div className="aspect-[3/4]">

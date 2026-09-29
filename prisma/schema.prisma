@@ -252,6 +252,9 @@ model PublicProfile {
   openToOpportunities Boolean @default(false)
   // Presentation theme — curated app-owned registry, resolved defensively.
   themeId             String @default("role-race-classic")
+  // Career Card accent color — curated registry id only (never a CSS
+  // value). Emerald preserves the pre-7A4E signature appearance.
+  accentColorId       String @default("emerald")
   // Opaque storage key for the normalized profile photo — never a path,
   // filename, or URL. Null → initials avatar.
   profilePhotoKey     String?
