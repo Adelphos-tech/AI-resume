@@ -256,3 +256,142 @@ export const DEMO_SKILLS_LONG = [
   "Executive Stakeholder Management",
   "Regulated-Market Enterprise Sales Cycles",
 ];
+
+/* ── Supporting career fixtures ──────────────────────────────────────── */
+
+export type DemoEducation = {
+  degree: string;
+  fieldOfStudy?: string;
+  institution: string;
+  start?: string;
+  end?: string;
+  location?: string;
+  description?: string;
+};
+
+export type DemoCertification = {
+  name: string;
+  issuer?: string;
+  issued?: string;
+  expires?: string;
+  credentialUrl?: string;
+};
+
+export type DemoLanguage = {
+  language: string;
+  proficiency?: string;
+};
+
+export type DemoResume = {
+  hasResume: boolean;
+  title?: string;
+};
+
+export const DEMO_EDUCATION_RICH: DemoEducation[] = [
+  {
+    degree: "MBA",
+    fieldOfStudy: "Business & Technology",
+    institution: "INSEAD",
+    start: "2017",
+    end: "2018",
+    location: "Fontainebleau",
+  },
+  {
+    degree: "B.S. Computer Science",
+    institution: "University of Illinois",
+    start: "2012",
+    end: "2016",
+    location: "Urbana-Champaign",
+  },
+];
+
+export const DEMO_CERTS_RICH: DemoCertification[] = [
+  {
+    name: "PMP",
+    issuer: "PMI",
+    issued: "2021",
+    credentialUrl: "https://demo-career.example.com/pmp",
+  },
+  {
+    name: "Certified Scrum Product Owner",
+    issuer: "Scrum Alliance",
+    issued: "2020",
+  },
+  {
+    name: "AWS Solutions Architect — Associate",
+    issuer: "Amazon Web Services",
+    issued: "2022",
+    expires: "2025",
+  },
+];
+
+export const DEMO_LANGS_RICH: DemoLanguage[] = [
+  { language: "English", proficiency: "Native" },
+  { language: "Spanish", proficiency: "Fluent" },
+  { language: "German", proficiency: "B2" },
+];
+
+export const DEMO_RESUME_RICH: DemoResume = {
+  hasResume: true,
+  title: "Senior AI Product Manager — Résumé",
+};
+
+export const DEMO_EDUCATION_SPARSE: DemoEducation[] = [
+  {
+    degree: "B.S. Computer Science",
+    institution: "University of Illinois",
+    end: "2016",
+  },
+];
+export const DEMO_CERTS_SPARSE: DemoCertification[] = [];
+export const DEMO_LANGS_SPARSE: DemoLanguage[] = [
+  { language: "English", proficiency: "Native" },
+];
+export const DEMO_RESUME_SPARSE: DemoResume = { hasResume: false };
+
+export const DEMO_EDUCATION_LONG: DemoEducation[] = [
+  {
+    degree:
+      "Master of Business Administration in Strategic Technology Leadership",
+    fieldOfStudy: "Business Administration & Emerging Technology Management",
+    institution:
+      "INSEAD — The Business School for the World, Fontainebleau Campus",
+    start: "2017",
+    end: "2018",
+    location: "Fontainebleau, France",
+    description:
+      "Focused on technology strategy, organizational transformation, and data-driven decision-making across global enterprise environments.",
+  },
+  {
+    degree: "Bachelor of Science in Computer Science & Software Engineering",
+    institution: "University of Illinois Urbana-Champaign",
+    start: "2012",
+    end: "2016",
+  },
+];
+
+export const DEMO_CERTS_LONG: DemoCertification[] = [
+  {
+    name: "Project Management Professional — Global Enterprise Delivery Track",
+    issuer: "Project Management Institute International",
+    issued: "2021",
+    expires: "2027",
+    credentialUrl: "https://demo-career.example.com/pmp",
+  },
+  {
+    name: "AWS Certified Solutions Architect — Professional",
+    issuer: "Amazon Web Services Training and Certification",
+    issued: "2022",
+  },
+];
+
+export const DEMO_LANGS_LONG: DemoLanguage[] = [
+  { language: "English", proficiency: "Native or bilingual proficiency" },
+  { language: "Spanish", proficiency: "Full professional working proficiency" },
+  { language: "German", proficiency: "Independent user — intermediate B2" },
+];
+
+export const DEMO_RESUME_LONG: DemoResume = {
+  hasResume: true,
+  title: "Senior Staff Artificial-Intelligence Product Manager — Résumé",
+};

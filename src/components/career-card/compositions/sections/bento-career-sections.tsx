@@ -1,10 +1,21 @@
 import { ArrowUpRight } from "lucide-react";
 import type {
+  DemoCertification,
+  DemoEducation,
   DemoExperience,
+  DemoLanguage,
   DemoProject,
+  DemoResume,
 } from "@/components/career-card/dev/demo-career-profile";
 import { formatRange } from "@/components/career-card/modules/experience-content";
 import { ProjectTags } from "@/components/career-card/modules/projects-content";
+import {
+  degreeLine,
+  formatEducationRange,
+} from "@/components/career-card/modules/education-content";
+import { credentialMeta } from "@/components/career-card/modules/certifications-content";
+import { languageLine } from "@/components/career-card/modules/languages-content";
+import { FileText } from "lucide-react";
 
 const cell = "rounded-xl border border-neutral-200 bg-white p-4 shadow-sm";
 const label =
@@ -18,10 +29,18 @@ export function BentoCareerSections({
   experience,
   projects,
   skills,
+  education = [],
+  certifications = [],
+  languages = [],
+  resume,
 }: {
   experience: DemoExperience[];
   projects: DemoProject[];
   skills: string[];
+  education?: DemoEducation[];
+  certifications?: DemoCertification[];
+  languages?: DemoLanguage[];
+  resume?: DemoResume;
 }) {
   const [featured, ...rest] = projects;
   return (
@@ -31,7 +50,7 @@ export function BentoCareerSections({
           <h2 id="bento-exp" className={`${label} mb-3`}>
             experience/
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {experience.map((r, i) => (
               <div
                 key={i}
@@ -73,7 +92,7 @@ export function BentoCareerSections({
           <h2 id="bento-proj" className={`${label} mb-3`}>
             projects/
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {featured && (
               <a
                 href={featured.url ?? "#"}
@@ -148,6 +167,114 @@ export function BentoCareerSections({
               </span>
             ))}
           </div>
+        </section>
+      )}
+
+      {education.length > 0 && (
+        <section aria-labelledby="bento-edu">
+          <h2 id="bento-edu" className={`${label} mb-3`}>
+            education/
+          </h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {education.map((e, i) => (
+              <div key={i} className={cell}>
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="text-[13px] font-bold text-neutral-900">
+                    {degreeLine(e)}
+                  </h3>
+                  <span className="shrink-0 font-mono text-[10px] text-neutral-400">
+                    {formatEducationRange(e)}
+                  </span>
+                </div>
+                <p className="mt-1 font-mono text-xs text-neutral-500">
+                  {e.institution}
+                  {e.location ? ` · ${e.location}` : ""}
+                </p>
+                {e.description && (
+                  <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">
+                    {e.description}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {certifications.length > 0 && (
+        <section aria-labelledby="bento-certs">
+          <h2 id="bento-certs" className={`${label} mb-3`}>
+            credentials/
+          </h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {certifications.map((c) => (
+              <div key={c.name} className={cell}>
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="text-[13px] font-bold text-neutral-900">
+                    {c.name}
+                  </h3>
+                  {c.credentialUrl && (
+                    <a
+                      href={c.credentialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`View ${c.name} credential`}
+                      className="shrink-0 text-blue-500"
+                    >
+                      <ArrowUpRight aria-hidden className="size-3.5" />
+                    </a>
+                  )}
+                </div>
+                <p className="mt-1 font-mono text-[11px] text-neutral-500">
+                  {credentialMeta(c)}
+                  {c.expires ? ` → ${c.expires}` : ""}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {(languages.length > 0 || resume?.hasResume) && (
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {languages.length > 0 && (
+            <div className={cell}>
+              <h2 className={label}>languages/</h2>
+              <ul className="mt-2.5 space-y-1.5">
+                {languages.map((l) => (
+                  <li
+                    key={l.language}
+                    className="font-mono text-[12px] text-neutral-600"
+                  >
+                    {languageLine(l)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {resume?.hasResume && (
+            <a
+              href="#resume"
+              className={`${cell} group flex items-center justify-between gap-3 border-t-2 border-t-blue-300`}
+            >
+              <span className="flex min-w-0 items-center gap-3">
+                <FileText
+                  aria-hidden
+                  className="size-4 shrink-0 text-blue-500"
+                />
+                <span className="min-w-0">
+                  <span className={`${label} block`}>resume/</span>
+                  <span className="mt-1 block truncate text-[13px] font-semibold text-neutral-900">
+                    {resume.title ?? "View résumé"}
+                  </span>
+                </span>
+              </span>
+              <ArrowUpRight
+                aria-hidden
+                className="size-4 shrink-0 text-blue-500 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              />
+            </a>
+          )}
         </section>
       )}
     </div>

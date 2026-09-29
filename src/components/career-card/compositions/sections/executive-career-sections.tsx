@@ -1,13 +1,24 @@
 import { ArrowUpRight } from "lucide-react";
 import type {
+  DemoCertification,
+  DemoEducation,
   DemoExperience,
+  DemoLanguage,
   DemoProject,
+  DemoResume,
 } from "@/components/career-card/dev/demo-career-profile";
 import {
   ExperienceBullets,
   formatRange,
 } from "@/components/career-card/modules/experience-content";
 import { skillLine } from "@/components/career-card/modules/skills-content";
+import {
+  degreeLine,
+  formatEducationRange,
+} from "@/components/career-card/modules/education-content";
+import { credentialMeta } from "@/components/career-card/modules/certifications-content";
+import { languageLine } from "@/components/career-card/modules/languages-content";
+import { FileText } from "lucide-react";
 
 /**
  * Executive career sections — career-story vertical timeline + selected-work
@@ -17,10 +28,18 @@ export function ExecutiveCareerSections({
   experience,
   projects,
   skills,
+  education = [],
+  certifications = [],
+  languages = [],
+  resume,
 }: {
   experience: DemoExperience[];
   projects: DemoProject[];
   skills: string[];
+  education?: DemoEducation[];
+  certifications?: DemoCertification[];
+  languages?: DemoLanguage[];
+  resume?: DemoResume;
 }) {
   const [featured, ...rest] = projects;
   return (
@@ -151,6 +170,97 @@ export function ExecutiveCareerSections({
               {skillLine(skills, "  ·  ")}
             </p>
           </div>
+        </section>
+      )}
+
+      {/* ── Education + Credentials — paired, supporting ──────────── */}
+      {(education.length > 0 || certifications.length > 0) && (
+        <section className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          {education.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+                Education
+              </p>
+              <div className="mt-4 space-y-4">
+                {education.map((e, i) => (
+                  <div key={i} className="border-l-2 border-stone-800 pl-4">
+                    <h3 className="text-sm font-semibold text-white">
+                      {degreeLine(e)}
+                    </h3>
+                    <p className="mt-0.5 text-xs text-stone-400">
+                      {e.institution}
+                      {e.location ? ` · ${e.location}` : ""}
+                    </p>
+                    <p className="mt-0.5 font-mono text-[11px] text-stone-500">
+                      {formatEducationRange(e)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {certifications.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+                Credentials
+              </p>
+              <div className="mt-4 space-y-4">
+                {certifications.map((c) => (
+                  <div
+                    key={c.name}
+                    className="border-l-2 border-violet-500/40 pl-4"
+                  >
+                    <h3 className="text-sm font-semibold text-white">
+                      {c.name}
+                    </h3>
+                    <p className="mt-0.5 text-xs text-stone-400">
+                      {credentialMeta(c)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ── Languages — compact ─────────────────────────────────────── */}
+      {languages.length > 0 && (
+        <section aria-labelledby="exec-langs">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+            Languages
+          </p>
+          <p className="mt-3 text-sm text-stone-300">
+            {languages.map(languageLine).join("  ·  ")}
+          </p>
+        </section>
+      )}
+
+      {/* ── Résumé — premium closing band ───────────────────────────── */}
+      {resume?.hasResume && (
+        <section>
+          <a
+            href="#resume"
+            className="group flex items-center justify-between gap-4 border-t-2 border-violet-500/40 pt-5"
+          >
+            <div className="flex items-center gap-3">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-violet-500/30 bg-violet-500/10 text-violet-300">
+                <FileText className="size-4" aria-hidden />
+              </span>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400/80">
+                  Résumé
+                </p>
+                <p className="mt-0.5 text-sm font-semibold text-white">
+                  {resume.title ?? "View my professional résumé"}
+                </p>
+              </div>
+            </div>
+            <ArrowUpRight
+              aria-hidden
+              className="size-5 shrink-0 text-violet-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            />
+          </a>
         </section>
       )}
     </div>
