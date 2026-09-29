@@ -15,6 +15,7 @@ import {
   resolveCareerCardAccent,
   type CareerCardAccentColorId,
 } from "@/lib/career-card-accent-colors";
+import { resolveCareerCardStyle } from "@/lib/career-card-styles";
 
 export type CardThemeTokens = {
   page: string;
@@ -104,6 +105,15 @@ interface LightAccent {
   hoverTextDeep: string;
   /** Classic's subtle page-gradient tint. */
   pageTint: string;
+  /** Premium portrait ring (accent-aware, restrained). */
+  ringAccent: string;
+  /** Premium no-cover hero gradient source. */
+  heroTint: string;
+  /** Premium section-card top accent edge. */
+  edge: string;
+  /** Premium secondary-action pill foreground/bg. */
+  pill: string;
+  pillHover: string;
 }
 
 /** Accent fragments consumed by Executive Dark. */
@@ -124,6 +134,12 @@ interface DarkAccent {
   dot: string;
   hoverBorder: string;
   footer: string;
+  /** Premium portrait ring + hero band tint + section edge + action pill. */
+  ringAccent: string;
+  heroTint: string;
+  edge: string;
+  pill: string;
+  pillHover: string;
 }
 
 // ── Curated accent fragments (trusted static classes only) ────────────
@@ -162,6 +178,11 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     hoverText: "hover:text-emerald-700",
     hoverTextDeep: "hover:text-emerald-800",
     pageTint: "from-emerald-50/60",
+    ringAccent: "ring-4 ring-emerald-600/30 ring-offset-4 ring-offset-white",
+    heroTint: "from-emerald-50/80 via-white",
+    edge: "border-t-2 border-t-emerald-600/40",
+    pill: "border border-emerald-600/25 bg-emerald-50/60 text-emerald-800",
+    pillHover: "hover:bg-emerald-100/70",
   },
   navy: {
     text: "text-sky-900",
@@ -196,6 +217,11 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     hoverText: "hover:text-sky-900",
     hoverTextDeep: "hover:text-sky-900",
     pageTint: "from-sky-50/70",
+    ringAccent: "ring-4 ring-sky-800/30 ring-offset-4 ring-offset-white",
+    heroTint: "from-sky-50/80 via-white",
+    edge: "border-t-2 border-t-sky-800/40",
+    pill: "border border-sky-800/25 bg-sky-50/60 text-sky-900",
+    pillHover: "hover:bg-sky-100/70",
   },
   blue: {
     text: "text-blue-800",
@@ -230,6 +256,11 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     hoverText: "hover:text-blue-800",
     hoverTextDeep: "hover:text-blue-800",
     pageTint: "from-blue-50/60",
+    ringAccent: "ring-4 ring-blue-600/30 ring-offset-4 ring-offset-white",
+    heroTint: "from-blue-50/80 via-white",
+    edge: "border-t-2 border-t-blue-600/40",
+    pill: "border border-blue-600/25 bg-blue-50/60 text-blue-800",
+    pillHover: "hover:bg-blue-100/70",
   },
   violet: {
     text: "text-violet-700",
@@ -264,6 +295,11 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     hoverText: "hover:text-violet-700",
     hoverTextDeep: "hover:text-violet-800",
     pageTint: "from-violet-50/60",
+    ringAccent: "ring-4 ring-violet-600/30 ring-offset-4 ring-offset-white",
+    heroTint: "from-violet-50/80 via-white",
+    edge: "border-t-2 border-t-violet-600/40",
+    pill: "border border-violet-600/25 bg-violet-50/60 text-violet-800",
+    pillHover: "hover:bg-violet-100/70",
   },
   amber: {
     // Deep-amber foregrounds keep light-surface text readable — no
@@ -300,6 +336,11 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     hoverText: "hover:text-amber-800",
     hoverTextDeep: "hover:text-amber-900",
     pageTint: "from-amber-50/60",
+    ringAccent: "ring-4 ring-amber-600/30 ring-offset-4 ring-offset-white",
+    heroTint: "from-amber-50/80 via-white",
+    edge: "border-t-2 border-t-amber-600/40",
+    pill: "border border-amber-700/25 bg-amber-50/60 text-amber-800",
+    pillHover: "hover:bg-amber-100/70",
   },
   neutral: {
     // Slate/graphite — restrained but keeps hierarchy obvious.
@@ -335,6 +376,11 @@ const LIGHT_ACCENTS: Record<CareerCardAccentColorId, LightAccent> = {
     hoverText: "hover:text-stone-700",
     hoverTextDeep: "hover:text-stone-800",
     pageTint: "from-stone-50",
+    ringAccent: "ring-4 ring-stone-500/40 ring-offset-4 ring-offset-white",
+    heroTint: "from-stone-100/80 via-white",
+    edge: "border-t-2 border-t-stone-500/50",
+    pill: "border border-stone-400/40 bg-stone-100/70 text-stone-800",
+    pillHover: "hover:bg-stone-200/70",
   },
 };
 
@@ -356,6 +402,12 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-emerald-500",
     hoverBorder: "hover:border-emerald-500/50",
     footer: "bg-emerald-500 text-stone-950",
+    ringAccent:
+      "ring-4 ring-emerald-400/40 ring-offset-4 ring-offset-stone-900",
+    heroTint: "from-emerald-500/15 via-stone-900/60",
+    edge: "border-t-2 border-t-emerald-500/50",
+    pill: "border border-emerald-500/30 bg-emerald-500/10 text-emerald-200",
+    pillHover: "hover:bg-emerald-500/20",
   },
   navy: {
     // Steel-blue interpretation — readable against dark charcoal.
@@ -375,6 +427,11 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-sky-400",
     hoverBorder: "hover:border-sky-500/50",
     footer: "bg-sky-700 text-white",
+    ringAccent: "ring-4 ring-sky-400/40 ring-offset-4 ring-offset-stone-900",
+    heroTint: "from-sky-500/15 via-stone-900/60",
+    edge: "border-t-2 border-t-sky-500/50",
+    pill: "border border-sky-500/30 bg-sky-500/10 text-sky-200",
+    pillHover: "hover:bg-sky-500/20",
   },
   blue: {
     text: "text-blue-300",
@@ -393,6 +450,11 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-blue-400",
     hoverBorder: "hover:border-blue-500/50",
     footer: "bg-blue-500 text-stone-950",
+    ringAccent: "ring-4 ring-blue-400/40 ring-offset-4 ring-offset-stone-900",
+    heroTint: "from-blue-500/15 via-stone-900/60",
+    edge: "border-t-2 border-t-blue-500/50",
+    pill: "border border-blue-500/30 bg-blue-500/10 text-blue-200",
+    pillHover: "hover:bg-blue-500/20",
   },
   violet: {
     text: "text-violet-300",
@@ -411,6 +473,11 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-violet-400",
     hoverBorder: "hover:border-violet-500/50",
     footer: "bg-violet-600 text-white",
+    ringAccent: "ring-4 ring-violet-400/40 ring-offset-4 ring-offset-stone-900",
+    heroTint: "from-violet-500/15 via-stone-900/60",
+    edge: "border-t-2 border-t-violet-500/50",
+    pill: "border border-violet-500/30 bg-violet-500/10 text-violet-200",
+    pillHover: "hover:bg-violet-500/20",
   },
   amber: {
     // Gold treatment — premium, not bright yellow.
@@ -430,6 +497,11 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-amber-400",
     hoverBorder: "hover:border-amber-400/50",
     footer: "bg-amber-400 text-stone-950",
+    ringAccent: "ring-4 ring-amber-400/40 ring-offset-4 ring-offset-stone-900",
+    heroTint: "from-amber-400/15 via-stone-900/60",
+    edge: "border-t-2 border-t-amber-400/50",
+    pill: "border border-amber-400/30 bg-amber-400/10 text-amber-200",
+    pillHover: "hover:bg-amber-400/20",
   },
   neutral: {
     text: "text-stone-300",
@@ -448,6 +520,11 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-stone-400",
     hoverBorder: "hover:border-stone-400/50",
     footer: "bg-stone-200 text-stone-950",
+    ringAccent: "ring-4 ring-stone-400/40 ring-offset-4 ring-offset-stone-900",
+    heroTint: "from-stone-500/15 via-stone-900/60",
+    edge: "border-t-2 border-t-stone-400/50",
+    pill: "border border-stone-400/30 bg-stone-500/10 text-stone-200",
+    pillHover: "hover:bg-stone-500/20",
   },
 };
 
@@ -624,4 +701,138 @@ export function cardTheme(
   return theme === "executive-dark"
     ? executiveTheme(DARK_ACCENTS[accent])
     : LIGHT_BUILDERS[theme](LIGHT_ACCENTS[accent]);
+}
+
+/**
+ * Stage 7A4F1 — Premium Card Style.
+ *
+ * Premium is a presentation overlay: the same theme + accent token sets
+ * are composed with a per-theme "premium" fragment that changes only
+ * composition/intensity (cover height, portrait size/ring, elevated
+ * identity panel, section cards, labeled action pills). Standard
+ * resolves `premium: null` and renders the pre-7A4F1 page verbatim.
+ */
+export interface CardStyleTokens {
+  /** Outer hero card. */
+  heroCard: string;
+  /** Cover frame height (may differ from Standard). */
+  coverWrap: string;
+  /** No-cover premium hero band — theme+accent tinted, never blank. */
+  heroBand: string;
+  /** Negative pull that overlaps the portrait over cover/band. */
+  avatarPull: string;
+  /** Initials avatar container. */
+  avatar: string;
+  /** Photo img frame. */
+  avatarImg: string;
+  /** Elevated identity panel around name/headline/actions. */
+  identityPanel: string;
+  /** Elevated section card (replaces t.card for sections). */
+  sectionCard: string;
+  /** Labeled secondary action pill. */
+  actionPill: string;
+  actionPillHover: string;
+}
+
+type AccentForPremium = Pick<
+  DarkAccent,
+  "ringAccent" | "heroTint" | "edge" | "pill" | "pillHover" | "cta"
+>;
+
+function premiumLight(
+  t: CardThemeTokens,
+  a: AccentForPremium,
+  opts: { radius: string; panelBg: string; edge: string; heroCard: string },
+): CardStyleTokens {
+  return {
+    heroCard: opts.heroCard,
+    coverWrap: "relative h-44 w-full overflow-hidden sm:h-60",
+    heroBand: `h-36 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-44`,
+    avatarPull: "-mt-16 sm:-mt-20",
+    avatar: `grid size-28 place-items-center rounded-full ${a.cta} text-4xl font-bold ${a.ringAccent} shadow-lg sm:size-32`,
+    avatarImg: `size-28 rounded-full object-cover ${a.ringAccent} shadow-lg sm:size-32`,
+    identityPanel: `mt-5 w-full max-w-2xl ${opts.radius} border border-stone-200 ${opts.panelBg} px-5 py-6 text-center shadow-md sm:px-10`,
+    sectionCard: `overflow-hidden rounded-xl border ${opts.edge} ${opts.panelBg} shadow-md`,
+    actionPill: `inline-flex min-h-11 items-center gap-2 rounded-full ${a.pill} px-4 text-sm font-medium transition-colors`,
+    actionPillHover: a.pillHover,
+  };
+}
+
+function premiumExecutive(
+  t: CardThemeTokens,
+  a: AccentForPremium,
+): CardStyleTokens {
+  return {
+    heroCard:
+      "overflow-hidden rounded-2xl border border-stone-800 bg-stone-900 shadow-xl",
+    coverWrap: "relative h-44 w-full overflow-hidden sm:h-64",
+    heroBand: `h-36 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-48`,
+    avatarPull: "-mt-16 sm:-mt-24",
+    avatar: `grid size-28 place-items-center rounded-full ${a.cta} text-4xl font-bold ${a.ringAccent} shadow-xl sm:size-36`,
+    avatarImg: `size-28 rounded-full object-cover ${a.ringAccent} shadow-xl sm:size-36`,
+    identityPanel:
+      "mt-5 w-full max-w-2xl rounded-2xl border border-stone-700/70 bg-stone-950/70 px-5 py-6 text-center shadow-xl backdrop-blur-sm sm:px-10",
+    sectionCard: `overflow-hidden rounded-xl border ${a.edge} border-stone-800 bg-stone-950/60 shadow-lg`,
+    actionPill: `inline-flex min-h-11 items-center gap-2 rounded-full ${a.pill} px-4 text-sm font-medium transition-colors`,
+    actionPillHover: a.pillHover,
+  };
+}
+
+function premiumTech(t: CardThemeTokens, a: AccentForPremium): CardStyleTokens {
+  return {
+    heroCard:
+      "overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg",
+    coverWrap: "relative h-40 w-full overflow-hidden sm:h-56",
+    heroBand: `h-32 w-full border-b border-neutral-200 bg-gradient-to-b ${a.heroTint} to-transparent sm:h-40`,
+    avatarPull: "-mt-14 sm:-mt-20",
+    avatar: `grid size-24 place-items-center rounded-lg bg-neutral-900 text-3xl font-bold text-white sm:size-32 ${a.ringAccent} shadow-lg`,
+    avatarImg: `size-24 rounded-lg object-cover ${a.ringAccent} shadow-lg sm:size-32`,
+    identityPanel:
+      "mt-5 w-full max-w-2xl rounded-lg border border-neutral-200 bg-white px-5 py-6 text-center shadow-md sm:px-10",
+    sectionCard: `overflow-hidden rounded-lg border ${a.edge} border-neutral-200 bg-white shadow-sm`,
+    actionPill: `inline-flex min-h-11 items-center gap-2 rounded-md ${a.pill} px-4 font-mono text-xs font-medium transition-colors`,
+    actionPillHover: a.pillHover,
+  };
+}
+
+export type CardStyleTokensOrNull = CardStyleTokens | null;
+
+/**
+ * Resolve theme + accent + style to the composed token pair. Standard
+ * (or any unknown style) → premium: null.
+ */
+export function cardStyleTokens(
+  themeId: unknown,
+  accentId: unknown,
+  styleId: unknown,
+): { base: CardThemeTokens; premium: CardStyleTokensOrNull } {
+  const theme = resolveCareerCardTheme(themeId);
+  const accent = resolveCareerCardAccent(accentId);
+  const base = cardTheme(theme, accent);
+  if (resolveCareerCardStyle(styleId) !== "premium") {
+    return { base, premium: null };
+  }
+  const a =
+    theme === "executive-dark" ? DARK_ACCENTS[accent] : LIGHT_ACCENTS[accent];
+  const premium =
+    theme === "executive-dark"
+      ? premiumExecutive(base, a)
+      : theme === "corporate-clean"
+        ? premiumLight(base, a, {
+            radius: "rounded-lg",
+            panelBg: "bg-white",
+            edge: "border-t-2 border-t-stone-300",
+            heroCard:
+              "overflow-hidden rounded-lg border border-stone-200 bg-white shadow-md",
+          })
+        : theme === "tech-minimal"
+          ? premiumTech(base, a)
+          : premiumLight(base, a, {
+              radius: "rounded-2xl",
+              panelBg: "bg-white",
+              edge: a.edge,
+              heroCard:
+                "overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-lg",
+            });
+  return { base, premium };
 }

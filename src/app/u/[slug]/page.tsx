@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { cardTheme } from "@/lib/career-card-theme-styles";
+import { cardStyleTokens } from "@/lib/career-card-theme-styles";
 import {
   CareerCardCoverPhoto,
   CareerCardProfilePhoto,
@@ -95,8 +95,10 @@ export default async function PublicProfilePage({
     buildPublicProfileDTO(profile, { allowUnpublished: isOwner === true });
   if (!dto) notFound();
 
-  const t = cardTheme(dto.themeId, dto.accentColorId);
-  const sectionCls = `${t.card} p-6 sm:p-8`;
+  const st = cardStyleTokens(dto.themeId, dto.accentColorId, dto.cardStyleId);
+  const t = st.base;
+  const prem = st.premium;
+  const sectionCls = `${prem ? prem.sectionCard : t.card} p-6 sm:p-8`;
 
   const socialLinks = [
     { href: dto.links.linkedin, label: "LinkedIn", icon: AtSign },
@@ -151,105 +153,209 @@ export default async function PublicProfilePage({
           </p>
         )}
         {/* hero */}
-        <section aria-label="Profile" className={`overflow-hidden ${t.card}`}>
-          {/* optional cover — decorative presentation image; the stored
-              master keeps its aspect ratio, object-fit crops visually */}
-          {dto.coverPhotoUrl && (
-            <div className={t.coverWrap}>
-              <CareerCardCoverPhoto
-                src={dto.coverPhotoUrl}
-                alt=""
-                position={dto.coverPhotoPosition}
-                frameClassName="absolute inset-0 size-full"
-              />
-              {t.coverOverlay && (
-                <div
-                  aria-hidden
-                  className={`pointer-events-none absolute inset-0 ${t.coverOverlay}`}
+        {prem !== null ? (
+          /* ---------- Premium identity hero ----------
+             cover (or accent-tinted band) + overlapping portrait +
+             elevated identity panel + labeled action pills */
+          <section aria-label="Profile" className={`${prem.heroCard}`}>
+            {dto.coverPhotoUrl ? (
+              <div className={prem.coverWrap}>
+                <CareerCardCoverPhoto
+                  src={dto.coverPhotoUrl}
+                  alt=""
+                  position={dto.coverPhotoPosition}
+                  frameClassName="absolute inset-0 size-full"
                 />
-              )}
-            </div>
-          )}
-          <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-            <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-              <div className={dto.coverPhotoUrl ? t.coverAvatarPull : ""}>
+                {t.coverOverlay && (
+                  <div
+                    aria-hidden
+                    className={`pointer-events-none absolute inset-0 ${t.coverOverlay}`}
+                  />
+                )}
+              </div>
+            ) : (
+              <div aria-hidden className={prem.heroBand} />
+            )}
+            <div className="flex flex-col items-center px-4 pb-8 sm:px-8">
+              <div className={prem.avatarPull}>
                 {dto.profilePhotoUrl ? (
                   <CareerCardProfilePhoto
                     src={dto.profilePhotoUrl}
                     alt={`${dto.name} profile photo`}
                     position={dto.profilePhotoPosition}
-                    frameClassName={t.avatarImg}
+                    frameClassName={prem.avatarImg}
                   />
                 ) : (
-                  <div aria-hidden className={`relative ${t.avatar}`}>
+                  <div aria-hidden className={`relative ${prem.avatar}`}>
                     {dto.initials}
                   </div>
                 )}
               </div>
-              {dto.openToOpportunities && (
-                <span className={`mt-4 ${t.openBadge}`}>
-                  <span
-                    aria-hidden
-                    className="size-1.5 rounded-full bg-emerald-500"
-                  />
-                  Open to opportunities
-                </span>
-              )}
-              <h1 className={t.h1}>{dto.name}</h1>
-              {dto.headline && <p className={t.headline}>{dto.headline}</p>}
-              {dto.bio && (
-                <p
-                  className={`mt-4 max-w-xl text-left text-[15px] leading-relaxed ${t.body}`}
-                >
-                  {dto.bio.length > 280
-                    ? `${dto.bio.slice(0, 280).trimEnd()}…`
-                    : dto.bio}
-                </p>
-              )}
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
-                {dto.featuredResume && (
-                  <Link
-                    href={`/u/${slug}/resume`}
-                    className={`inline-flex min-h-11 items-center gap-2 ${t.button}`}
-                  >
-                    <FileText className="size-4" aria-hidden />
-                    View Resume
-                  </Link>
+              <div className={prem.identityPanel}>
+                {dto.openToOpportunities && (
+                  <span className={t.openBadge}>
+                    <span
+                      aria-hidden
+                      className="size-1.5 rounded-full bg-emerald-500"
+                    />
+                    Open to opportunities
+                  </span>
                 )}
-                {socialLinks.map((l) => (
-                  <a
-                    key={l.label}
-                    href={l.href!}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${l.label} profile`}
-                    className={`grid size-11 place-items-center rounded-full border transition-colors ${t.socialBtn}`}
+                <h1 className={t.h1}>{dto.name}</h1>
+                {dto.headline && <p className={t.headline}>{dto.headline}</p>}
+                {dto.bio && (
+                  <p
+                    className={`mx-auto mt-4 max-w-xl text-[15px] leading-relaxed ${t.body}`}
                   >
-                    <l.icon className="size-4" aria-hidden />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* career facts */}
-            {facts.length > 0 && (
-              <aside
-                aria-label="Career facts"
-                className={`h-fit ${t.factsPanel}`}
-              >
-                <p className={t.meta}>Career facts</p>
-                <dl className="mt-3 space-y-3">
-                  {facts.map((f) => (
-                    <div key={f.label}>
-                      <dt className={t.factLabel}>{f.label}</dt>
-                      <dd className={t.factValue}>{f.value}</dd>
-                    </div>
+                    {dto.bio.length > 280
+                      ? `${dto.bio.slice(0, 280).trimEnd()}…`
+                      : dto.bio}
+                  </p>
+                )}
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                  {dto.featuredResume && (
+                    <Link
+                      href={`/u/${slug}/resume`}
+                      className={`inline-flex min-h-11 items-center gap-2 ${t.button}`}
+                    >
+                      <FileText className="size-4" aria-hidden />
+                      View Resume
+                    </Link>
+                  )}
+                  {socialLinks.map((l) => (
+                    <a
+                      key={l.label}
+                      href={l.href!}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${l.label} profile`}
+                      className={`${prem.actionPill} ${prem.actionPillHover}`}
+                    >
+                      <l.icon className="size-4" aria-hidden />
+                      {l.label}
+                    </a>
                   ))}
-                </dl>
-              </aside>
+                </div>
+              </div>
+              {facts.length > 0 && (
+                <aside
+                  aria-label="Career facts"
+                  className={`mt-6 w-full max-w-2xl ${t.factsPanel}`}
+                >
+                  <p className={t.meta}>Career facts</p>
+                  <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+                    {facts.map((f) => (
+                      <div key={f.label}>
+                        <dt className={t.factLabel}>{f.label}</dt>
+                        <dd className={t.factValue}>{f.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </aside>
+              )}
+            </div>
+          </section>
+        ) : (
+          <section aria-label="Profile" className={`overflow-hidden ${t.card}`}>
+            {/* optional cover — decorative presentation image; the stored
+              master keeps its aspect ratio, object-fit crops visually */}
+            {dto.coverPhotoUrl && (
+              <div className={t.coverWrap}>
+                <CareerCardCoverPhoto
+                  src={dto.coverPhotoUrl}
+                  alt=""
+                  position={dto.coverPhotoPosition}
+                  frameClassName="absolute inset-0 size-full"
+                />
+                {t.coverOverlay && (
+                  <div
+                    aria-hidden
+                    className={`pointer-events-none absolute inset-0 ${t.coverOverlay}`}
+                  />
+                )}
+              </div>
             )}
-          </div>
-        </section>
+            <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+              <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+                <div className={dto.coverPhotoUrl ? t.coverAvatarPull : ""}>
+                  {dto.profilePhotoUrl ? (
+                    <CareerCardProfilePhoto
+                      src={dto.profilePhotoUrl}
+                      alt={`${dto.name} profile photo`}
+                      position={dto.profilePhotoPosition}
+                      frameClassName={t.avatarImg}
+                    />
+                  ) : (
+                    <div aria-hidden className={`relative ${t.avatar}`}>
+                      {dto.initials}
+                    </div>
+                  )}
+                </div>
+                {dto.openToOpportunities && (
+                  <span className={`mt-4 ${t.openBadge}`}>
+                    <span
+                      aria-hidden
+                      className="size-1.5 rounded-full bg-emerald-500"
+                    />
+                    Open to opportunities
+                  </span>
+                )}
+                <h1 className={t.h1}>{dto.name}</h1>
+                {dto.headline && <p className={t.headline}>{dto.headline}</p>}
+                {dto.bio && (
+                  <p
+                    className={`mt-4 max-w-xl text-left text-[15px] leading-relaxed ${t.body}`}
+                  >
+                    {dto.bio.length > 280
+                      ? `${dto.bio.slice(0, 280).trimEnd()}…`
+                      : dto.bio}
+                  </p>
+                )}
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+                  {dto.featuredResume && (
+                    <Link
+                      href={`/u/${slug}/resume`}
+                      className={`inline-flex min-h-11 items-center gap-2 ${t.button}`}
+                    >
+                      <FileText className="size-4" aria-hidden />
+                      View Resume
+                    </Link>
+                  )}
+                  {socialLinks.map((l) => (
+                    <a
+                      key={l.label}
+                      href={l.href!}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${l.label} profile`}
+                      className={`grid size-11 place-items-center rounded-full border transition-colors ${t.socialBtn}`}
+                    >
+                      <l.icon className="size-4" aria-hidden />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* career facts */}
+              {facts.length > 0 && (
+                <aside
+                  aria-label="Career facts"
+                  className={`h-fit ${t.factsPanel}`}
+                >
+                  <p className={t.meta}>Career facts</p>
+                  <dl className="mt-3 space-y-3">
+                    {facts.map((f) => (
+                      <div key={f.label}>
+                        <dt className={t.factLabel}>{f.label}</dt>
+                        <dd className={t.factValue}>{f.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </aside>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* about */}
         {dto.bio && dto.bio.length > 280 && (

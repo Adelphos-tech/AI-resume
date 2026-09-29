@@ -3,6 +3,7 @@ import { prisma } from "@/server/db";
 import { env } from "@/server/env";
 import { resolveCareerCardTheme } from "@/lib/career-card-themes";
 import { resolveCareerCardAccent } from "@/lib/career-card-accent-colors";
+import { resolveCareerCardStyle } from "@/lib/career-card-styles";
 import { getCandidatePublicProfile } from "@/server/public-profile/public-profile";
 
 export const metadata = { title: "Career Card — RoleRace" };
@@ -60,6 +61,7 @@ export default async function CandidatePublicProfilePage() {
                 featuredResumeVariantId: profile.featuredResumeVariantId ?? "",
                 themeId: resolveCareerCardTheme(profile.themeId),
                 accentColorId: resolveCareerCardAccent(profile.accentColorId),
+                cardStyleId: resolveCareerCardStyle(profile.cardStyleId),
               }
             : null
         }

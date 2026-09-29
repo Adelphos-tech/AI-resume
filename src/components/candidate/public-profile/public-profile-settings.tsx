@@ -1,6 +1,15 @@
 "use client";
 
-import { Check, Copy, ExternalLink, Globe, Link2, Palette } from "lucide-react";
+import {
+  Check,
+  Copy,
+  ExternalLink,
+  Globe,
+  LayoutPanelTop,
+  Link2,
+  Palette,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 
@@ -12,6 +21,10 @@ import {
   CAREER_CARD_ACCENT_COLORS,
   type CareerCardAccentColorId,
 } from "@/lib/career-card-accent-colors";
+import {
+  CAREER_CARD_STYLES,
+  type CareerCardStyleId,
+} from "@/lib/career-card-styles";
 
 import {
   createPublicProfileAction,
@@ -62,6 +75,7 @@ export type PublicProfileSettingsState = {
   featuredResumeVariantId: string;
   themeId: CareerCardThemeId;
   accentColorId: CareerCardAccentColorId;
+  cardStyleId: CareerCardStyleId;
 };
 
 const VISIBILITY_SECTIONS: {
@@ -143,6 +157,7 @@ export function PublicProfileSettings({
       featuredResumeVariantId: "",
       themeId: "role-race-classic",
       accentColorId: "emerald",
+      cardStyleId: "standard",
     },
   );
   const [copied, setCopied] = useState(false);
@@ -849,6 +864,76 @@ export function PublicProfileSettings({
             })}
           </div>
         </fieldset>
+
+        {/* ── Card style ── */}
+        <fieldset className="mt-6">
+          <legend className="text-sm font-semibold text-stone-900">
+            Card Style
+          </legend>
+          <p className="mt-1 mb-3 text-xs text-stone-500">
+            Choose how your Career Card presents your professional identity.
+          </p>
+          <div
+            role="radiogroup"
+            aria-label="Card style"
+            className="grid gap-2 sm:grid-cols-2"
+          >
+            {CAREER_CARD_STYLES.map((s) => {
+              const selected = form.cardStyleId === s.id;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => setForm((f) => ({ ...f, cardStyleId: s.id }))}
+                  className={`group flex items-center gap-3 rounded-xl border-2 p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
+                    selected
+                      ? "border-emerald-600 bg-emerald-50/40"
+                      : "border-stone-200 hover:border-stone-300"
+                  }`}
+                >
+                  <span
+                    aria-hidden
+                    className={`grid size-10 shrink-0 place-items-center rounded-lg border ${
+                      selected
+                        ? "border-emerald-600/40 bg-emerald-50"
+                        : "border-stone-200 bg-stone-50"
+                    }`}
+                  >
+                    {s.id === "premium" ? (
+                      <Sparkles
+                        className={`size-4 ${selected ? "text-emerald-700" : "text-stone-500"}`}
+                      />
+                    ) : (
+                      <LayoutPanelTop
+                        className={`size-4 ${selected ? "text-emerald-700" : "text-stone-500"}`}
+                      />
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold text-stone-900">
+                      {s.label}
+                    </span>
+                    <span className="block text-xs leading-snug text-stone-500">
+                      {s.description}
+                    </span>
+                  </span>
+                  <span
+                    className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                      selected
+                        ? "bg-emerald-700 text-white"
+                        : "bg-stone-100 text-stone-500 group-hover:bg-stone-200"
+                    }`}
+                  >
+                    {selected && <Check className="size-3" aria-hidden />}
+                    {selected ? "Selected" : "Use"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
       </section>
 
       {/* public identity */}
@@ -1113,6 +1198,7 @@ export function PublicProfileSettings({
                 featuredResumeVariantId: form.featuredResumeVariantId || null,
                 themeId: form.themeId,
                 accentColorId: form.accentColorId,
+                cardStyleId: form.cardStyleId,
               }),
             )
           }

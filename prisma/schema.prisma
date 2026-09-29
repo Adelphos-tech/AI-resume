@@ -255,6 +255,9 @@ model PublicProfile {
   // Career Card accent color — curated registry id only (never a CSS
   // value). Emerald preserves the pre-7A4E signature appearance.
   accentColorId       String @default("emerald")
+  // Career Card presentation style — curated registry id only.
+  // "standard" preserves the pre-7A4F1 appearance exactly.
+  cardStyleId         String @default("standard")
   // Opaque storage key for the normalized profile photo — never a path,
   // filename, or URL. Null → initials avatar.
   profilePhotoKey     String?
