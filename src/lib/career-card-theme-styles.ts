@@ -140,6 +140,8 @@ interface DarkAccent {
   edge: string;
   pill: string;
   pillHover: string;
+  /** Premium-only: subtle accent illumination on the dark page canvas. */
+  pageGlow: string;
 }
 
 // ── Curated accent fragments (trusted static classes only) ────────────
@@ -403,11 +405,13 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     hoverBorder: "hover:border-emerald-500/50",
     footer: "bg-emerald-500 text-stone-950",
     ringAccent:
-      "ring-4 ring-emerald-400/40 ring-offset-4 ring-offset-stone-900",
+      "ring-4 ring-emerald-400/40 ring-offset-4 ring-offset-stone-900 shadow-[0_0_32px_-8px_rgba(52,211,153,0.35)]",
     heroTint: "from-emerald-500/15 via-stone-900/60",
     edge: "border-t-2 border-t-emerald-500/50",
     pill: "border border-emerald-500/30 bg-emerald-500/10 text-emerald-200",
     pillHover: "hover:bg-emerald-500/20",
+    pageGlow:
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(16,185,129,0.10),transparent)]",
   },
   navy: {
     // Steel-blue interpretation — readable against dark charcoal.
@@ -427,11 +431,14 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-sky-400",
     hoverBorder: "hover:border-sky-500/50",
     footer: "bg-sky-700 text-white",
-    ringAccent: "ring-4 ring-sky-400/40 ring-offset-4 ring-offset-stone-900",
+    ringAccent:
+      "ring-4 ring-sky-400/40 ring-offset-4 ring-offset-stone-900 shadow-[0_0_32px_-8px_rgba(56,189,248,0.35)]",
     heroTint: "from-sky-500/15 via-stone-900/60",
     edge: "border-t-2 border-t-sky-500/50",
     pill: "border border-sky-500/30 bg-sky-500/10 text-sky-200",
     pillHover: "hover:bg-sky-500/20",
+    pageGlow:
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(56,189,248,0.10),transparent)]",
   },
   blue: {
     text: "text-blue-300",
@@ -450,11 +457,14 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-blue-400",
     hoverBorder: "hover:border-blue-500/50",
     footer: "bg-blue-500 text-stone-950",
-    ringAccent: "ring-4 ring-blue-400/40 ring-offset-4 ring-offset-stone-900",
+    ringAccent:
+      "ring-4 ring-blue-400/40 ring-offset-4 ring-offset-stone-900 shadow-[0_0_32px_-8px_rgba(96,165,250,0.35)]",
     heroTint: "from-blue-500/15 via-stone-900/60",
     edge: "border-t-2 border-t-blue-500/50",
     pill: "border border-blue-500/30 bg-blue-500/10 text-blue-200",
     pillHover: "hover:bg-blue-500/20",
+    pageGlow:
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(96,165,250,0.10),transparent)]",
   },
   violet: {
     text: "text-violet-300",
@@ -473,11 +483,14 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-violet-400",
     hoverBorder: "hover:border-violet-500/50",
     footer: "bg-violet-600 text-white",
-    ringAccent: "ring-4 ring-violet-400/40 ring-offset-4 ring-offset-stone-900",
+    ringAccent:
+      "ring-4 ring-violet-400/40 ring-offset-4 ring-offset-stone-900 shadow-[0_0_32px_-8px_rgba(167,139,250,0.35)]",
     heroTint: "from-violet-500/15 via-stone-900/60",
     edge: "border-t-2 border-t-violet-500/50",
     pill: "border border-violet-500/30 bg-violet-500/10 text-violet-200",
     pillHover: "hover:bg-violet-500/20",
+    pageGlow:
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(167,139,250,0.10),transparent)]",
   },
   amber: {
     // Gold treatment — premium, not bright yellow.
@@ -497,11 +510,14 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-amber-400",
     hoverBorder: "hover:border-amber-400/50",
     footer: "bg-amber-400 text-stone-950",
-    ringAccent: "ring-4 ring-amber-400/40 ring-offset-4 ring-offset-stone-900",
+    ringAccent:
+      "ring-4 ring-amber-400/40 ring-offset-4 ring-offset-stone-900 shadow-[0_0_32px_-8px_rgba(251,191,36,0.30)]",
     heroTint: "from-amber-400/15 via-stone-900/60",
     edge: "border-t-2 border-t-amber-400/50",
     pill: "border border-amber-400/30 bg-amber-400/10 text-amber-200",
     pillHover: "hover:bg-amber-400/20",
+    pageGlow:
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(251,191,36,0.08),transparent)]",
   },
   neutral: {
     text: "text-stone-300",
@@ -520,11 +536,14 @@ const DARK_ACCENTS: Record<CareerCardAccentColorId, DarkAccent> = {
     dot: "bg-stone-400",
     hoverBorder: "hover:border-stone-400/50",
     footer: "bg-stone-200 text-stone-950",
-    ringAccent: "ring-4 ring-stone-400/40 ring-offset-4 ring-offset-stone-900",
+    ringAccent:
+      "ring-4 ring-stone-400/40 ring-offset-4 ring-offset-stone-900 shadow-[0_0_32px_-8px_rgba(214,211,209,0.25)]",
     heroTint: "from-stone-500/15 via-stone-900/60",
     edge: "border-t-2 border-t-stone-400/50",
     pill: "border border-stone-400/30 bg-stone-500/10 text-stone-200",
     pillHover: "hover:bg-stone-500/20",
+    pageGlow:
+      "bg-[radial-gradient(ellipse_90%_40%_at_50%_0%,rgba(120,113,108,0.14),transparent)]",
   },
 };
 
@@ -713,6 +732,10 @@ export function cardTheme(
  * resolves `premium: null` and renders the pre-7A4F1 page verbatim.
  */
 export interface CardStyleTokens {
+  /** Premium page canvas (replaces t.page on <main>). */
+  page: string;
+  /** Premium content width constraint. */
+  contentMax: string;
   /** Outer hero card. */
   heroCard: string;
   /** Cover frame height (may differ from Standard). */
@@ -732,29 +755,50 @@ export interface CardStyleTokens {
   /** Labeled secondary action pill. */
   actionPill: string;
   actionPillHover: string;
+  /** Mobile-first full-width treatment for the primary CTA. */
+  primaryCta: string;
+  /** Derived career-facts strip inside the identity panel. */
+  factsRow: string;
+  factValue: string;
+  factLabel: string;
 }
 
 type AccentForPremium = Pick<
   DarkAccent,
   "ringAccent" | "heroTint" | "edge" | "pill" | "pillHover" | "cta"
->;
+> & { pageGlow?: string };
 
 function premiumLight(
   t: CardThemeTokens,
   a: AccentForPremium,
-  opts: { radius: string; panelBg: string; edge: string; heroCard: string },
+  opts: {
+    radius: string;
+    panelBg: string;
+    edge: string;
+    heroCard: string;
+    page: string;
+    avatarRadius: string;
+    factsBorder: string;
+  },
 ): CardStyleTokens {
+  const avatarSz = `size-28 sm:size-36 ${opts.avatarRadius}`;
   return {
+    page: opts.page,
+    contentMax: "max-w-[980px]",
     heroCard: opts.heroCard,
-    coverWrap: "relative h-44 w-full overflow-hidden sm:h-60",
-    heroBand: `h-36 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-44`,
-    avatarPull: "-mt-16 sm:-mt-20",
-    avatar: `grid size-28 place-items-center rounded-full ${a.cta} text-4xl font-bold ${a.ringAccent} shadow-lg sm:size-32`,
-    avatarImg: `size-28 rounded-full object-cover ${a.ringAccent} shadow-lg sm:size-32`,
-    identityPanel: `mt-5 w-full max-w-2xl ${opts.radius} border border-stone-200 ${opts.panelBg} px-5 py-6 text-center shadow-md sm:px-10`,
+    coverWrap: "relative h-44 w-full overflow-hidden sm:h-56 lg:h-64",
+    heroBand: `h-36 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-40`,
+    avatarPull: "-mt-14 sm:-mt-20",
+    avatar: `grid ${avatarSz} place-items-center ${a.cta} text-4xl font-bold ${a.ringAccent} shadow-lg`,
+    avatarImg: `${avatarSz} object-cover ${a.ringAccent} shadow-lg`,
+    identityPanel: `relative z-10 -mt-10 w-full max-w-2xl ${opts.radius} border border-stone-200 ${opts.panelBg} px-5 pt-14 pb-6 text-center shadow-md sm:-mt-12 sm:px-10 sm:pt-20`,
     sectionCard: `overflow-hidden rounded-xl border ${opts.edge} ${opts.panelBg} shadow-md`,
     actionPill: `inline-flex min-h-11 items-center gap-2 rounded-full ${a.pill} px-4 text-sm font-medium transition-colors`,
     actionPillHover: a.pillHover,
+    primaryCta: "w-full justify-center sm:w-auto",
+    factsRow: `mt-6 grid grid-cols-2 gap-4 border-t ${opts.factsBorder} pt-5 sm:grid-cols-3`,
+    factValue: `text-xl font-bold ${t.strong}`,
+    factLabel: `text-[11px] font-medium tracking-[0.14em] uppercase ${t.faint}`,
   };
 }
 
@@ -763,35 +807,49 @@ function premiumExecutive(
   a: AccentForPremium,
 ): CardStyleTokens {
   return {
+    page: `bg-stone-950 ${a.pageGlow ?? ""}`,
+    contentMax: "max-w-[980px]",
     heroCard:
       "overflow-hidden rounded-2xl border border-stone-800 bg-stone-900 shadow-xl",
-    coverWrap: "relative h-44 w-full overflow-hidden sm:h-64",
-    heroBand: `h-36 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-48`,
-    avatarPull: "-mt-16 sm:-mt-24",
-    avatar: `grid size-28 place-items-center rounded-full ${a.cta} text-4xl font-bold ${a.ringAccent} shadow-xl sm:size-36`,
-    avatarImg: `size-28 rounded-full object-cover ${a.ringAccent} shadow-xl sm:size-36`,
+    coverWrap: "relative h-44 w-full overflow-hidden sm:h-60 lg:h-[280px]",
+    heroBand: `h-36 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-44`,
+    avatarPull: "-mt-14 sm:-mt-20 lg:-mt-24",
+    avatar: `grid size-28 place-items-center rounded-full sm:size-36 lg:size-40 ${a.cta} text-4xl font-bold ${a.ringAccent} shadow-xl sm:text-5xl`,
+    avatarImg: `size-28 rounded-full object-cover sm:size-36 lg:size-40 ${a.ringAccent} shadow-xl`,
     identityPanel:
-      "mt-5 w-full max-w-2xl rounded-2xl border border-stone-700/70 bg-stone-950/70 px-5 py-6 text-center shadow-xl backdrop-blur-sm sm:px-10",
+      "relative z-10 -mt-10 w-full max-w-2xl rounded-2xl border border-stone-700/70 bg-stone-950/70 px-5 pt-14 pb-6 text-center shadow-xl backdrop-blur-sm sm:-mt-12 sm:px-10 sm:pt-20",
     sectionCard: `overflow-hidden rounded-xl border ${a.edge} border-stone-800 bg-stone-950/60 shadow-lg`,
     actionPill: `inline-flex min-h-11 items-center gap-2 rounded-full ${a.pill} px-4 text-sm font-medium transition-colors`,
     actionPillHover: a.pillHover,
+    primaryCta: "w-full justify-center sm:w-auto",
+    factsRow:
+      "mt-6 grid grid-cols-2 gap-4 border-t border-stone-800 pt-5 sm:grid-cols-3",
+    factValue: `text-xl font-bold ${t.strong}`,
+    factLabel: `text-[11px] font-medium tracking-[0.14em] uppercase ${t.faint}`,
   };
 }
 
 function premiumTech(t: CardThemeTokens, a: AccentForPremium): CardStyleTokens {
   return {
+    page: "bg-neutral-100 bg-[radial-gradient(rgba(0,0,0,0.045)_1px,transparent_1px)] bg-[size:22px_22px]",
+    contentMax: "max-w-[980px]",
     heroCard:
       "overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg",
-    coverWrap: "relative h-40 w-full overflow-hidden sm:h-56",
-    heroBand: `h-32 w-full border-b border-neutral-200 bg-gradient-to-b ${a.heroTint} to-transparent sm:h-40`,
-    avatarPull: "-mt-14 sm:-mt-20",
-    avatar: `grid size-24 place-items-center rounded-lg bg-neutral-900 text-3xl font-bold text-white sm:size-32 ${a.ringAccent} shadow-lg`,
-    avatarImg: `size-24 rounded-lg object-cover ${a.ringAccent} shadow-lg sm:size-32`,
+    coverWrap: "relative h-40 w-full overflow-hidden sm:h-52 lg:h-60",
+    heroBand: `h-32 w-full border-b border-neutral-200 bg-gradient-to-b ${a.heroTint} to-transparent sm:h-36`,
+    avatarPull: "-mt-12 sm:-mt-16",
+    avatar: `grid size-28 place-items-center rounded-lg bg-neutral-900 text-3xl font-bold text-white sm:size-32 ${a.ringAccent} shadow-lg`,
+    avatarImg: `size-28 rounded-lg object-cover sm:size-32 ${a.ringAccent} shadow-lg`,
     identityPanel:
-      "mt-5 w-full max-w-2xl rounded-lg border border-neutral-200 bg-white px-5 py-6 text-center shadow-md sm:px-10",
+      "relative z-10 -mt-10 w-full max-w-2xl rounded-lg border border-neutral-200 bg-white px-5 pt-14 pb-6 text-center shadow-md sm:-mt-10 sm:px-10 sm:pt-16",
     sectionCard: `overflow-hidden rounded-lg border ${a.edge} border-neutral-200 bg-white shadow-sm`,
     actionPill: `inline-flex min-h-11 items-center gap-2 rounded-md ${a.pill} px-4 font-mono text-xs font-medium transition-colors`,
     actionPillHover: a.pillHover,
+    primaryCta: "w-full justify-center sm:w-auto",
+    factsRow:
+      "mt-6 grid grid-cols-2 gap-4 border-t border-neutral-200 pt-5 sm:grid-cols-3",
+    factValue: `font-mono text-xl font-bold ${t.strong}`,
+    factLabel: `font-mono text-[11px] tracking-[0.14em] uppercase ${t.faint}`,
   };
 }
 
@@ -824,6 +882,9 @@ export function cardStyleTokens(
             edge: "border-t-2 border-t-stone-300",
             heroCard:
               "overflow-hidden rounded-lg border border-stone-200 bg-white shadow-md",
+            page: `bg-gradient-to-b ${a.heroTint} via-stone-100 to-stone-100`,
+            avatarRadius: "rounded-2xl",
+            factsBorder: "border-stone-200",
           })
         : theme === "tech-minimal"
           ? premiumTech(base, a)
@@ -833,6 +894,9 @@ export function cardStyleTokens(
               edge: a.edge,
               heroCard:
                 "overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-lg",
+              page: `bg-gradient-to-b ${a.heroTint} via-stone-50 to-stone-100`,
+              avatarRadius: "rounded-full",
+              factsBorder: "border-stone-200",
             });
   return { base, premium };
 }
