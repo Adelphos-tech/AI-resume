@@ -24,6 +24,7 @@ import {
   PhotoPositionEditor,
   type PhotoPosition,
 } from "@/components/candidate/public-profile/career-card-photo";
+import type { ThemeRecommendation } from "@/lib/career-card-themes";
 import { CareerCardNfcWriter } from "@/components/candidate/public-profile/career-card-nfc-writer";
 import { Button } from "@/components/ui/button";
 
@@ -137,6 +138,9 @@ export function PublicProfileSettings({
   const [photoKey, setPhotoKey] = useState<string | null>(initialPhotoKey);
   const [editorOpen, setEditorOpen] = useState(false);
   const [posMsg, setPosMsg] = useState<string | null>(null);
+  const [reco, setReco] = useState<ThemeRecommendation | null>(null);
+  const [recoBusy, setRecoBusy] = useState(false);
+  const [recoErr, setRecoErr] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const adjustBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -466,6 +470,113 @@ export function PublicProfileSettings({
 
         <fieldset className="mt-5 border-t border-stone-200 pt-5">
           <legend className="sr-only">Career Card theme</legend>
+
+          {/* AI recommendation — explicit candidate action only; nothing is
+             auto-applied or persisted. */}
+          <div className="mb-4">
+            <button
+              type="button"
+              disabled={recoBusy}
+              onClick={async () => {
+                setRecoErr(null);
+                setRecoBusy(true);
+                try {
+                  const res = await fetch(
+                    "/api/candidate/public-profile/theme-recommendation",
+                    { method: "POST" },
+                  );
+                  const r: {
+                    success: boolean;
+                    recommendation?: ThemeRecommendation;
+                    message?: string;
+                  } = await res.json().catch(() => ({ success: false }));
+                  if (!r.success || !r.recommendation) {
+                    setRecoErr(
+                      r.message ??
+                        "Unable to get a recommendation right now. Please try again.",
+                    );
+                  } else {
+                    setReco(r.recommendation);
+                  }
+                } catch {
+                  setRecoErr(
+                    "Unable to get a recommendation right now. Please try again.",
+                  );
+                } finally {
+                  setRecoBusy(false);
+                }
+              }}
+              className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-emerald-600/30 bg-emerald-50/60 px-4 py-2 text-sm font-semibold text-emerald-800 transition-colors hover:border-emerald-600/60 disabled:opacity-50"
+            >
+              {recoBusy ? "Recommending…" : "Recommend a theme with AI"}
+            </button>
+            {recoErr && (
+              <p role="alert" className="mt-2 text-sm text-stone-600">
+                {recoErr}
+              </p>
+            )}
+          </div>
+
+          {reco && (
+            <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50/40 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+                Recommended for you
+              </p>
+              <p className="mt-1 text-sm font-semibold text-stone-900">
+                {reco.label}
+              </p>
+              <ul className="mt-2 space-y-1">
+                {reco.reasons.map((r, i) => (
+                  <li key={i} className="text-sm text-stone-600">
+                    • {r}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-3 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setForm((f) => ({
+                      ...f,
+                      themeId: reco.recommendedThemeId,
+                    }))
+                  }
+                  className="inline-flex min-h-9 items-center rounded-lg bg-emerald-700 px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-800"
+                >
+                  Use {reco.label}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReco(null)}
+                  className="inline-flex min-h-9 items-center rounded-lg border border-stone-200 px-4 py-1.5 text-sm font-semibold text-stone-600 transition-colors hover:border-stone-300"
+                >
+                  Dismiss
+                </button>
+              </div>
+              {reco.alternatives.length > 0 && (
+                <div className="mt-3 border-t border-emerald-200/60 pt-3">
+                  <p className="text-xs font-semibold text-stone-500">
+                    Also consider
+                  </p>
+                  <ul className="mt-1 space-y-1">
+                    {reco.alternatives.map((a) => (
+                      <li key={a.themeId} className="text-sm text-stone-600">
+                        <span className="font-medium text-stone-800">
+                          {a.label}
+                        </span>{" "}
+                        — {a.reason}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <p className="mt-3 text-xs text-stone-400">
+                Recommendation is a suggestion only — your theme changes only
+                after you select and Save profile.
+              </p>
+            </div>
+          )}
+
           <div className="grid gap-3 sm:grid-cols-2">
             {CAREER_CARD_THEMES.map((t) => {
               const selected = form.themeId === t.id;

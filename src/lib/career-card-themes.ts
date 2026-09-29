@@ -58,3 +58,11 @@ export function isCareerCardThemeId(
 export function resolveCareerCardTheme(value: unknown): CareerCardThemeId {
   return isCareerCardThemeId(value) ? value : DEFAULT_CAREER_CARD_THEME;
 }
+
+/** Ephemeral AI recommendation DTO — never persisted. */
+export type ThemeRecommendation = {
+  recommendedThemeId: CareerCardThemeId;
+  label: string;
+  reasons: string[];
+  alternatives: { themeId: CareerCardThemeId; label: string; reason: string }[];
+};
