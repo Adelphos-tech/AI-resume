@@ -723,13 +723,11 @@ export function cardTheme(
 }
 
 /**
- * Stage 7A4F1 — Premium Card Style.
+ * Stage 7A4F1/7A4F3 — Premium Card Style (compact one-page).
  *
  * Premium is a presentation overlay: the same theme + accent token sets
- * are composed with a per-theme "premium" fragment that changes only
- * composition/intensity (cover height, portrait size/ring, elevated
- * identity panel, section cards, labeled action pills). Standard
- * resolves `premium: null` and renders the pre-7A4F1 page verbatim.
+ * are composed with a per-theme "premium" fragment. Standard resolves
+ * `premium: null` and renders the pre-7A4F1 page verbatim.
  */
 export interface CardStyleTokens {
   /** Premium page canvas (replaces t.page on <main>). */
@@ -738,7 +736,7 @@ export interface CardStyleTokens {
   contentMax: string;
   /** Outer hero card. */
   heroCard: string;
-  /** Cover frame height (may differ from Standard). */
+  /** Cover frame height. */
   coverWrap: string;
   /** No-cover premium hero band — theme+accent tinted, never blank. */
   heroBand: string;
@@ -748,19 +746,25 @@ export interface CardStyleTokens {
   avatar: string;
   /** Photo img frame. */
   avatarImg: string;
-  /** Elevated identity panel around name/headline/actions. */
+  /** Compact identity panel tucked under the portrait. */
   identityPanel: string;
-  /** Elevated section card (replaces t.card for sections). */
-  sectionCard: string;
+  /** Compact stacked section card. */
+  card: string;
+  cardTitle: string;
+  cardIcon: string;
+  /** Inline expand/collapse toggle. */
+  toggle: string;
   /** Labeled secondary action pill. */
   actionPill: string;
   actionPillHover: string;
-  /** Mobile-first full-width treatment for the primary CTA. */
+  /** Full-width-on-mobile primary CTA. */
   primaryCta: string;
-  /** Derived career-facts strip inside the identity panel. */
+  /** Derived career-facts strip. */
   factsRow: string;
   factValue: string;
   factLabel: string;
+  /** Skill / language chip. */
+  chip: string;
 }
 
 type AccentForPremium = Pick<
@@ -773,32 +777,37 @@ function premiumLight(
   a: AccentForPremium,
   opts: {
     radius: string;
-    panelBg: string;
+    cardRadius: string;
     edge: string;
     heroCard: string;
     page: string;
     avatarRadius: string;
-    factsBorder: string;
+    mono?: boolean;
   },
 ): CardStyleTokens {
-  const avatarSz = `size-28 sm:size-36 ${opts.avatarRadius}`;
+  const avatarSz = `size-28 sm:size-32 ${opts.avatarRadius}`;
+  const mono = opts.mono ? "font-mono " : "";
   return {
     page: opts.page,
     contentMax: "max-w-[980px]",
     heroCard: opts.heroCard,
-    coverWrap: "relative h-44 w-full overflow-hidden sm:h-56 lg:h-64",
-    heroBand: `h-36 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-40`,
-    avatarPull: "-mt-14 sm:-mt-20",
-    avatar: `grid ${avatarSz} place-items-center ${a.cta} text-4xl font-bold ${a.ringAccent} shadow-lg`,
+    coverWrap: "relative z-0 h-40 w-full overflow-hidden sm:h-52 lg:h-60",
+    heroBand: `h-28 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-32`,
+    avatarPull: "-mt-10 sm:-mt-16",
+    avatar: `grid ${avatarSz} place-items-center ${a.cta} text-3xl font-bold ${a.ringAccent} shadow-lg`,
     avatarImg: `${avatarSz} object-cover ${a.ringAccent} shadow-lg`,
-    identityPanel: `relative z-10 -mt-10 w-full max-w-2xl ${opts.radius} border border-stone-200 ${opts.panelBg} px-5 pt-14 pb-6 text-center shadow-md sm:-mt-12 sm:px-10 sm:pt-20`,
-    sectionCard: `overflow-hidden rounded-xl border ${opts.edge} ${opts.panelBg} shadow-md`,
-    actionPill: `inline-flex min-h-11 items-center gap-2 rounded-full ${a.pill} px-4 text-sm font-medium transition-colors`,
+    identityPanel: `relative z-20 -mt-8 w-full max-w-2xl ${opts.radius} border border-stone-200 bg-white px-4 pt-11 pb-5 text-center shadow-md sm:-mt-10 sm:px-8 sm:pt-14`,
+    card: `${opts.cardRadius} border ${opts.edge} bg-white p-4 shadow-sm sm:p-5`,
+    cardTitle: `${mono}text-base font-semibold ${t.strong}`,
+    cardIcon: `mt-0.5 grid size-9 shrink-0 place-items-center ${opts.cardRadius} ${a.pill}`,
+    toggle: `${mono}inline-flex min-h-9 shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-stone-600 hover:text-stone-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400`,
+    actionPill: `${mono}inline-flex min-h-10 items-center gap-2 ${opts.mono ? "rounded-md" : "rounded-full"} ${a.pill} px-3.5 text-sm font-medium transition-colors`,
     actionPillHover: a.pillHover,
     primaryCta: "w-full justify-center sm:w-auto",
-    factsRow: `mt-6 grid grid-cols-2 gap-4 border-t ${opts.factsBorder} pt-5 sm:grid-cols-3`,
-    factValue: `text-xl font-bold ${t.strong}`,
-    factLabel: `text-[11px] font-medium tracking-[0.14em] uppercase ${t.faint}`,
+    factsRow: `mt-4 flex justify-center gap-6 border-t border-stone-200 pt-4`,
+    factValue: `${mono}text-lg font-bold leading-none ${t.strong}`,
+    factLabel: `${mono}mt-1 text-[10px] font-medium tracking-[0.12em] uppercase ${t.faint}`,
+    chip: t.skillChip,
   };
 }
 
@@ -811,45 +820,24 @@ function premiumExecutive(
     contentMax: "max-w-[980px]",
     heroCard:
       "overflow-hidden rounded-2xl border border-stone-800 bg-stone-900 shadow-xl",
-    coverWrap: "relative h-44 w-full overflow-hidden sm:h-60 lg:h-[280px]",
-    heroBand: `h-36 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-44`,
-    avatarPull: "-mt-14 sm:-mt-20 lg:-mt-24",
-    avatar: `grid size-28 place-items-center rounded-full sm:size-36 lg:size-40 ${a.cta} text-4xl font-bold ${a.ringAccent} shadow-xl sm:text-5xl`,
-    avatarImg: `size-28 rounded-full object-cover sm:size-36 lg:size-40 ${a.ringAccent} shadow-xl`,
+    coverWrap: "relative z-0 h-40 w-full overflow-hidden sm:h-56 lg:h-64",
+    heroBand: `h-28 w-full bg-gradient-to-b ${a.heroTint} to-transparent sm:h-36`,
+    avatarPull: "-mt-10 sm:-mt-16 lg:-mt-20",
+    avatar: `grid size-28 place-items-center rounded-full sm:size-32 lg:size-36 ${a.cta} text-3xl font-bold ${a.ringAccent} shadow-xl sm:text-4xl`,
+    avatarImg: `size-28 rounded-full object-cover sm:size-32 lg:size-36 ${a.ringAccent} shadow-xl`,
     identityPanel:
-      "relative z-10 -mt-10 w-full max-w-2xl rounded-2xl border border-stone-700/70 bg-stone-950/70 px-5 pt-14 pb-6 text-center shadow-xl backdrop-blur-sm sm:-mt-12 sm:px-10 sm:pt-20",
-    sectionCard: `overflow-hidden rounded-xl border ${a.edge} border-stone-800 bg-stone-950/60 shadow-lg`,
-    actionPill: `inline-flex min-h-11 items-center gap-2 rounded-full ${a.pill} px-4 text-sm font-medium transition-colors`,
+      "relative z-20 -mt-8 w-full max-w-2xl rounded-2xl border border-stone-700/70 bg-stone-950/70 px-4 pt-11 pb-5 text-center shadow-xl backdrop-blur-sm sm:-mt-10 sm:px-8 sm:pt-14",
+    card: `rounded-xl border ${a.edge} border-stone-800 bg-stone-900/80 p-4 shadow-lg sm:p-5`,
+    cardTitle: `text-base font-semibold ${t.strong}`,
+    cardIcon: `mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg ${a.pill}`,
+    toggle: `inline-flex min-h-9 shrink-0 items-center gap-1 rounded-md px-2 text-xs font-medium text-stone-400 hover:text-stone-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-500`,
+    actionPill: `inline-flex min-h-10 items-center gap-2 rounded-full ${a.pill} px-3.5 text-sm font-medium transition-colors`,
     actionPillHover: a.pillHover,
     primaryCta: "w-full justify-center sm:w-auto",
-    factsRow:
-      "mt-6 grid grid-cols-2 gap-4 border-t border-stone-800 pt-5 sm:grid-cols-3",
-    factValue: `text-xl font-bold ${t.strong}`,
-    factLabel: `text-[11px] font-medium tracking-[0.14em] uppercase ${t.faint}`,
-  };
-}
-
-function premiumTech(t: CardThemeTokens, a: AccentForPremium): CardStyleTokens {
-  return {
-    page: "bg-neutral-100 bg-[radial-gradient(rgba(0,0,0,0.045)_1px,transparent_1px)] bg-[size:22px_22px]",
-    contentMax: "max-w-[980px]",
-    heroCard:
-      "overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg",
-    coverWrap: "relative h-40 w-full overflow-hidden sm:h-52 lg:h-60",
-    heroBand: `h-32 w-full border-b border-neutral-200 bg-gradient-to-b ${a.heroTint} to-transparent sm:h-36`,
-    avatarPull: "-mt-12 sm:-mt-16",
-    avatar: `grid size-28 place-items-center rounded-lg bg-neutral-900 text-3xl font-bold text-white sm:size-32 ${a.ringAccent} shadow-lg`,
-    avatarImg: `size-28 rounded-lg object-cover sm:size-32 ${a.ringAccent} shadow-lg`,
-    identityPanel:
-      "relative z-10 -mt-10 w-full max-w-2xl rounded-lg border border-neutral-200 bg-white px-5 pt-14 pb-6 text-center shadow-md sm:-mt-10 sm:px-10 sm:pt-16",
-    sectionCard: `overflow-hidden rounded-lg border ${a.edge} border-neutral-200 bg-white shadow-sm`,
-    actionPill: `inline-flex min-h-11 items-center gap-2 rounded-md ${a.pill} px-4 font-mono text-xs font-medium transition-colors`,
-    actionPillHover: a.pillHover,
-    primaryCta: "w-full justify-center sm:w-auto",
-    factsRow:
-      "mt-6 grid grid-cols-2 gap-4 border-t border-neutral-200 pt-5 sm:grid-cols-3",
-    factValue: `font-mono text-xl font-bold ${t.strong}`,
-    factLabel: `font-mono text-[11px] tracking-[0.14em] uppercase ${t.faint}`,
+    factsRow: "mt-4 flex justify-center gap-6 border-t border-stone-800 pt-4",
+    factValue: `text-lg font-bold leading-none ${t.strong}`,
+    factLabel: `mt-1 text-[10px] font-medium tracking-[0.12em] uppercase ${t.faint}`,
+    chip: t.skillChip,
   };
 }
 
@@ -878,25 +866,32 @@ export function cardStyleTokens(
       : theme === "corporate-clean"
         ? premiumLight(base, a, {
             radius: "rounded-lg",
-            panelBg: "bg-white",
-            edge: "border-t-2 border-t-stone-300",
+            cardRadius: "rounded-lg",
+            edge: "border-stone-200 border-l-2 border-l-stone-400",
             heroCard:
               "overflow-hidden rounded-lg border border-stone-200 bg-white shadow-md",
             page: `bg-gradient-to-b ${a.heroTint} via-stone-100 to-stone-100`,
             avatarRadius: "rounded-2xl",
-            factsBorder: "border-stone-200",
           })
         : theme === "tech-minimal"
-          ? premiumTech(base, a)
+          ? premiumLight(base, a, {
+              radius: "rounded-lg",
+              cardRadius: "rounded-lg",
+              edge: `border-neutral-200 ${a.edge}`,
+              heroCard:
+                "overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg",
+              page: "bg-neutral-100 bg-[radial-gradient(rgba(0,0,0,0.045)_1px,transparent_1px)] bg-[size:22px_22px]",
+              avatarRadius: "rounded-lg",
+              mono: true,
+            })
           : premiumLight(base, a, {
               radius: "rounded-2xl",
-              panelBg: "bg-white",
-              edge: a.edge,
+              cardRadius: "rounded-xl",
+              edge: `border-stone-200 ${a.edge}`,
               heroCard:
                 "overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-lg",
               page: `bg-gradient-to-b ${a.heroTint} via-stone-50 to-stone-100`,
               avatarRadius: "rounded-full",
-              factsBorder: "border-stone-200",
             });
   return { base, premium };
 }
