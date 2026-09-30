@@ -309,6 +309,7 @@ model CompanyProfile {
   publicPhone     String?
   publicEmail     String?
   whatsappNumber  String?
+  whatsappCountry String?
   // links
   websiteUrl      String?
   linkedinUrl     String?

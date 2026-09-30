@@ -1,6 +1,11 @@
 import "server-only";
 
 import { z } from "zod";
+import {
+  getCountries,
+  parsePhoneNumberFromString,
+} from "libphonenumber-js/min";
+import type { CountryCode } from "libphonenumber-js";
 
 import { prisma } from "@/server/db";
 import { requireCandidateSession } from "@/server/session";
@@ -35,20 +40,13 @@ const trimmedList = (max: number, each: number) =>
     .transform((arr) => arr.filter((v) => v.length > 0));
 
 /**
- * WhatsApp requires an explicit international number — no inferred
- * country codes. Input may contain spaces/parens/hyphens; stored
- * canonically as +<digits> (E.164-style bounds).
+ * WhatsApp accepts a national number (interpreted against the selected
+ * country) or a full international +… number. Stored canonically as
+ * E.164 by libphonenumber — trunk prefixes are handled correctly, never
+ * by manual concatenation.
  */
-const whatsappNumber = z
-  .string()
-  .trim()
-  .max(40)
-  .refine(
-    (v) => v === "" || /^\+[0-9()\-\s]{7,30}$/.test(v),
-    "WhatsApp needs international format, e.g. +91 98765 43210.",
-  )
-  .transform((v) => (v === "" ? null : `+${v.replace(/\D/g, "")}`))
-  .refine((v) => v === null || /^\+[0-9]{7,15}$/.test(v));
+const whatsappNumber = z.string().trim().max(40);
+const whatsappCountry = z.string().trim().toUpperCase().max(2);
 
 export const companyProfileSettingsSchema = z.strictObject({
   companyName: z.string().trim().min(1).max(120),
@@ -57,6 +55,7 @@ export const companyProfileSettingsSchema = z.strictObject({
   contactPersonRole: trimMax(120),
   publicPhone: trimMax(40),
   whatsappNumber: whatsappNumber,
+  whatsappCountry: whatsappCountry,
   publicEmail: z
     .string()
     .trim()
@@ -110,7 +109,42 @@ export async function updateCompanyProfileSettings(
         "Check your company entries — links must be valid http(s) URLs and text fields have length limits.",
     };
   }
-  const data = parsed.data;
+  const {
+    whatsappCountry: waCountry,
+    whatsappNumber: rawWhatsapp,
+    ...data
+  } = parsed.data;
+
+  if (waCountry && !getCountries().includes(waCountry as CountryCode)) {
+    return { success: false, message: "Select a valid country." };
+  }
+
+  let whatsapp: string | null = null;
+  const rawNumber = rawWhatsapp.trim();
+  if (rawNumber) {
+    if (!waCountry && !rawNumber.startsWith("+")) {
+      return {
+        success: false,
+        message: "Select a country for your WhatsApp number.",
+      };
+    }
+    const phone = parsePhoneNumberFromString(
+      rawNumber,
+      (waCountry || undefined) as CountryCode | undefined,
+    );
+    if (!phone || !phone.isValid()) {
+      const name =
+        waCountry &&
+        new Intl.DisplayNames(["en"], { type: "region" }).of(waCountry);
+      return {
+        success: false,
+        message: name
+          ? `Enter a valid WhatsApp number for ${name}.`
+          : "Enter a valid WhatsApp number.",
+      };
+    }
+    whatsapp = phone.number;
+  }
 
   const profile = await prisma.publicProfile.findUnique({
     where: { candidateId: candidate.id },
@@ -120,10 +154,18 @@ export async function updateCompanyProfileSettings(
     return { success: false, message: "Create your public profile first." };
   }
 
+  // whatsappCountry is private settings metadata — persisted for
+  // hydration fidelity (shared calling codes like +44/+1 make reverse
+  // inference ambiguous); it never enters the public DTO.
+  const companyData = {
+    ...data,
+    whatsappNumber: whatsapp,
+    whatsappCountry: waCountry || null,
+  };
   await prisma.companyProfile.upsert({
     where: { publicProfileId: profile.id },
-    create: { publicProfileId: profile.id, ...data },
-    update: data,
+    create: { publicProfileId: profile.id, ...companyData },
+    update: companyData,
   });
   return { success: true };
 }
@@ -248,6 +290,7 @@ export type CompanyProfileRow = {
   publicPhone: string | null;
   publicEmail: string | null;
   whatsappNumber: string | null;
+  whatsappCountry: string | null;
   websiteUrl: string | null;
   linkedinUrl: string | null;
   facebookUrl: string | null;

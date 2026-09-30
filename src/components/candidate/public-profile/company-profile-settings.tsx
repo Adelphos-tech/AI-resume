@@ -2,12 +2,20 @@
 
 import { Building2, ImagePlus, Plus, Trash2, Upload, X } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
+import { getCountries, getCountryCallingCode } from "libphonenumber-js/min";
+import type { CountryCode } from "libphonenumber-js";
 
 import {
   removeCompanyLogoAction,
   saveCompanyProfileAction,
 } from "@/app/candidate/(workspace)/public-profile/actions";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
 
 export type CompanyProfileState = {
   companyName: string;
@@ -17,6 +25,7 @@ export type CompanyProfileState = {
   publicPhone: string;
   publicEmail: string;
   whatsappNumber: string;
+  whatsappCountry: string;
   websiteUrl: string;
   linkedinUrl: string;
   facebookUrl: string;
@@ -48,6 +57,7 @@ export const EMPTY_COMPANY: CompanyProfileState = {
   publicPhone: "",
   publicEmail: "",
   whatsappNumber: "",
+  whatsappCountry: "",
   websiteUrl: "",
   linkedinUrl: "",
   facebookUrl: "",
@@ -76,6 +86,14 @@ const inputCls =
 const labelCls = "text-xs font-semibold uppercase tracking-wide text-stone-500";
 const groupCls = "rounded-2xl border border-stone-200 bg-white p-6 space-y-4";
 const groupTitleCls = "text-sm font-semibold text-stone-900";
+
+const COUNTRY_NAMES = new Intl.DisplayNames(["en"], { type: "region" });
+const WA_COUNTRIES: { iso: CountryCode; label: string }[] = getCountries()
+  .map((iso) => ({
+    iso,
+    label: `${COUNTRY_NAMES.of(iso) ?? iso} (+${getCountryCallingCode(iso)})`,
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label));
 
 function Toggle({
   checked,
@@ -479,13 +497,41 @@ export function CompanyProfileSettings({
               <label htmlFor="cp-whatsapp" className={labelCls}>
                 WhatsApp
               </label>
-              <input
-                id="cp-whatsapp"
-                value={form.whatsappNumber}
-                onChange={(e) => set("whatsappNumber", e.target.value)}
-                className={`mt-1.5 ${inputCls}`}
-                placeholder="+91 98765 43210"
-              />
+              <div className="mt-1.5 grid gap-2 sm:grid-cols-[190px_minmax(0,1fr)]">
+                <Select
+                  value={form.whatsappCountry}
+                  onValueChange={(v) => set("whatsappCountry", v)}
+                >
+                  <SelectTrigger
+                    id="cp-whatsapp-country"
+                    className={`${inputCls} w-full truncate ${
+                      form.whatsappCountry ? "" : "text-stone-400"
+                    }`}
+                    aria-label="WhatsApp country"
+                  >
+                    {WA_COUNTRIES.find((c) => c.iso === form.whatsappCountry)
+                      ?.label ?? "Select country"}
+                  </SelectTrigger>
+                  <SelectContent
+                    position="popper"
+                    className="max-h-64 max-w-[calc(100vw-3rem)]"
+                  >
+                    {WA_COUNTRIES.map((c) => (
+                      <SelectItem key={c.iso} value={c.iso}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <input
+                  id="cp-whatsapp"
+                  inputMode="tel"
+                  value={form.whatsappNumber}
+                  onChange={(e) => set("whatsappNumber", e.target.value)}
+                  className={inputCls}
+                  placeholder="98765 43210"
+                />
+              </div>
               <div className="mt-2">
                 <Toggle
                   checked={form.showWhatsapp}
@@ -494,9 +540,9 @@ export function CompanyProfileSettings({
                 />
                 {form.whatsappNumber.trim() &&
                   (form.showWhatsapp ? publicHint : privateHint)}
-                {!form.showWhatsapp && !form.whatsappNumber.trim() && (
+                {!form.whatsappNumber.trim() && (
                   <p className="mt-1.5 text-xs text-stone-500">
-                    Use international format, e.g. +91 98765 43210.
+                    Pick the country, then enter your normal national number.
                   </p>
                 )}
               </div>

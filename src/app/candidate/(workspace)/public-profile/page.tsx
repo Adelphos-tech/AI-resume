@@ -4,6 +4,8 @@ import {
   type CompanyProfileState,
 } from "@/components/candidate/public-profile/company-profile-settings";
 import { prisma } from "@/server/db";
+import { parsePhoneNumberFromString } from "libphonenumber-js/min";
+
 import { env } from "@/server/env";
 import { resolveCareerCardTheme } from "@/lib/career-card-themes";
 import { resolveCareerCardAccent } from "@/lib/career-card-accent-colors";
@@ -25,7 +27,17 @@ export default async function CandidatePublicProfilePage() {
         contactPersonName: company.contactPersonName ?? "",
         contactPersonRole: company.contactPersonRole ?? "",
         publicPhone: company.publicPhone ?? "",
-        whatsappNumber: company.whatsappNumber ?? "",
+        whatsappNumber: company.whatsappNumber
+          ? (parsePhoneNumberFromString(
+              company.whatsappNumber,
+            )?.formatNational() ?? company.whatsappNumber)
+          : "",
+        whatsappCountry:
+          company.whatsappCountry ??
+          (company.whatsappNumber
+            ? (parsePhoneNumberFromString(company.whatsappNumber)?.country ??
+              "")
+            : ""),
         publicEmail: company.publicEmail ?? "",
         websiteUrl: company.websiteUrl ?? "",
         linkedinUrl: company.linkedinUrl ?? "",
