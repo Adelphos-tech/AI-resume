@@ -22,6 +22,9 @@ FROM base AS builder
 RUN corepack enable
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Ensure /app/public exists even when the build context lacks it — the
+# runner COPY below requires the directory unconditionally.
+RUN mkdir -p ./public
 ENV DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build \
     BETTER_AUTH_SECRET=build-placeholder-not-a-real-secret-00 \
     BETTER_AUTH_URL=http://localhost:3000 \
