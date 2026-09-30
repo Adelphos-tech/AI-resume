@@ -44,6 +44,7 @@ export function NfcCompactLibraryCard({
         onSwitch={setActive}
         cta={cta}
         accentStyle={nfcCompactAccentStyle(dto.accentColorId)}
+        shareUrl={dto.shareUrl}
       />
     </main>
   );

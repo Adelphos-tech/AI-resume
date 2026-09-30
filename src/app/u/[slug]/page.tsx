@@ -83,6 +83,7 @@ export default async function PublicProfilePage({
       },
       candidate: { include: { careerProfile: true } },
       company: true,
+      links: { select: { token: true, isActive: true } },
     },
   });
 

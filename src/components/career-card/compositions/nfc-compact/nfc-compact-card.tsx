@@ -1,4 +1,4 @@
-import { Nfc, QrCode, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import type { CSSProperties } from "react";
 import type {
   CompactCandidate,
@@ -7,6 +7,7 @@ import type {
 import { NfcCompactCandidate } from "@/components/career-card/compositions/nfc-compact/nfc-compact-candidate";
 import { NfcCompactCompany } from "@/components/career-card/compositions/nfc-compact/nfc-compact-company";
 import { ProfileSwitch } from "@/components/career-card/compositions/nfc-compact/nfc-compact-parts";
+import { NfcCompactQr } from "@/components/career-card/compositions/nfc-compact/nfc-compact-qr";
 
 /**
  * NFC Compact / Dual Profile template — dev-only lab.
@@ -20,6 +21,7 @@ export function NfcCompactCard({
   onSwitch,
   cta,
   accentStyle,
+  shareUrl,
 }: {
   candidate: CompactCandidate;
   /** Absent → Candidate-only card; the segmented switch is not rendered. */
@@ -31,6 +33,11 @@ export function NfcCompactCard({
    * Omitted → the composition's frozen default blue palette.
    */
   accentStyle?: CSSProperties;
+  /**
+   * Permanent public share URL (/n/<token>) for the QR action. Absent →
+   * the QR button is not rendered (dev lab / profiles without a link).
+   */
+  shareUrl?: string | null;
   /**
    * Production CTA contract: {href,label} renders a real link, `null`
    * hides the CTA entirely. When the prop is omitted the card renders the
@@ -77,15 +84,7 @@ export function NfcCompactCard({
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-[var(--nfc-strong)]">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[10px] font-semibold">
-              <Nfc className="size-3.5" aria-hidden />
-              Tap Your Phone
-            </span>
-            <span className="grid size-7 place-items-center rounded-md border border-sky-200 bg-sky-50">
-              <QrCode className="size-4" aria-hidden />
-            </span>
-          </div>
+          {shareUrl && <NfcCompactQr url={shareUrl} />}
         </header>
 
         {/* segmented candidate/company switch — only when a public company exists */}

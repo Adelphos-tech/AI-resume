@@ -5,6 +5,7 @@ import { randomBytes } from "node:crypto";
 import { Prisma } from "@/generated/prisma/client";
 
 import { prisma } from "@/server/db";
+import { env } from "@/server/env";
 import { requireCandidateSession } from "@/server/session";
 
 /** Top-level paths that must never be claimable as a public slug. */
@@ -321,6 +322,8 @@ export type PublicCareerProfileDTO = {
   themeId: CareerCardThemeId;
   accentColorId: CareerCardAccentColorId;
   cardStyleId: CareerCardStyleId;
+  /** Permanent NFC/share URL — /n/<opaque-token>, or null when no link exists. */
+  shareUrl: string | null;
   profilePhotoUrl: string | null;
   coverPhotoUrl: string | null;
   coverPhotoPosition: {
@@ -446,6 +449,7 @@ export function buildPublicProfileDTO(
       resumeData: unknown;
     } | null;
     company?: CompanyProfileRow | null;
+    links?: { token: string; isActive: boolean }[];
     candidate: {
       firstName: string;
       lastName: string;
@@ -473,6 +477,10 @@ export function buildPublicProfileDTO(
     themeId: resolveCareerCardTheme(profile.themeId),
     accentColorId: resolveCareerCardAccent(profile.accentColorId),
     cardStyleId: resolveCareerCardStyle(profile.cardStyleId),
+    shareUrl:
+      profile.links?.length && profile.links[0].isActive
+        ? `${env.PUBLIC_SHARE_ORIGIN}/n/${profile.links[0].token}`
+        : null,
     profilePhotoUrl: profile.profilePhotoKey
       ? `/u/${profile.slug}/photo`
       : null,
