@@ -39,12 +39,12 @@ export function CompactMiniCard({
   const items = lines.filter(Boolean) as string[];
   if (!items.length) return null;
   return (
-    <div className="rounded-2xl border border-sky-100 bg-sky-50/60 p-3.5">
-      <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center">
+    <div className="min-w-0 rounded-2xl border border-sky-100 bg-sky-50/60 p-3.5">
+      <div className="flex w-full min-w-0 flex-col gap-1.5 sm:flex-row sm:items-center">
         <span className="grid size-6 shrink-0 place-items-center rounded-md border border-sky-200 bg-white text-blue-900">
           {icon}
         </span>
-        <p className="min-w-0 text-[10px] font-bold uppercase leading-tight tracking-wide text-blue-900/70">
+        <p className="min-w-0 whitespace-normal break-normal hyphens-none text-[9px] font-semibold leading-tight tracking-normal text-blue-900/70 sm:text-[10px] sm:font-bold sm:uppercase sm:tracking-wide">
           {label}
         </p>
       </div>
