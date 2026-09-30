@@ -287,8 +287,58 @@ model PublicProfile {
   updatedAt   DateTime @updatedAt
   candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
   links       PublicProfileLink[]
+  company     CompanyProfile?
 
   @@map("public_profile")
+}
+
+// Optional company identity attached 0..1 to a PublicProfile. Not a
+// separate account/tenant — additional presentation data managed by the
+// candidate. Never public until isVisible is explicitly true.
+model CompanyProfile {
+  id              String       @id @default(cuid())
+  publicProfileId String       @unique
+  // identity
+  companyName     String
+  tagline         String?
+  // media — opaque storage key, never a path/filename/URL
+  companyLogoKey  String?
+  // contact (privacy-gated by the show* flags below)
+  contactPersonName String?
+  contactPersonRole String?
+  publicPhone     String?
+  publicEmail     String?
+  // links
+  websiteUrl      String?
+  linkedinUrl     String?
+  facebookUrl     String?
+  instagramUrl    String?
+  xUrl            String?
+  youtubeUrl      String?
+  tiktokUrl       String?
+  // company information
+  about           String?
+  industry        String?
+  // structured lists — Postgres scalar arrays, bounded in validation
+  locations       String[]
+  services        String[]
+  // opportunity/company actions
+  hiringOpen         Boolean @default(false)
+  openRolesSummary   String?
+  openRolesUrl       String?
+  companyProfileSummary String?
+  companyProfileUrl     String?
+  // contact visibility — independent per-field controls, never inferred
+  showPublicPhone      Boolean @default(false)
+  showPublicEmail      Boolean @default(false)
+  showContactPerson    Boolean @default(false)
+  // master visibility — company stays private until explicitly enabled
+  isVisible            Boolean @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  publicProfile PublicProfile @relation(fields: [publicProfileId], references: [id], onDelete: Cascade)
+
+  @@map("company_profile")
 }
 
 model PublicProfileLink {

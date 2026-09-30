@@ -1,4 +1,8 @@
 import { PublicProfileSettings } from "@/components/candidate/public-profile/public-profile-settings";
+import {
+  CompanyProfileSettings,
+  type CompanyProfileState,
+} from "@/components/candidate/public-profile/company-profile-settings";
 import { prisma } from "@/server/db";
 import { env } from "@/server/env";
 import { resolveCareerCardTheme } from "@/lib/career-card-themes";
@@ -11,6 +15,39 @@ export const metadata = { title: "Career Card — RoleRace" };
 export default async function CandidatePublicProfilePage() {
   const { candidate, profile } = await getCandidatePublicProfile();
   const link = profile?.links[0] ?? null;
+  const company = await prisma.companyProfile.findUnique({
+    where: { publicProfileId: profile?.id ?? "" },
+  });
+  const companyInitial: CompanyProfileState | null = company
+    ? {
+        companyName: company.companyName,
+        tagline: company.tagline ?? "",
+        contactPersonName: company.contactPersonName ?? "",
+        contactPersonRole: company.contactPersonRole ?? "",
+        publicPhone: company.publicPhone ?? "",
+        publicEmail: company.publicEmail ?? "",
+        websiteUrl: company.websiteUrl ?? "",
+        linkedinUrl: company.linkedinUrl ?? "",
+        facebookUrl: company.facebookUrl ?? "",
+        instagramUrl: company.instagramUrl ?? "",
+        xUrl: company.xUrl ?? "",
+        youtubeUrl: company.youtubeUrl ?? "",
+        tiktokUrl: company.tiktokUrl ?? "",
+        about: company.about ?? "",
+        industry: company.industry ?? "",
+        locations: company.locations,
+        services: company.services,
+        hiringOpen: company.hiringOpen,
+        openRolesSummary: company.openRolesSummary ?? "",
+        openRolesUrl: company.openRolesUrl ?? "",
+        companyProfileSummary: company.companyProfileSummary ?? "",
+        companyProfileUrl: company.companyProfileUrl ?? "",
+        showPublicPhone: company.showPublicPhone,
+        showPublicEmail: company.showPublicEmail,
+        showContactPerson: company.showContactPerson,
+        isVisible: company.isVisible,
+      }
+    : null;
 
   const variants = await prisma.resumeVariant.findMany({
     where: { candidateId: candidate.id },
@@ -89,6 +126,14 @@ export default async function CandidatePublicProfilePage() {
             : { focalX: 0.5, focalY: 0.5, zoom: 1 }
         }
         displayName={`${candidate.firstName} ${candidate.lastName}`.trim()}
+      />
+      <CompanyProfileSettings
+        initial={companyInitial}
+        logoUrl={
+          profile && company?.companyLogoKey
+            ? `/u/${profile.slug}/company-logo`
+            : null
+        }
       />
     </div>
   );

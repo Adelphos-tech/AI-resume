@@ -83,3 +83,22 @@ export async function updateCoverPositionAction(raw: unknown) {
   if (result.success) revalidate();
   return result;
 }
+
+// --- Stage 7A5H2A: Company Profile — settings save + logo removal -------
+
+import {
+  removeCompanyLogo,
+  updateCompanyProfileSettings,
+} from "@/server/public-profile/company-profile";
+
+export async function saveCompanyProfileAction(raw: unknown) {
+  const result = await updateCompanyProfileSettings(raw);
+  if (result.success) revalidate();
+  return result;
+}
+
+export async function removeCompanyLogoAction() {
+  const result = await removeCompanyLogo();
+  if (result.success) revalidate();
+  return result;
+}

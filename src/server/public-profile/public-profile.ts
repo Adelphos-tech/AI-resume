@@ -205,44 +205,13 @@ import {
 } from "@/lib/career-card-themes";
 import { masterCareerProfileSchema } from "@/lib/master-career-profile-schema";
 import { RESUME_TEMPLATES, type ResumeData } from "@/lib/resume-schema";
+import {
+  buildCompanyProfileDTO,
+  type CompanyProfileDTO,
+  type CompanyProfileRow,
+} from "@/server/public-profile/company-profile";
 
-const publicHttpUrl = z
-  .string()
-  .trim()
-  .max(2048)
-  .refine((v) => {
-    try {
-      const u = new URL(v);
-      return u.protocol === "https:" || u.protocol === "http:";
-    } catch {
-      return false;
-    }
-  });
-
-const INVALID_URL = "\0invalid-url";
-const nullableUrl = (max: number) =>
-  z
-    .string()
-    .trim()
-    .max(max)
-    .transform((v) => {
-      if (v === "") return null;
-      try {
-        // Explicit scheme present — only http(s) may pass.
-        const u = new URL(v);
-        return u.protocol === "https:" || u.protocol === "http:"
-          ? u.href
-          : INVALID_URL;
-      } catch {
-        // Scheme-less input — normalize to https and validate.
-        try {
-          return new URL(`https://${v}`).href;
-        } catch {
-          return INVALID_URL;
-        }
-      }
-    })
-    .pipe(publicHttpUrl.nullable());
+import { nullableUrl } from "@/server/public-profile/url";
 
 export const publicProfileSettingsSchema = z.strictObject({
   publicHeadline: z
@@ -420,6 +389,8 @@ export type PublicCareerProfileDTO = {
     url: string | null;
   }[];
   languages: { language: string; fluency: string | null }[];
+  /** Optional company identity — present only when isVisible. */
+  company?: CompanyProfileDTO | null;
 };
 
 function formatCareerDate(d: string | null): string | null {
@@ -474,6 +445,7 @@ export function buildPublicProfileDTO(
       templateKey: string;
       resumeData: unknown;
     } | null;
+    company?: CompanyProfileRow | null;
     candidate: {
       firstName: string;
       lastName: string;
@@ -603,6 +575,9 @@ export function buildPublicProfileDTO(
             fluency: l.fluency,
           }))
         : [],
+    company: profile.company
+      ? buildCompanyProfileDTO(profile.company, profile.slug)
+      : null,
   };
 }
 
