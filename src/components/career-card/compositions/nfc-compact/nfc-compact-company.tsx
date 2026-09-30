@@ -30,22 +30,24 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
     <div className="space-y-3">
       {/* company header — logo left, identity + contact */}
       <div className="flex gap-3.5">
-        <div className="size-20 shrink-0 overflow-hidden rounded-2xl border border-sky-200 bg-sky-50 sm:size-24">
-          {c.logo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={c.logo}
-              alt={c.companyName}
-              className="size-full object-cover"
-            />
-          ) : (
-            <span className="grid size-full place-items-center bg-[var(--nfc-cta)] text-xl font-black text-white">
-              {c.companyName[0]}
-            </span>
-          )}
+        <div className="shrink-0 self-start rounded-2xl border border-stone-200 bg-white p-1">
+          <div className="size-20 overflow-hidden rounded-xl ring-1 ring-[var(--nfc-cta)]/40 sm:size-24">
+            {c.logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={c.logo}
+                alt={c.companyName}
+                className="size-full object-cover"
+              />
+            ) : (
+              <span className="grid size-full place-items-center bg-[var(--nfc-cta)] text-xl font-black text-white">
+                {c.companyName[0]}
+              </span>
+            )}
+          </div>
         </div>
         <div className="min-w-0">
-          <h1 className="text-xl font-extrabold tracking-tight text-blue-950">
+          <h1 className="text-2xl font-extrabold tracking-tight text-blue-950">
             {c.companyName}
           </h1>
           {c.tagline && (

@@ -14,15 +14,35 @@ export function CompactSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-sky-100 bg-sky-50/60 p-4">
+    <section className="rounded-2xl border border-stone-200/70 border-l-[3px] border-l-[var(--nfc-cta)] bg-white p-4">
       <div className="flex items-center gap-2.5">
-        <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white text-[var(--nfc-strong)]">
+        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--nfc-cta)]/10 text-[var(--nfc-strong)]">
           {icon}
         </span>
         <h3 className="text-sm font-bold text-blue-950">{label}</h3>
       </div>
       <div className="mt-3">{children}</div>
     </section>
+  );
+}
+
+/** Borderless group heading — used where chips/rows carry the structure. */
+export function CompactPlainHeading({
+  icon,
+  label,
+}: {
+  icon: ReactNode;
+  label: string;
+}) {
+  return (
+    <div className="flex items-center gap-2 px-0.5">
+      <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-[var(--nfc-cta)]/10 text-[var(--nfc-strong)] [&>svg]:size-3.5">
+        {icon}
+      </span>
+      <h3 className="text-xs font-bold uppercase tracking-wider text-blue-950">
+        {label}
+      </h3>
+    </div>
   );
 }
 
@@ -39,18 +59,28 @@ export function CompactMiniCard({
   const items = lines.filter(Boolean) as string[];
   if (!items.length) return null;
   return (
-    <div className="min-w-0 rounded-2xl border border-sky-100 bg-sky-50/60 p-3.5">
+    <div className="relative min-w-0 rounded-xl border border-stone-200/70 bg-white p-3.5">
+      {/* credential corner mark */}
+      <span
+        aria-hidden
+        className="absolute top-2 right-2 grid grid-cols-2 gap-0.5 opacity-40"
+      >
+        <span className="size-1 rounded-[1px] bg-[var(--nfc-cta)]" />
+        <span className="size-1 rounded-[1px] bg-stone-300" />
+        <span className="size-1 rounded-[1px] bg-stone-300" />
+        <span className="size-1 rounded-[1px] bg-[var(--nfc-cta)]" />
+      </span>
       {/* mobile: compact horizontal row — icon left, label+values stacked right;
           sm+: same card in the approved 3-column grid */}
-      <div className="flex w-full min-w-0 items-center gap-3">
-        <span className="grid size-8 shrink-0 place-items-center rounded-md border border-sky-200 bg-white text-[var(--nfc-strong)] sm:size-6">
+      <div className="flex w-full min-w-0 items-center gap-3 sm:flex-col sm:items-start sm:gap-2.5">
+        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--nfc-cta)]/10 text-[var(--nfc-strong)]">
           {icon}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="whitespace-normal break-normal hyphens-none text-[9px] font-semibold leading-tight tracking-normal text-[var(--nfc-strong)]/70 sm:text-[10px] sm:font-bold sm:uppercase sm:tracking-wide">
+          <p className="whitespace-normal break-normal hyphens-none text-[10px] font-bold uppercase tracking-wider text-[var(--nfc-strong)]/60">
             {label}
           </p>
-          <div className="mt-1 space-y-0.5 sm:mt-1">
+          <div className="mt-1 space-y-0.5">
             {items.map((l, i) => (
               <p
                 key={i}
@@ -84,10 +114,10 @@ export function CompactActionCard({
   href?: string | null;
 }) {
   const cls =
-    "group flex w-full items-center gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 text-left";
+    "group flex w-full items-center gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 text-left transition hover:border-[var(--nfc-cta)]/40 hover:ring-2 hover:ring-[var(--nfc-cta)]/15";
   const inner = (
     <>
-      <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white text-[var(--nfc-strong)]">
+      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--nfc-cta)]/10 text-[var(--nfc-strong)]">
         {icon}
       </span>
       <div className="min-w-0 flex-1">
@@ -122,7 +152,7 @@ export function ProfileSwitch({
     <div
       role="tablist"
       aria-label="Profile type"
-      className="mx-auto grid w-full max-w-xs grid-cols-2 rounded-full bg-sky-100 p-1"
+      className="mx-auto grid w-full max-w-xs grid-cols-2 rounded-full bg-stone-100 p-1 ring-1 ring-stone-200/60"
     >
       {(["candidate", "company"] as const).map((id) => (
         <button
@@ -132,8 +162,8 @@ export function ProfileSwitch({
           onClick={() => onChange(id)}
           className={`rounded-full py-1.5 text-sm font-semibold transition ${
             value === id
-              ? "bg-[var(--nfc-cta)] text-white shadow-sm"
-              : "text-[var(--nfc-strong)]/60"
+              ? "bg-[var(--nfc-cta)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
+              : "text-stone-500 hover:text-stone-700"
           }`}
         >
           {id === "candidate" ? "Candidate" : "Company"}
@@ -158,7 +188,7 @@ export function SocialTile({
     <a
       href={href}
       aria-label={label}
-      className="grid size-8 place-items-center rounded-full bg-[var(--nfc-cta)] text-white"
+      className="grid size-8 place-items-center rounded-full bg-[var(--nfc-cta)] text-white transition hover:bg-[var(--nfc-cta-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)]"
     >
       {children}
     </a>
@@ -176,7 +206,7 @@ export function ContactRow({
   if (!value) return null;
   return (
     <p className="flex items-center gap-1.5 text-xs font-medium text-blue-950">
-      <span className="grid size-4 shrink-0 place-items-center rounded-full bg-[var(--nfc-cta)] text-white [&>svg]:size-2.5">
+      <span className="grid size-4 shrink-0 place-items-center rounded-full bg-[var(--nfc-cta)]/10 text-[var(--nfc-strong)] [&>svg]:size-2.5">
         {icon}
       </span>
       {value}

@@ -48,43 +48,64 @@ export function NfcCompactCard({
   return (
     <div
       style={accentStyle}
-      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-[2rem] border border-sky-200/70 bg-gradient-to-b from-sky-50 via-white to-sky-50 shadow-[0_18px_50px_-20px_rgba(30,58,138,0.35)] lg:max-w-[860px]"
+      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-[2rem] border border-stone-200/80 bg-[#fafaf9] shadow-[0_24px_60px_-28px_rgba(41,37,36,0.28)] lg:max-w-[860px]"
     >
-      {/* pale decorative corner curves — pure CSS, non-interactive */}
+      {/* credential edge rail + subtle cool tint — pure CSS, non-interactive */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-24 -left-24 size-72 rounded-full bg-sky-200/40"
+        className="pointer-events-none absolute inset-y-0 left-0 w-1.5 bg-[var(--nfc-cta)]/85"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-32 -right-16 size-72 rounded-full bg-sky-200/30"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-br from-sky-50/50 via-transparent to-transparent"
       />
+      {/* RoleRace geometric credential motif — top-right + bottom-left */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-28 -left-20 size-72 rounded-full bg-sky-200/40"
-      />
+        className="pointer-events-none absolute top-4 right-4 grid grid-cols-2 gap-1 opacity-50"
+      >
+        {[0, 1, 2, 3].map((i) => (
+          <span
+            key={i}
+            className={`size-1.5 rounded-[2px] ${
+              i === 0 || i === 3 ? "bg-[var(--nfc-cta)]" : "bg-stone-300"
+            }`}
+          />
+        ))}
+      </div>
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-32 -right-24 size-80 rounded-full bg-sky-200/30"
-      />
+        className="pointer-events-none absolute bottom-4 left-4 grid grid-cols-2 gap-1 opacity-40"
+      >
+        {[0, 1, 2, 3].map((i) => (
+          <span
+            key={i}
+            className={`size-1.5 rounded-[2px] ${
+              i === 1 || i === 2 ? "bg-[var(--nfc-cta)]" : "bg-stone-300"
+            }`}
+          />
+        ))}
+      </div>
 
-      <div className="relative m-3 rounded-3xl bg-white/95 p-4 sm:p-5 lg:m-4 lg:p-6">
+      <div className="relative m-3 rounded-3xl bg-white p-4 ring-1 ring-stone-100 sm:p-5 lg:m-4 lg:p-6">
         {/* top brand bar */}
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-[var(--nfc-cta)] text-sm font-black text-white">
+            <span className="grid size-9 place-items-center rounded-xl bg-[var(--nfc-cta)] text-sm font-black text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
               R
             </span>
             <div>
               <p className="text-sm font-extrabold leading-tight text-blue-950">
                 RoleRace
               </p>
-              <p className="text-[10px] font-semibold text-[var(--nfc-strong)]/60">
-                NFC Profile
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--nfc-strong)]/60">
+                NFC Career Card
               </p>
             </div>
           </div>
-          {shareUrl && <NfcCompactQr url={shareUrl} />}
+          {shareUrl && (
+            <NfcCompactQr url={shareUrl} accentStyle={accentStyle} />
+          )}
         </header>
 
         {/* segmented candidate/company switch — only when a public company exists */}
@@ -106,7 +127,7 @@ export function NfcCompactCard({
         {cta === undefined ? (
           <button
             type="button"
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nfc-cta)] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[var(--nfc-cta-hover)]"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nfc-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_20px_-10px_var(--nfc-cta)] transition hover:bg-[var(--nfc-cta-hover)] active:translate-y-px"
           >
             <Send className="size-4 -rotate-12" aria-hidden />
             {active === "candidate" ? "Get in Touch" : "Contact Us"}
@@ -114,7 +135,7 @@ export function NfcCompactCard({
         ) : cta ? (
           <a
             href={cta.href}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nfc-cta)] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[var(--nfc-cta-hover)]"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nfc-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_20px_-10px_var(--nfc-cta)] transition hover:bg-[var(--nfc-cta-hover)] active:translate-y-px"
           >
             <Send className="size-4 -rotate-12" aria-hidden />
             {cta.label}

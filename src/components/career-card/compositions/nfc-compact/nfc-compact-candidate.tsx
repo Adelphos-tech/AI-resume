@@ -16,6 +16,7 @@ import type { CompactCandidate } from "@/components/career-card/dev/nfc-compact-
 import {
   CompactActionCard,
   CompactMiniCard,
+  CompactPlainHeading,
   CompactSection,
   ContactRow,
   SocialTile,
@@ -26,38 +27,46 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
   return (
     <div className="space-y-3">
       {/* identity header — portrait left, compact contact rows */}
-      <div className="flex gap-3.5">
-        <div className="size-20 shrink-0 overflow-hidden rounded-full border-2 border-[var(--nfc-strong)]/80 bg-sky-100 sm:size-24">
-          {c.portrait ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={c.portrait}
-              alt={c.name}
-              className="size-full object-cover"
-            />
-          ) : (
-            <span className="grid size-full place-items-center bg-[var(--nfc-cta)] text-xl font-black text-white">
-              {c.initials}
-            </span>
-          )}
+      <div className="flex gap-4">
+        <div className="shrink-0 self-start rounded-full border border-stone-200 bg-white p-1">
+          <div className="size-20 overflow-hidden rounded-full ring-2 ring-[var(--nfc-cta)]/80 sm:size-24">
+            {c.portrait ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={c.portrait}
+                alt={c.name}
+                className="size-full object-cover"
+              />
+            ) : (
+              <span className="grid size-full place-items-center bg-[var(--nfc-cta)] text-xl font-black text-white">
+                {c.initials}
+              </span>
+            )}
+          </div>
         </div>
-        <div className="min-w-0">
-          <h1 className="text-xl font-extrabold tracking-tight text-blue-950">
-            {c.name}
-          </h1>
-          {c.headline && (
-            <p className="mt-0.5 text-[13px] font-semibold text-[var(--nfc-strong)]">
-              {c.headline}
-            </p>
-          )}
-          {(c.currentRole || c.currentCompany) && (
-            <p className="mt-0.5 text-xs text-slate-500">
-              {[c.currentRole, c.currentCompany].filter(Boolean).join(" · ")}
-            </p>
-          )}
-          <div className="mt-2 space-y-1">
-            <ContactRow icon={<Phone />} value={c.publicPhone} />
-            <ContactRow icon={<Mail />} value={c.publicEmail} />
+        <div className="flex min-w-0 items-stretch gap-3">
+          <span
+            aria-hidden
+            className="w-1 shrink-0 self-stretch rounded-full bg-[var(--nfc-cta)]/70"
+          />
+          <div className="min-w-0">
+            <h1 className="text-2xl font-extrabold tracking-tight text-blue-950">
+              {c.name}
+            </h1>
+            {c.headline && (
+              <p className="mt-0.5 text-[13px] font-semibold text-[var(--nfc-strong)]">
+                {c.headline}
+              </p>
+            )}
+            {(c.currentRole || c.currentCompany) && (
+              <p className="mt-0.5 text-xs text-slate-500">
+                {[c.currentRole, c.currentCompany].filter(Boolean).join(" · ")}
+              </p>
+            )}
+            <div className="mt-2 space-y-1">
+              <ContactRow icon={<Phone />} value={c.publicPhone} />
+              <ContactRow icon={<Mail />} value={c.publicEmail} />
+            </div>
           </div>
         </div>
       </div>
@@ -85,21 +94,26 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
       )}
 
       {c.skills.length > 0 && (
-        <CompactSection
-          icon={<Settings2 className="size-4" />}
-          label="Key Skills"
-        >
-          <div className="flex flex-wrap gap-1.5">
+        <div className="px-1">
+          <CompactPlainHeading
+            icon={<Settings2 className="size-3.5" />}
+            label="Key Skills"
+          />
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
             {c.skills.map((s) => (
               <span
                 key={s}
-                className="rounded-full border border-sky-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-[var(--nfc-strong)]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[var(--nfc-cta)]/10 px-2.5 py-1 text-[11px] font-semibold text-[var(--nfc-strong)]"
               >
+                <span
+                  aria-hidden
+                  className="size-1.5 rounded-full bg-[var(--nfc-cta)]"
+                />
                 {s}
               </span>
             ))}
           </div>
-        </CompactSection>
+        </div>
       )}
 
       {/* three mini information cards */}
@@ -147,12 +161,14 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
             />
           )}
           {c.availability && (
-            <div className="flex items-center gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4">
-              <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white text-[var(--nfc-strong)]">
+            <div className="flex items-center gap-3 rounded-2xl border border-stone-200/70 bg-stone-50/60 p-4">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--nfc-cta)]/10 text-[var(--nfc-strong)]">
                 <CheckCircle2 className="size-4" />
               </span>
               <div className="min-w-0">
-                <p className="text-sm font-bold text-blue-950">Availability</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-blue-950">
+                  Availability
+                </p>
                 <span className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/90 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                   <span className="size-1.5 rounded-full bg-white" />
                   {c.availability}
