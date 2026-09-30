@@ -4,14 +4,17 @@ import {
   Briefcase,
   CheckCircle2,
   FileText,
-  FolderGit2,
   Globe,
   GraduationCap,
-  AtSign,
   Mail,
   Phone,
   Settings2,
 } from "lucide-react";
+import {
+  GitHubIcon,
+  LinkedInIcon,
+  WhatsAppIcon,
+} from "@/components/career-card/primitives/brand-icons";
 import type { CompactCandidate } from "@/components/career-card/dev/nfc-compact-data";
 import {
   CompactActionCard,
@@ -71,13 +74,18 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
         </div>
       </div>
       <div className="flex gap-2">
-        <SocialTile href={c.linkedin} label="LinkedIn">
-          <AtSign className="size-4" aria-hidden />
+        {c.whatsappUrl && (
+          <SocialTile href={c.whatsappUrl} label="Open WhatsApp">
+            <WhatsAppIcon />
+          </SocialTile>
+        )}
+        <SocialTile href={c.linkedin} label="Open LinkedIn">
+          <LinkedInIcon />
         </SocialTile>
-        <SocialTile href={c.github} label="GitHub">
-          <FolderGit2 className="size-4" aria-hidden />
+        <SocialTile href={c.github} label="Open GitHub">
+          <GitHubIcon />
         </SocialTile>
-        <SocialTile href={c.website} label="Website">
+        <SocialTile href={c.website} label="Open website">
           <Globe className="size-4" aria-hidden />
         </SocialTile>
       </div>

@@ -69,6 +69,7 @@ function toCompactCandidate(
     // synthesize them (see PublicCareerProfileDTO contract).
     linkedin: dto.links.linkedin,
     github: dto.links.github,
+    whatsappUrl: dto.whatsappUrl,
     website: dto.links.website,
     professionalSummary: dto.bio ?? undefined,
     skills,
@@ -128,6 +129,9 @@ function toCompactCompany(c: CompanyProfileDTO): CompactCompany {
 function candidateCta(
   c: CompactCandidate,
 ): { href: string; label: string } | null {
+  if (c.whatsappUrl) {
+    return { href: c.whatsappUrl, label: "Chat on WhatsApp" };
+  }
   const href = c.linkedin ?? c.website ?? c.portfolioHref ?? null;
   return href ? { href, label: "Get in Touch" } : null;
 }

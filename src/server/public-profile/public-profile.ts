@@ -7,6 +7,10 @@ import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/server/db";
 import { env } from "@/server/env";
 import { requireCandidateSession } from "@/server/session";
+import {
+  resolveWhatsapp,
+  whatsappPublicUrl,
+} from "@/server/public-profile/whatsapp";
 
 /** Top-level paths that must never be claimable as a public slug. */
 const RESERVED_SLUGS = new Set([
@@ -244,6 +248,11 @@ export const publicProfileSettingsSchema = z.strictObject({
   linkedinUrl: nullableUrl(2048),
   githubUrl: nullableUrl(2048),
   websiteUrl: nullableUrl(2048),
+  // Private settings metadata: selected ISO country + raw national
+  // input. Server normalizes to canonical E.164 before persisting.
+  whatsappCountry: z.string().trim().toUpperCase().max(2),
+  whatsappNumber: z.string().trim().max(40),
+  showWhatsapp: z.boolean(),
   showExperience: z.boolean(),
   showEducation: z.boolean(),
   showSkills: z.boolean(),
@@ -288,7 +297,21 @@ export async function updatePublicProfileSettings(
         "Check your entries — links must be valid http(s) URLs and text fields have length limits.",
     };
   }
-  const data = parsed.data;
+  const {
+    whatsappCountry: waCountry,
+    whatsappNumber: rawWhatsapp,
+    ...rest
+  } = parsed.data;
+
+  const wa = resolveWhatsapp(rawWhatsapp, waCountry);
+  if (!wa.ok) {
+    return { success: false, message: wa.message };
+  }
+  const data = {
+    ...rest,
+    whatsappNumber: wa.number || null,
+    whatsappCountry: waCountry || null,
+  };
 
   const profile = await prisma.publicProfile.findUnique({
     where: { candidateId: candidate.id },
@@ -344,6 +367,8 @@ export type PublicCareerProfileDTO = {
   currentFocus: string | null;
   workAuthorization: string | null;
   openToOpportunities: boolean;
+  /** https://wa.me/<digits> — only when the number is flagged public. */
+  whatsappUrl: string | null;
   links: {
     linkedin: string | null;
     github: string | null;
@@ -432,6 +457,8 @@ export function buildPublicProfileDTO(
     currentFocus: string | null;
     workAuthorization: string | null;
     openToOpportunities: boolean;
+    whatsappNumber: string | null;
+    showWhatsapp: boolean;
     linkedinUrl: string | null;
     githubUrl: string | null;
     websiteUrl: string | null;
@@ -508,6 +535,10 @@ export function buildPublicProfileDTO(
     currentFocus: profile.currentFocus || null,
     workAuthorization: profile.workAuthorization || null,
     openToOpportunities: profile.openToOpportunities,
+    whatsappUrl:
+      profile.showWhatsapp && profile.whatsappNumber
+        ? whatsappPublicUrl(profile.whatsappNumber)
+        : null,
     links: {
       linkedin: profile.linkedinUrl,
       github: profile.githubUrl,

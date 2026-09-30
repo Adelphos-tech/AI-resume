@@ -2,20 +2,13 @@
 
 import { Building2, ImagePlus, Plus, Trash2, Upload, X } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
-import { getCountries, getCountryCallingCode } from "libphonenumber-js/min";
-import type { CountryCode } from "libphonenumber-js";
 
 import {
   removeCompanyLogoAction,
   saveCompanyProfileAction,
 } from "@/app/candidate/(workspace)/public-profile/actions";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+import { WhatsappCountrySelect } from "@/components/candidate/public-profile/whatsapp-fields";
 
 export type CompanyProfileState = {
   companyName: string;
@@ -86,14 +79,6 @@ const inputCls =
 const labelCls = "text-xs font-semibold uppercase tracking-wide text-stone-500";
 const groupCls = "rounded-2xl border border-stone-200 bg-white p-6 space-y-4";
 const groupTitleCls = "text-sm font-semibold text-stone-900";
-
-const COUNTRY_NAMES = new Intl.DisplayNames(["en"], { type: "region" });
-const WA_COUNTRIES: { iso: CountryCode; label: string }[] = getCountries()
-  .map((iso) => ({
-    iso,
-    label: `${COUNTRY_NAMES.of(iso) ?? iso} (+${getCountryCallingCode(iso)})`,
-  }))
-  .sort((a, b) => a.label.localeCompare(b.label));
 
 function Toggle({
   checked,
@@ -498,31 +483,12 @@ export function CompanyProfileSettings({
                 WhatsApp
               </label>
               <div className="mt-1.5 grid gap-2 sm:grid-cols-[190px_minmax(0,1fr)]">
-                <Select
+                <WhatsappCountrySelect
+                  id="cp-whatsapp-country"
                   value={form.whatsappCountry}
-                  onValueChange={(v) => set("whatsappCountry", v)}
-                >
-                  <SelectTrigger
-                    id="cp-whatsapp-country"
-                    className={`${inputCls} w-full truncate ${
-                      form.whatsappCountry ? "" : "text-stone-400"
-                    }`}
-                    aria-label="WhatsApp country"
-                  >
-                    {WA_COUNTRIES.find((c) => c.iso === form.whatsappCountry)
-                      ?.label ?? "Select country"}
-                  </SelectTrigger>
-                  <SelectContent
-                    position="popper"
-                    className="max-h-64 max-w-[calc(100vw-3rem)]"
-                  >
-                    {WA_COUNTRIES.map((c) => (
-                      <SelectItem key={c.iso} value={c.iso}>
-                        {c.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onChange={(v) => set("whatsappCountry", v)}
+                  className={inputCls}
+                />
                 <input
                   id="cp-whatsapp"
                   inputMode="tel"

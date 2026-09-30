@@ -1,11 +1,7 @@
 import "server-only";
 
 import { z } from "zod";
-import {
-  getCountries,
-  parsePhoneNumberFromString,
-} from "libphonenumber-js/min";
-import type { CountryCode } from "libphonenumber-js";
+import { resolveWhatsapp, whatsappPublicUrl } from "./whatsapp";
 
 import { prisma } from "@/server/db";
 import { requireCandidateSession } from "@/server/session";
@@ -115,36 +111,11 @@ export async function updateCompanyProfileSettings(
     ...data
   } = parsed.data;
 
-  if (waCountry && !getCountries().includes(waCountry as CountryCode)) {
-    return { success: false, message: "Select a valid country." };
+  const wa = resolveWhatsapp(rawWhatsapp, waCountry);
+  if (!wa.ok) {
+    return { success: false, message: wa.message };
   }
-
-  let whatsapp: string | null = null;
-  const rawNumber = rawWhatsapp.trim();
-  if (rawNumber) {
-    if (!waCountry && !rawNumber.startsWith("+")) {
-      return {
-        success: false,
-        message: "Select a country for your WhatsApp number.",
-      };
-    }
-    const phone = parsePhoneNumberFromString(
-      rawNumber,
-      (waCountry || undefined) as CountryCode | undefined,
-    );
-    if (!phone || !phone.isValid()) {
-      const name =
-        waCountry &&
-        new Intl.DisplayNames(["en"], { type: "region" }).of(waCountry);
-      return {
-        success: false,
-        message: name
-          ? `Enter a valid WhatsApp number for ${name}.`
-          : "Enter a valid WhatsApp number.",
-      };
-    }
-    whatsapp = phone.number;
-  }
+  const whatsapp = wa.number || null;
 
   const profile = await prisma.publicProfile.findUnique({
     where: { candidateId: candidate.id },
@@ -337,7 +308,7 @@ export function buildCompanyProfileDTO(
     publicEmail: company.showPublicEmail ? company.publicEmail : null,
     whatsappUrl:
       company.showWhatsapp && company.whatsappNumber
-        ? `https://wa.me/${company.whatsappNumber.replace(/\D/g, "")}`
+        ? whatsappPublicUrl(company.whatsappNumber)
         : null,
     links: {
       website: company.websiteUrl,

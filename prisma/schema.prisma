@@ -281,6 +281,11 @@ model PublicProfile {
   linkedinUrl         String?
   githubUrl           String?
   websiteUrl          String?
+  // Candidate WhatsApp — canonical E.164 + explicitly selected ISO
+  // country (shared calling codes make reverse inference ambiguous).
+  whatsappNumber      String?
+  whatsappCountry     String?
+  showWhatsapp        Boolean @default(false)
   featuredResumeVariantId String?
   featuredResumeVariant   ResumeVariant? @relation("FeaturedPublicResume", fields: [featuredResumeVariantId], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())

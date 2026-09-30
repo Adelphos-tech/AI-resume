@@ -103,6 +103,18 @@ export default async function CandidatePublicProfilePage() {
                 linkedinUrl: profile.linkedinUrl ?? "",
                 githubUrl: profile.githubUrl ?? "",
                 websiteUrl: profile.websiteUrl ?? "",
+                whatsappNumber: profile.whatsappNumber
+                  ? (parsePhoneNumberFromString(
+                      profile.whatsappNumber,
+                    )?.formatNational() ?? profile.whatsappNumber)
+                  : "",
+                whatsappCountry:
+                  profile.whatsappCountry ??
+                  (profile.whatsappNumber
+                    ? (parsePhoneNumberFromString(profile.whatsappNumber)
+                        ?.country ?? "")
+                    : ""),
+                showWhatsapp: profile.showWhatsapp,
                 showExperience: profile.showExperience,
                 showEducation: profile.showEducation,
                 showSkills: profile.showSkills,
