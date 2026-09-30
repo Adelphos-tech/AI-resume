@@ -1,6 +1,6 @@
 /** Inline SVG stand-ins for the NFC Compact lab — no image dependencies. */
 
-const svg = (body: string, w = 400, h = 400) =>
+export const svg = (body: string, w = 400, h = 400) =>
   `data:image/svg+xml;utf8,${encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${body}</svg>`,
   )}`;

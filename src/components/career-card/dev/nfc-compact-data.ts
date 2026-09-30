@@ -10,6 +10,7 @@
 import {
   svgPortrait,
   svgLogo,
+  svg,
 } from "@/components/career-card/dev/nfc-compact-media";
 
 export type CompactCandidate = {
@@ -18,6 +19,11 @@ export type CompactCandidate = {
   currentRole?: string;
   currentCompany?: string;
   portrait?: string;
+  /** Optional cover art — object-cover with focal position/zoom. */
+  cover?: string | null;
+  coverFocalX?: number;
+  coverFocalY?: number;
+  coverZoom?: number;
   initials: string;
   publicPhone?: string | null;
   publicEmail?: string | null;
@@ -42,6 +48,11 @@ export type CompactCandidate = {
 export type CompactCompany = {
   companyName: string;
   logo?: string;
+  /** Optional cover art — object-cover with focal position/zoom. */
+  cover?: string | null;
+  coverFocalX?: number;
+  coverFocalY?: number;
+  coverZoom?: number;
   tagline?: string;
   contactPerson?: string;
   contactPersonRole?: string;
@@ -67,7 +78,34 @@ export type CompactCompany = {
   companyProfileUrl?: string | null;
 };
 
+/** Demo cover — abstract dark indigo band (synthetic, no imagery). */
+export const demoCover = svg(
+  `
+<defs>
+<linearGradient id="cv" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#172554"/><stop offset="1" stop-color="#0f172a"/>
+</linearGradient>
+<linearGradient id="tr" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#3b82f6" stop-opacity="0"/>
+<stop offset="0.6" stop-color="#60a5fa" stop-opacity="0.5"/>
+<stop offset="1" stop-color="#93c5fd" stop-opacity="0"/>
+</linearGradient>
+</defs>
+<rect width="400" height="140" fill="url(#cv)"/>
+<rect x="0" y="96" width="400" height="2" fill="url(#tr)"/>
+<g fill="#93c5fd" opacity="0.25">
+<rect x="330" y="18" width="8" height="8" rx="1"/>
+<rect x="342" y="18" width="8" height="8" rx="1" opacity="0.4"/>
+<rect x="330" y="30" width="8" height="8" rx="1" opacity="0.4"/>
+<rect x="342" y="30" width="8" height="8" rx="1"/>
+</g>
+`,
+  400,
+  140,
+);
+
 export const DEMO_CANDIDATE_RICH: CompactCandidate = {
+  cover: demoCover,
   name: "Ava Reyes",
   headline: "AI Product Manager — GenAI & Agentic Workflows",
   currentRole: "Senior AI Product Manager",
@@ -76,6 +114,7 @@ export const DEMO_CANDIDATE_RICH: CompactCandidate = {
   initials: "AR",
   publicPhone: "+1 415 555 0192",
   publicEmail: "ava.reyes@rolerace-demo.dev",
+  whatsappUrl: "https://wa.me/14155550192",
   linkedin: "https://www.linkedin.com/in/demo-career",
   github: "https://github.com/demo-career",
   website: "https://demo-career.example.com",
@@ -120,6 +159,7 @@ export const DEMO_CANDIDATE_SPARSE: CompactCandidate = {
 };
 
 export const DEMO_COMPANY_RICH: CompactCompany = {
+  cover: demoCover,
   companyName: "Skyline AI",
   logo: svgLogo,
   tagline: "Enterprise Agentic Platforms",
@@ -127,7 +167,11 @@ export const DEMO_COMPANY_RICH: CompactCompany = {
   publicPhone: "+1 415 555 0148",
   publicEmail: "hello@skyline-demo.dev",
   website: "https://skyline-demo.dev",
+  whatsappUrl: "https://wa.me/14155550148",
   linkedin: "https://www.linkedin.com/company/skyline-demo",
+  facebook: "https://facebook.com/skyline-demo",
+  instagram: "https://instagram.com/skyline.demo",
+  x: "https://x.com/skyline_demo",
   about:
     "Skyline AI is a San Francisco-based enterprise platform company delivering agentic workflow products, evaluation infrastructure and enterprise AI rollouts to help businesses innovate, grow and stay ahead in a digital world.",
   industry: "AI Platforms & Enterprise Software",
