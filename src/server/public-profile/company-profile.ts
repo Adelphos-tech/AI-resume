@@ -34,12 +34,29 @@ const trimmedList = (max: number, each: number) =>
     .max(max)
     .transform((arr) => arr.filter((v) => v.length > 0));
 
+/**
+ * WhatsApp requires an explicit international number — no inferred
+ * country codes. Input may contain spaces/parens/hyphens; stored
+ * canonically as +<digits> (E.164-style bounds).
+ */
+const whatsappNumber = z
+  .string()
+  .trim()
+  .max(40)
+  .refine(
+    (v) => v === "" || /^\+[0-9()\-\s]{7,30}$/.test(v),
+    "WhatsApp needs international format, e.g. +91 98765 43210.",
+  )
+  .transform((v) => (v === "" ? null : `+${v.replace(/\D/g, "")}`))
+  .refine((v) => v === null || /^\+[0-9]{7,15}$/.test(v));
+
 export const companyProfileSettingsSchema = z.strictObject({
   companyName: z.string().trim().min(1).max(120),
   tagline: trimMax(180),
   contactPersonName: trimMax(120),
   contactPersonRole: trimMax(120),
   publicPhone: trimMax(40),
+  whatsappNumber: whatsappNumber,
   publicEmail: z
     .string()
     .trim()
@@ -64,6 +81,7 @@ export const companyProfileSettingsSchema = z.strictObject({
   companyProfileUrl: nullableUrl(2048),
   showPublicPhone: z.boolean(),
   showPublicEmail: z.boolean(),
+  showWhatsapp: z.boolean(),
   showContactPerson: z.boolean(),
   isVisible: z.boolean(),
 });
@@ -87,6 +105,8 @@ export async function updateCompanyProfileSettings(
     return {
       success: false,
       message:
+        parsed.error.issues.find((i) => i.path[0] === "whatsappNumber")
+          ?.message ??
         "Check your company entries — links must be valid http(s) URLs and text fields have length limits.",
     };
   }
@@ -196,6 +216,8 @@ export type CompanyProfileDTO = {
   contactPersonRole: string | null;
   publicPhone: string | null;
   publicEmail: string | null;
+  /** https://wa.me/<digits> — only when the number is flagged public. */
+  whatsappUrl: string | null;
   links: {
     website: string | null;
     linkedin: string | null;
@@ -225,6 +247,7 @@ export type CompanyProfileRow = {
   contactPersonRole: string | null;
   publicPhone: string | null;
   publicEmail: string | null;
+  whatsappNumber: string | null;
   websiteUrl: string | null;
   linkedinUrl: string | null;
   facebookUrl: string | null;
@@ -243,6 +266,7 @@ export type CompanyProfileRow = {
   companyProfileUrl: string | null;
   showPublicPhone: boolean;
   showPublicEmail: boolean;
+  showWhatsapp: boolean;
   showContactPerson: boolean;
 };
 
@@ -268,6 +292,10 @@ export function buildCompanyProfileDTO(
       : null,
     publicPhone: company.showPublicPhone ? company.publicPhone : null,
     publicEmail: company.showPublicEmail ? company.publicEmail : null,
+    whatsappUrl:
+      company.showWhatsapp && company.whatsappNumber
+        ? `https://wa.me/${company.whatsappNumber.replace(/\D/g, "")}`
+        : null,
     links: {
       website: company.websiteUrl,
       linkedin: company.linkedinUrl,

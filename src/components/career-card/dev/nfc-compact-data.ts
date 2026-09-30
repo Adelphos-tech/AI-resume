@@ -21,6 +21,8 @@ export type CompactCandidate = {
   initials: string;
   publicPhone?: string | null;
   publicEmail?: string | null;
+  /** https://wa.me/<digits> — only present when flagged public. */
+  whatsappUrl?: string | null;
   linkedin?: string | null;
   github?: string | null;
   website?: string | null;
@@ -45,6 +47,8 @@ export type CompactCompany = {
   contactPersonRole?: string;
   publicPhone?: string | null;
   publicEmail?: string | null;
+  /** https://wa.me/<digits> — only present when flagged public. */
+  whatsappUrl?: string | null;
   website?: string | null;
   linkedin?: string | null;
   facebook?: string | null;

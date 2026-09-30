@@ -105,6 +105,7 @@ function toCompactCompany(c: CompanyProfileDTO): CompactCompany {
     contactPersonRole: c.contactPersonRole ?? undefined,
     publicPhone: c.publicPhone,
     publicEmail: c.publicEmail,
+    whatsappUrl: c.whatsappUrl,
     website: c.links.website,
     linkedin: c.links.linkedin,
     facebook: c.links.facebook,
@@ -132,6 +133,7 @@ function candidateCta(
 }
 
 function companyCta(c: CompactCompany): { href: string; label: string } | null {
+  if (c.whatsappUrl) return { href: c.whatsappUrl, label: "Chat on WhatsApp" };
   const href = c.publicEmail
     ? `mailto:${c.publicEmail}`
     : (c.website ??

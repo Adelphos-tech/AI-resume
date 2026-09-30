@@ -308,6 +308,7 @@ model CompanyProfile {
   contactPersonRole String?
   publicPhone     String?
   publicEmail     String?
+  whatsappNumber  String?
   // links
   websiteUrl      String?
   linkedinUrl     String?
@@ -331,6 +332,7 @@ model CompanyProfile {
   // contact visibility — independent per-field controls, never inferred
   showPublicPhone      Boolean @default(false)
   showPublicEmail      Boolean @default(false)
+  showWhatsapp         Boolean @default(false)
   showContactPerson    Boolean @default(false)
   // master visibility — company stays private until explicitly enabled
   isVisible            Boolean @default(false)

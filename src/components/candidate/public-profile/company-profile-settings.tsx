@@ -16,6 +16,7 @@ export type CompanyProfileState = {
   contactPersonRole: string;
   publicPhone: string;
   publicEmail: string;
+  whatsappNumber: string;
   websiteUrl: string;
   linkedinUrl: string;
   facebookUrl: string;
@@ -34,6 +35,7 @@ export type CompanyProfileState = {
   companyProfileUrl: string;
   showPublicPhone: boolean;
   showPublicEmail: boolean;
+  showWhatsapp: boolean;
   showContactPerson: boolean;
   isVisible: boolean;
 };
@@ -45,6 +47,7 @@ export const EMPTY_COMPANY: CompanyProfileState = {
   contactPersonRole: "",
   publicPhone: "",
   publicEmail: "",
+  whatsappNumber: "",
   websiteUrl: "",
   linkedinUrl: "",
   facebookUrl: "",
@@ -63,6 +66,7 @@ export const EMPTY_COMPANY: CompanyProfileState = {
   companyProfileUrl: "",
   showPublicPhone: false,
   showPublicEmail: false,
+  showWhatsapp: false,
   showContactPerson: false,
   isVisible: false,
 };
@@ -469,6 +473,32 @@ export function CompanyProfileSettings({
                 />
                 {form.publicPhone.trim() &&
                   (form.showPublicPhone ? publicHint : privateHint)}
+              </div>
+            </div>
+            <div>
+              <label htmlFor="cp-whatsapp" className={labelCls}>
+                WhatsApp
+              </label>
+              <input
+                id="cp-whatsapp"
+                value={form.whatsappNumber}
+                onChange={(e) => set("whatsappNumber", e.target.value)}
+                className={`mt-1.5 ${inputCls}`}
+                placeholder="+91 98765 43210"
+              />
+              <div className="mt-2">
+                <Toggle
+                  checked={form.showWhatsapp}
+                  onChange={(v) => set("showWhatsapp", v)}
+                  label="Show publicly"
+                />
+                {form.whatsappNumber.trim() &&
+                  (form.showWhatsapp ? publicHint : privateHint)}
+                {!form.showWhatsapp && !form.whatsappNumber.trim() && (
+                  <p className="mt-1.5 text-xs text-stone-500">
+                    Use international format, e.g. +91 98765 43210.
+                  </p>
+                )}
               </div>
             </div>
             <div>
