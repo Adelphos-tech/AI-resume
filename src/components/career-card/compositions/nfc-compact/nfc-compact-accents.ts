@@ -26,6 +26,8 @@ const NFC_COMPACT_ACCENTS: Record<CareerCardAccentColorId, NfcAccentTokens> = {
   violet: { cta: "#5b21b6", ctaHover: "#4c1d95", strong: "#5b21b6" },
   amber: { cta: "#92400e", ctaHover: "#78350f", strong: "#92400e" },
   neutral: { cta: "#1e293b", ctaHover: "#0f172a", strong: "#1e293b" },
+  // Deep premium red — confident, not warning/error.
+  red: { cta: "#b91c1c", ctaHover: "#991b1b", strong: "#991b1b" },
 };
 
 export function nfcCompactAccentStyle(accentId: unknown): CSSProperties {

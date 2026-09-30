@@ -71,4 +71,11 @@ export const CORPORATE_ACCENT_VARS: Record<CorporateAccent, CSSProperties> = {
     avatar: "#1e293b",
     cover: cover("#1e293b"),
   }),
+  red: build({
+    accent: "#dc2626",
+    btn: "#b91c1c",
+    btnHover: "#991b1b",
+    avatar: "#991b1b",
+    cover: cover("#3a1212"),
+  }),
 };

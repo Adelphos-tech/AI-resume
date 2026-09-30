@@ -8,7 +8,7 @@
  */
 
 export type CareerCardAccentColorId =
-  "emerald" | "navy" | "blue" | "violet" | "amber" | "neutral";
+  "emerald" | "navy" | "blue" | "violet" | "amber" | "neutral" | "red";
 
 export const DEFAULT_ACCENT_COLOR_ID: CareerCardAccentColorId = "emerald";
 
@@ -56,6 +56,12 @@ export const CAREER_CARD_ACCENT_COLORS: readonly CareerCardAccentColor[] = [
     label: "Neutral",
     description: "Minimal and understated.",
     swatchClass: "bg-stone-500",
+  },
+  {
+    id: "red",
+    label: "Red",
+    description: "Bold, premium and confident.",
+    swatchClass: "bg-red-700",
   },
 ] as const;
 
