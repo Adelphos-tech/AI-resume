@@ -32,6 +32,8 @@ export type CompactCandidate = {
   certifications: { name: string; issuer?: string }[];
   portfolioAvailable: boolean;
   resumeAvailable: boolean;
+  /** Public href for the Portfolio/CV action card (production: /u/<slug>/resume). */
+  portfolioHref?: string | null;
   availability?: string | null;
 };
 
@@ -40,17 +42,25 @@ export type CompactCompany = {
   logo?: string;
   tagline?: string;
   contactPerson?: string;
+  contactPersonRole?: string;
   publicPhone?: string | null;
   publicEmail?: string | null;
   website?: string | null;
   linkedin?: string | null;
-  about: string;
+  facebook?: string | null;
+  instagram?: string | null;
+  x?: string | null;
+  youtube?: string | null;
+  tiktok?: string | null;
+  about?: string;
   industry?: string;
   locations: string[];
   services: string[];
   hiringOpen?: boolean;
   openRolesSummary?: string;
+  openRolesUrl?: string | null;
   companyProfileSummary?: string;
+  companyProfileUrl?: string | null;
 };
 
 export const DEMO_CANDIDATE_RICH: CompactCandidate = {

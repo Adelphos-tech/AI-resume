@@ -24,6 +24,7 @@ import {
 import { CompactCard } from "@/components/public-profile/compact-card";
 import { ExecutiveLibraryCard } from "@/components/career-card/production/executive-library-card";
 import { CorporateLibraryCard } from "@/components/career-card/production/corporate-library-card";
+import { NfcCompactLibraryCard } from "@/components/career-card/production/nfc-compact-library-card";
 import {
   BlurFade,
   BorderBeam,
@@ -109,6 +110,12 @@ export function PremiumCareerCard({
   }
   if (dto.themeId === "corporate-clean") {
     return <CorporateLibraryCard dto={dto} slug={slug} t={t} p={p} />;
+  }
+  // NFC Compact renders its own frozen compact composition with real
+  // Candidate + optional Company data — the shared premium tokens are
+  // not consumed by that composition.
+  if (dto.themeId === "nfc-compact") {
+    return <NfcCompactLibraryCard dto={dto} slug={slug} />;
   }
   const socialLinks = [
     { href: dto.links.linkedin, label: "LinkedIn", icon: AtSign },

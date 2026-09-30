@@ -7,7 +7,11 @@
  */
 
 export type CareerCardThemeId =
-  "role-race-classic" | "corporate-clean" | "executive-dark" | "tech-minimal";
+  | "role-race-classic"
+  | "corporate-clean"
+  | "executive-dark"
+  | "tech-minimal"
+  | "nfc-compact";
 
 export type CareerCardTheme = {
   id: CareerCardThemeId;
@@ -43,6 +47,12 @@ export const CAREER_CARD_THEMES: readonly CareerCardTheme[] = [
     label: "Tech Minimal",
     description: "Compact, technical clarity.",
     fits: ["Engineering", "Data", "Technology"],
+  },
+  {
+    id: "nfc-compact",
+    label: "NFC Compact",
+    description: "Compact Candidate + Company profile.",
+    fits: ["NFC cards", "Founders", "Dual profile"],
   },
 ] as const;
 

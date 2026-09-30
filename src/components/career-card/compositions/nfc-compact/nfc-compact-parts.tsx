@@ -16,7 +16,7 @@ export function CompactSection({
   return (
     <section className="rounded-2xl border border-sky-100 bg-sky-50/60 p-4">
       <div className="flex items-center gap-2.5">
-        <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white text-blue-900">
+        <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white text-[var(--nfc-strong)]">
           {icon}
         </span>
         <h3 className="text-sm font-bold text-blue-950">{label}</h3>
@@ -41,10 +41,10 @@ export function CompactMiniCard({
   return (
     <div className="min-w-0 rounded-2xl border border-sky-100 bg-sky-50/60 p-3.5">
       <div className="flex w-full min-w-0 flex-col gap-1.5 sm:flex-row sm:items-center">
-        <span className="grid size-6 shrink-0 place-items-center rounded-md border border-sky-200 bg-white text-blue-900">
+        <span className="grid size-6 shrink-0 place-items-center rounded-md border border-sky-200 bg-white text-[var(--nfc-strong)]">
           {icon}
         </span>
-        <p className="min-w-0 whitespace-normal break-normal hyphens-none text-[9px] font-semibold leading-tight tracking-normal text-blue-900/70 sm:text-[10px] sm:font-bold sm:uppercase sm:tracking-wide">
+        <p className="min-w-0 whitespace-normal break-normal hyphens-none text-[9px] font-semibold leading-tight tracking-normal text-[var(--nfc-strong)]/70 sm:text-[10px] sm:font-bold sm:uppercase sm:tracking-wide">
           {label}
         </p>
       </div>
@@ -71,14 +71,18 @@ export function CompactActionCard({
   icon,
   label,
   description,
+  href,
 }: {
   icon: ReactNode;
   label: string;
   description: string;
+  href?: string | null;
 }) {
-  return (
-    <div className="group flex w-full items-center gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 text-left">
-      <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white text-blue-900">
+  const cls =
+    "group flex w-full items-center gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 text-left";
+  const inner = (
+    <>
+      <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white text-[var(--nfc-strong)]">
         {icon}
       </span>
       <div className="min-w-0 flex-1">
@@ -87,8 +91,17 @@ export function CompactActionCard({
           {description}
         </p>
       </div>
-      <ChevronRight aria-hidden className="size-4 shrink-0 text-blue-900/50" />
-    </div>
+      <ChevronRight
+        aria-hidden
+        className="size-4 shrink-0 text-[var(--nfc-strong)]/50"
+      />
+    </>
+  );
+  if (!href) return <div className={cls}>{inner}</div>;
+  return (
+    <a href={href} className={cls}>
+      {inner}
+    </a>
   );
 }
 
@@ -114,8 +127,8 @@ export function ProfileSwitch({
           onClick={() => onChange(id)}
           className={`rounded-full py-1.5 text-sm font-semibold transition ${
             value === id
-              ? "bg-blue-900 text-white shadow-sm"
-              : "text-blue-900/60"
+              ? "bg-[var(--nfc-cta)] text-white shadow-sm"
+              : "text-[var(--nfc-strong)]/60"
           }`}
         >
           {id === "candidate" ? "Candidate" : "Company"}
@@ -140,7 +153,7 @@ export function SocialTile({
     <a
       href={href}
       aria-label={label}
-      className="grid size-8 place-items-center rounded-full bg-blue-900 text-white"
+      className="grid size-8 place-items-center rounded-full bg-[var(--nfc-cta)] text-white"
     >
       {children}
     </a>
@@ -158,7 +171,7 @@ export function ContactRow({
   if (!value) return null;
   return (
     <p className="flex items-center gap-1.5 text-xs font-medium text-blue-950">
-      <span className="grid size-4 shrink-0 place-items-center rounded-full bg-blue-900 text-white [&>svg]:size-2.5">
+      <span className="grid size-4 shrink-0 place-items-center rounded-full bg-[var(--nfc-cta)] text-white [&>svg]:size-2.5">
         {icon}
       </span>
       {value}

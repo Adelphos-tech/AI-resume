@@ -29,7 +29,9 @@ function careerDate(d: string | null): string | undefined {
 }
 
 /** Mirrors production Premium: valid merged intervals, current→now, completed yrs, <1 omitted. */
-function completedYearsOfExperience(dto: PublicCareerProfileDTO): number {
+export function completedYearsOfExperience(
+  dto: PublicCareerProfileDTO,
+): number {
   const now = new Date();
   const intervals: [number, number][] = [];
   for (const e of dto.experience) {

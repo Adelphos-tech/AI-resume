@@ -1,4 +1,5 @@
 import { Nfc, QrCode, Send } from "lucide-react";
+import type { CSSProperties } from "react";
 import type {
   CompactCandidate,
   CompactCompany,
@@ -17,14 +18,31 @@ export function NfcCompactCard({
   company,
   active,
   onSwitch,
+  cta,
+  accentStyle,
 }: {
   candidate: CompactCandidate;
-  company: CompactCompany;
+  /** Absent → Candidate-only card; the segmented switch is not rendered. */
+  company?: CompactCompany | null;
   active: "candidate" | "company";
   onSwitch: (v: "candidate" | "company") => void;
+  /**
+   * Finite trusted accent CSS variables (see nfc-compact-accents.ts).
+   * Omitted → the composition's frozen default blue palette.
+   */
+  accentStyle?: CSSProperties;
+  /**
+   * Production CTA contract: {href,label} renders a real link, `null`
+   * hides the CTA entirely. When the prop is omitted the card renders the
+   * original static lab button (dev lab only).
+   */
+  cta?: { href: string; label: string } | null;
 }) {
   return (
-    <div className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-[2rem] border border-sky-200/70 bg-gradient-to-b from-sky-50 via-white to-sky-50 shadow-[0_18px_50px_-20px_rgba(30,58,138,0.35)] lg:max-w-[860px]">
+    <div
+      style={accentStyle}
+      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-[2rem] border border-sky-200/70 bg-gradient-to-b from-sky-50 via-white to-sky-50 shadow-[0_18px_50px_-20px_rgba(30,58,138,0.35)] lg:max-w-[860px]"
+    >
       {/* pale decorative corner curves — pure CSS, non-interactive */}
       <div
         aria-hidden
@@ -47,19 +65,19 @@ export function NfcCompactCard({
         {/* top brand bar */}
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-blue-900 text-sm font-black text-white">
+            <span className="grid size-9 place-items-center rounded-xl bg-[var(--nfc-cta)] text-sm font-black text-white">
               R
             </span>
             <div>
               <p className="text-sm font-extrabold leading-tight text-blue-950">
                 RoleRace
               </p>
-              <p className="text-[10px] font-semibold text-blue-900/60">
+              <p className="text-[10px] font-semibold text-[var(--nfc-strong)]/60">
                 NFC Profile
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-blue-900">
+          <div className="flex items-center gap-2 text-[var(--nfc-strong)]">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[10px] font-semibold">
               <Nfc className="size-3.5" aria-hidden />
               Tap Your Phone
@@ -70,27 +88,39 @@ export function NfcCompactCard({
           </div>
         </header>
 
-        {/* segmented candidate/company switch */}
-        <div className="mt-4">
-          <ProfileSwitch value={active} onChange={onSwitch} />
-        </div>
+        {/* segmented candidate/company switch — only when a public company exists */}
+        {company && (
+          <div className="mt-4">
+            <ProfileSwitch value={active} onChange={onSwitch} />
+          </div>
+        )}
 
         <div className="mt-5">
-          {active === "candidate" ? (
-            <NfcCompactCandidate c={candidate} />
-          ) : (
+          {active === "company" && company ? (
             <NfcCompactCompany c={company} />
+          ) : (
+            <NfcCompactCandidate c={candidate} />
           )}
         </div>
 
         {/* primary CTA */}
-        <button
-          type="button"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-900 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-blue-950"
-        >
-          <Send className="size-4 -rotate-12" aria-hidden />
-          {active === "candidate" ? "Get in Touch" : "Contact Us"}
-        </button>
+        {cta === undefined ? (
+          <button
+            type="button"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nfc-cta)] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[var(--nfc-cta-hover)]"
+          >
+            <Send className="size-4 -rotate-12" aria-hidden />
+            {active === "candidate" ? "Get in Touch" : "Contact Us"}
+          </button>
+        ) : cta ? (
+          <a
+            href={cta.href}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nfc-cta)] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[var(--nfc-cta-hover)]"
+          >
+            <Send className="size-4 -rotate-12" aria-hidden />
+            {cta.label}
+          </a>
+        ) : null}
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
     <div className="space-y-3">
       {/* identity header — portrait left, compact contact rows */}
       <div className="flex gap-3.5">
-        <div className="size-20 shrink-0 overflow-hidden rounded-full border-2 border-blue-900/80 bg-sky-100 sm:size-24">
+        <div className="size-20 shrink-0 overflow-hidden rounded-full border-2 border-[var(--nfc-strong)]/80 bg-sky-100 sm:size-24">
           {c.portrait ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -36,7 +36,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
               className="size-full object-cover"
             />
           ) : (
-            <span className="grid size-full place-items-center bg-blue-900 text-xl font-black text-white">
+            <span className="grid size-full place-items-center bg-[var(--nfc-cta)] text-xl font-black text-white">
               {c.initials}
             </span>
           )}
@@ -46,7 +46,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
             {c.name}
           </h1>
           {c.headline && (
-            <p className="mt-0.5 text-[13px] font-semibold text-blue-900">
+            <p className="mt-0.5 text-[13px] font-semibold text-[var(--nfc-strong)]">
               {c.headline}
             </p>
           )}
@@ -93,7 +93,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
             {c.skills.map((s) => (
               <span
                 key={s}
-                className="rounded-full border border-sky-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-blue-900"
+                className="rounded-full border border-sky-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-[var(--nfc-strong)]"
               >
                 {s}
               </span>
@@ -136,11 +136,12 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
               icon={<FileText className="size-4" />}
               label="Portfolio / CV"
               description="View my résumé, projects and achievements"
+              href={c.portfolioHref}
             />
           )}
           {c.availability && (
             <div className="flex items-center gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4">
-              <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white text-blue-900">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white text-[var(--nfc-strong)]">
                 <CheckCircle2 className="size-4" />
               </span>
               <div className="min-w-0">

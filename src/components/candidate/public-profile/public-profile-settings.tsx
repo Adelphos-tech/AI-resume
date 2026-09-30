@@ -1425,6 +1425,37 @@ function ThemeMiniPreview({ themeId }: { themeId: CareerCardThemeId }) {
           </div>
         </div>
       );
+    case "nfc-compact":
+      return (
+        <div
+          aria-hidden
+          className="h-24 w-full rounded-lg bg-gradient-to-b from-sky-50 to-white p-2"
+        >
+          <div className="h-full w-full rounded-md border border-sky-200 bg-white p-2.5 shadow-sm">
+            <div className="mx-auto flex w-4/5 items-center rounded-full bg-sky-100 p-0.5">
+              <span className="flex-1 rounded-full bg-blue-900 py-0.5 text-center text-[7px] font-bold text-white">
+                Candidate
+              </span>
+              <span className="flex-1 py-0.5 text-center text-[7px] font-bold text-blue-900/50">
+                Company
+              </span>
+            </div>
+            <div className="mt-1.5 flex items-center gap-2">
+              <span className="size-6 rounded-full bg-sky-100 ring-1 ring-blue-900/40" />
+              <div className="flex-1 space-y-1">
+                {bar("w-2/5", "bg-blue-950")}
+                {bar("w-3/5", "bg-sky-300")}
+              </div>
+            </div>
+            <div className="mt-1.5 flex gap-1">
+              <span className="h-4 flex-1 rounded-md border border-sky-100 bg-sky-50" />
+              <span className="h-4 flex-1 rounded-md border border-sky-100 bg-sky-50" />
+              <span className="h-4 flex-1 rounded-md border border-sky-100 bg-sky-50" />
+            </div>
+            <span className="mt-1.5 block h-3 w-full rounded-md bg-blue-900" />
+          </div>
+        </div>
+      );
     case "role-race-classic":
     default:
       return (

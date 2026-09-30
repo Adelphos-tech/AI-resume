@@ -1,14 +1,19 @@
 import {
   Building2,
+  Camera,
   Factory,
   Globe,
   Layers,
+  Link2,
   AtSign,
   Mail,
   MapPin,
+  Music2,
   Phone,
+  Play,
   UserRound,
   UserRoundPlus,
+  X,
 } from "lucide-react";
 import type { CompactCompany } from "@/components/career-card/dev/nfc-compact-data";
 import {
@@ -34,7 +39,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
               className="size-full object-cover"
             />
           ) : (
-            <span className="grid size-full place-items-center bg-blue-900 text-xl font-black text-white">
+            <span className="grid size-full place-items-center bg-[var(--nfc-cta)] text-xl font-black text-white">
               {c.companyName[0]}
             </span>
           )}
@@ -44,7 +49,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
             {c.companyName}
           </h1>
           {c.tagline && (
-            <p className="mt-0.5 text-[13px] font-semibold text-blue-900">
+            <p className="mt-0.5 text-[13px] font-semibold text-[var(--nfc-strong)]">
               {c.tagline}
             </p>
           )}
@@ -52,6 +57,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
             <p className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500">
               <UserRound className="size-3.5" aria-hidden />
               Contact Person: {c.contactPerson}
+              {c.contactPersonRole ? ` · ${c.contactPersonRole}` : ""}
             </p>
           )}
           <div className="mt-2 space-y-1">
@@ -67,11 +73,31 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
         <SocialTile href={c.website} label="Website">
           <Globe className="size-4" aria-hidden />
         </SocialTile>
+        <SocialTile href={c.facebook} label="Facebook">
+          <Link2 className="size-4" aria-hidden />
+        </SocialTile>
+        <SocialTile href={c.instagram} label="Instagram">
+          <Camera className="size-4" aria-hidden />
+        </SocialTile>
+        <SocialTile href={c.x} label="X">
+          <X className="size-4" aria-hidden />
+        </SocialTile>
+        <SocialTile href={c.youtube} label="YouTube">
+          <Play className="size-4" aria-hidden />
+        </SocialTile>
+        <SocialTile href={c.tiktok} label="TikTok">
+          <Music2 className="size-4" aria-hidden />
+        </SocialTile>
       </div>
 
-      <CompactSection icon={<Building2 className="size-4" />} label="About Us">
-        <p className="text-xs leading-relaxed text-slate-600">{c.about}</p>
-      </CompactSection>
+      {c.about && (
+        <CompactSection
+          icon={<Building2 className="size-4" />}
+          label="About Us"
+        >
+          <p className="text-xs leading-relaxed text-slate-600">{c.about}</p>
+        </CompactSection>
+      )}
 
       {/* three company mini cards */}
       <div className="grid grid-cols-3 gap-2">
@@ -100,6 +126,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
             c.openRolesSummary ??
             "Explore current opportunities and grow with us."
           }
+          href={c.openRolesUrl}
         />
       )}
       {c.companyProfileSummary && (
@@ -107,6 +134,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
           icon={<Building2 className="size-4" />}
           label="Company Profile"
           description={c.companyProfileSummary}
+          href={c.companyProfileUrl}
         />
       )}
     </div>

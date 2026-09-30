@@ -771,12 +771,15 @@ const executiveTheme = (a: DarkAccent): CardThemeTokens => ({
 });
 
 const LIGHT_BUILDERS: Record<
-  "role-race-classic" | "corporate-clean" | "tech-minimal",
+  "role-race-classic" | "corporate-clean" | "tech-minimal" | "nfc-compact",
   (a: LightAccent) => CardThemeTokens
 > = {
   "role-race-classic": classicTheme,
   "corporate-clean": corporateTheme,
   "tech-minimal": techTheme,
+  // NFC Compact renders its own frozen composition under the premium
+  // style; the base tokens only matter for the standard-style fallback.
+  "nfc-compact": classicTheme,
 };
 
 /**
