@@ -1207,7 +1207,7 @@ export function PublicProfileSettings({
           disabled={isPending}
           className="bg-emerald-700 hover:bg-emerald-800"
         >
-          {isPending ? "Saving…" : "Save profile"}
+          {isPending ? "Saving…" : "Save Career Card settings"}
         </Button>
         {saved && (
           <p role="status" className="text-sm font-medium text-emerald-700">

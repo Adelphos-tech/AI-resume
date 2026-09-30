@@ -40,27 +40,32 @@ export function CompactMiniCard({
   if (!items.length) return null;
   return (
     <div className="min-w-0 rounded-2xl border border-sky-100 bg-sky-50/60 p-3.5">
-      <div className="flex w-full min-w-0 flex-col gap-1.5 sm:flex-row sm:items-center">
-        <span className="grid size-6 shrink-0 place-items-center rounded-md border border-sky-200 bg-white text-[var(--nfc-strong)]">
+      {/* mobile: compact horizontal row — icon left, label+values stacked right;
+          sm+: same card in the approved 3-column grid */}
+      <div className="flex w-full min-w-0 items-center gap-3">
+        <span className="grid size-8 shrink-0 place-items-center rounded-md border border-sky-200 bg-white text-[var(--nfc-strong)] sm:size-6">
           {icon}
         </span>
-        <p className="min-w-0 whitespace-normal break-normal hyphens-none text-[9px] font-semibold leading-tight tracking-normal text-[var(--nfc-strong)]/70 sm:text-[10px] sm:font-bold sm:uppercase sm:tracking-wide">
-          {label}
-        </p>
-      </div>
-      <div className="mt-2.5 space-y-0.5">
-        {items.map((l, i) => (
-          <p
-            key={i}
-            className={
-              i === 0
-                ? "text-xs font-semibold text-blue-950"
-                : "text-[11px] leading-snug text-slate-500"
-            }
-          >
-            {l}
+        <div className="min-w-0 flex-1">
+          <p className="whitespace-normal break-normal hyphens-none text-[9px] font-semibold leading-tight tracking-normal text-[var(--nfc-strong)]/70 sm:text-[10px] sm:font-bold sm:uppercase sm:tracking-wide">
+            {label}
           </p>
-        ))}
+          <div className="mt-1 space-y-0.5 sm:mt-1">
+            {items.map((l, i) => (
+              <p
+                key={i}
+                className={
+                  "break-normal hyphens-none " +
+                  (i === 0
+                    ? "text-xs font-semibold leading-snug text-blue-950"
+                    : "text-[11px] leading-snug text-slate-500")
+                }
+              >
+                {l}
+              </p>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

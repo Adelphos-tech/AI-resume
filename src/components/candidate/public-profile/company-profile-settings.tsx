@@ -184,6 +184,9 @@ export function CompanyProfileSettings({
   const [form, setForm] = useState<CompanyProfileState>(
     initial ?? EMPTY_COMPANY,
   );
+  const [savedForm, setSavedForm] = useState<CompanyProfileState>(
+    initial ?? EMPTY_COMPANY,
+  );
   const [logo, setLogo] = useState<string | null>(logoUrl);
   const [logoMsg, setLogoMsg] = useState<string | null>(null);
   const [logoBusy, setLogoBusy] = useState(false);
@@ -247,9 +250,24 @@ export function CompanyProfileSettings({
     startTransition(async () => {
       const r = await saveCompanyProfileAction(form);
       if (!r.success) setError(r.message ?? "Something went wrong.");
-      else setSaved(true);
+      else {
+        setSaved(true);
+        setSavedForm(form);
+      }
     });
   }
+
+  const dirty = JSON.stringify(form) !== JSON.stringify(savedForm);
+  const hasSavedRow = initial !== null || saved;
+  const hintCls = "mt-1.5 text-xs";
+  const privateHint = (
+    <p className={`${hintCls} text-stone-500`}>
+      Saved privately — not shown publicly.
+    </p>
+  );
+  const publicHint = (
+    <p className={`${hintCls} text-emerald-700`}>Shown publicly.</p>
+  );
 
   return (
     <section
@@ -267,7 +285,11 @@ export function CompanyProfileSettings({
           </h2>
           <p className="mt-1 text-sm leading-relaxed text-stone-600">
             Add an optional company identity for NFC Compact. Nothing becomes
-            public until you enable visibility.
+            public until you enable visibility.{" "}
+            <strong className="font-medium text-stone-700">
+              Company Profile is saved separately from your Career Card settings
+              — use the button at the bottom of this section.
+            </strong>
           </p>
         </div>
 
@@ -425,6 +447,8 @@ export function CompanyProfileSettings({
             onChange={(v) => set("showContactPerson", v)}
             label="Show contact person publicly"
           />
+          {form.contactPersonName.trim() &&
+            (form.showContactPerson ? publicHint : privateHint)}
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label htmlFor="cp-phone" className={labelCls}>
@@ -443,6 +467,8 @@ export function CompanyProfileSettings({
                   onChange={(v) => set("showPublicPhone", v)}
                   label="Show publicly"
                 />
+                {form.publicPhone.trim() &&
+                  (form.showPublicPhone ? publicHint : privateHint)}
               </div>
             </div>
             <div>
@@ -463,6 +489,8 @@ export function CompanyProfileSettings({
                   onChange={(v) => set("showPublicEmail", v)}
                   label="Show publicly"
                 />
+                {form.publicEmail.trim() &&
+                  (form.showPublicEmail ? publicHint : privateHint)}
               </div>
             </div>
           </div>
@@ -567,6 +595,17 @@ export function CompanyProfileSettings({
             label="Show company profile publicly"
             description="The company section only appears on your published Career Card when enabled."
           />
+          {hasSavedRow &&
+            (form.isVisible ? (
+              <p className="text-xs text-emerald-700">
+                Company profile can appear on NFC Compact.
+              </p>
+            ) : (
+              <p className="text-xs text-amber-700">
+                Company profile saved, but it is currently hidden from your
+                public Career Card.
+              </p>
+            ))}
           <div className="flex items-center gap-3 pt-2">
             <Button
               type="button"
@@ -576,11 +615,12 @@ export function CompanyProfileSettings({
             >
               {isPending ? "Saving…" : "Save company profile"}
             </Button>
-            {saved && (
+            {saved && !dirty && (
               <p role="status" className="text-sm font-medium text-emerald-700">
                 Saved
               </p>
             )}
+            {dirty && <p className="text-sm text-amber-700">Unsaved changes</p>}
             {error && (
               <p role="alert" className="text-sm text-red-600">
                 {error}

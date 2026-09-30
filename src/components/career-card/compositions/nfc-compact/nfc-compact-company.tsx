@@ -100,7 +100,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
       )}
 
       {/* three company mini cards */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <CompactMiniCard
           icon={<Factory className="size-3.5" />}
           label="Industry"
@@ -109,12 +109,26 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
         <CompactMiniCard
           icon={<MapPin className="size-3.5" />}
           label="Locations"
-          lines={c.locations.slice(0, 3)}
+          lines={
+            c.locations.length > 1
+              ? [
+                  `${c.locations.length} Locations`,
+                  c.locations.slice(0, 2).join(" · "),
+                ]
+              : c.locations.slice(0, 1)
+          }
         />
         <CompactMiniCard
           icon={<Layers className="size-3.5" />}
           label="Products / Services"
-          lines={c.services.slice(0, 4)}
+          lines={
+            c.services.length > 1
+              ? [
+                  `${c.services.length} Services`,
+                  c.services.slice(0, 2).join(" · "),
+                ]
+              : c.services.slice(0, 1)
+          }
         />
       </div>
 

@@ -103,7 +103,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
       )}
 
       {/* three mini information cards */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <CompactMiniCard
           icon={<GraduationCap className="size-3.5" />}
           label="Education"
@@ -124,7 +124,14 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
         <CompactMiniCard
           icon={<BadgeCheck className="size-3.5" />}
           label="Certifications"
-          lines={c.certifications.map((x) => x.name).slice(0, 3)}
+          lines={
+            c.certifications.length > 1
+              ? [
+                  `${c.certifications.length} Certifications`,
+                  c.certifications[0].name,
+                ]
+              : c.certifications.slice(0, 1).map((x) => x.name)
+          }
         />
       </div>
 
