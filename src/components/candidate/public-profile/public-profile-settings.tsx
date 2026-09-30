@@ -47,6 +47,10 @@ import {
   type PhotoPosition,
 } from "@/components/candidate/public-profile/career-card-photo";
 import type { ThemeRecommendation } from "@/lib/career-card-themes";
+import {
+  NFC_COMPACT_SKINS,
+  type NfcCompactSkinId,
+} from "@/lib/nfc-compact-skins";
 import { CareerCardNfcWriter } from "@/components/candidate/public-profile/career-card-nfc-writer";
 import { Button } from "@/components/ui/button";
 
@@ -80,6 +84,7 @@ export type PublicProfileSettingsState = {
   themeId: CareerCardThemeId;
   accentColorId: CareerCardAccentColorId;
   cardStyleId: CareerCardStyleId;
+  nfcCompactSkinId: NfcCompactSkinId;
 };
 
 const VISIBILITY_SECTIONS: {
@@ -101,6 +106,28 @@ const VISIBILITY_SECTIONS: {
   { key: "showCertifications", label: "Certifications" },
   { key: "showLanguages", label: "Languages" },
 ];
+
+/** Lightweight skin preview chips — CSS only, no image generation. */
+function SkinMiniPreview({ skinId }: { skinId: NfcCompactSkinId }) {
+  if (skinId === "crimson-night") {
+    return (
+      <div className="relative h-16 overflow-hidden rounded-lg bg-[#09090B] ring-1 ring-white/10">
+        <span className="absolute inset-y-0 left-0 w-1 bg-[#B91C1C]" />
+        <span className="absolute top-2 left-4 h-2 w-8 rounded-full bg-white/80" />
+        <span className="absolute top-5 left-4 h-1.5 w-14 rounded-full bg-[#EF4444]/70" />
+        <span className="absolute right-2 bottom-2 h-5 w-14 rounded-md bg-[#B91C1C]" />
+      </div>
+    );
+  }
+  return (
+    <div className="relative h-16 overflow-hidden rounded-lg bg-[#fafaf9] ring-1 ring-stone-200">
+      <span className="absolute inset-y-0 left-0 w-1 bg-emerald-700" />
+      <span className="absolute top-2 left-4 h-2 w-8 rounded-full bg-stone-800" />
+      <span className="absolute top-5 left-4 h-1.5 w-14 rounded-full bg-emerald-700/60" />
+      <span className="absolute right-2 bottom-2 h-5 w-14 rounded-md bg-emerald-700" />
+    </div>
+  );
+}
 
 export function PublicProfileSettings({
   slug,
@@ -165,6 +192,7 @@ export function PublicProfileSettings({
       themeId: "role-race-classic",
       accentColorId: "emerald",
       cardStyleId: "standard",
+      nfcCompactSkinId: "career-passport",
     },
   );
   const [copied, setCopied] = useState(false);
@@ -813,6 +841,66 @@ export function PublicProfileSettings({
           </div>
         </fieldset>
 
+        {/* ── Appearance — NFC Compact skins only ── */}
+        {form.themeId === "nfc-compact" && (
+          <fieldset>
+            <legend className="text-sm font-semibold text-stone-900">
+              Appearance
+            </legend>
+            <p className="mt-1 mb-3 text-xs text-stone-500">
+              Choose how your NFC Compact Career Card looks. Accent color is
+              independent of appearance.
+            </p>
+            <div
+              role="radiogroup"
+              aria-label="Career Card appearance"
+              className="grid gap-2 sm:grid-cols-2"
+            >
+              {NFC_COMPACT_SKINS.map((sk) => {
+                const selected = form.nfcCompactSkinId === sk.id;
+                return (
+                  <button
+                    key={sk.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() =>
+                      setForm((f) => ({ ...f, nfcCompactSkinId: sk.id }))
+                    }
+                    className={`group rounded-xl border-2 p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
+                      selected
+                        ? "border-emerald-600 bg-emerald-50/40"
+                        : "border-stone-200 hover:border-stone-300"
+                    }`}
+                  >
+                    <SkinMiniPreview skinId={sk.id} />
+                    <div className="mt-3 flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-semibold text-stone-900">
+                          {sk.label}
+                        </p>
+                        <p className="mt-0.5 text-xs leading-relaxed text-stone-500">
+                          {sk.description}
+                        </p>
+                      </div>
+                      <span
+                        className={`mt-0.5 inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                          selected
+                            ? "bg-emerald-700 text-white"
+                            : "bg-stone-100 text-stone-500 group-hover:bg-emerald-50 group-hover:text-emerald-800"
+                        }`}
+                      >
+                        {selected && <Check className="size-3" aria-hidden />}
+                        {selected ? "Selected" : "Use"}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
+
         {/* ── Accent color ── */}
         <fieldset>
           <legend className="text-sm font-semibold text-stone-900">
@@ -1273,6 +1361,7 @@ export function PublicProfileSettings({
                   themeId: form.themeId,
                   accentColorId: form.accentColorId,
                   cardStyleId: form.cardStyleId,
+                  nfcCompactSkinId: form.nfcCompactSkinId,
                 }),
               true,
             )

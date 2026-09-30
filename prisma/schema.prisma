@@ -258,6 +258,9 @@ model PublicProfile {
   // Career Card presentation style — curated registry id only.
   // "standard" preserves the pre-7A4F1 appearance exactly.
   cardStyleId         String @default("standard")
+  // NFC Compact visual skin — curated registry id only; ignored by other
+  // templates. "career-passport" preserves the pre-7A5H3B appearance.
+  nfcCompactSkinId    String @default("career-passport")
   // Opaque storage key for the normalized profile photo — never a path,
   // filename, or URL. Null → initials avatar.
   profilePhotoKey     String?

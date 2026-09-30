@@ -11,6 +11,11 @@ import {
   resolveWhatsapp,
   whatsappPublicUrl,
 } from "@/server/public-profile/whatsapp";
+import {
+  isNfcCompactSkinId,
+  resolveNfcCompactSkin,
+  type NfcCompactSkinId,
+} from "@/lib/nfc-compact-skins";
 
 /** Top-level paths that must never be claimable as a public slug. */
 const RESERVED_SLUGS = new Set([
@@ -275,6 +280,11 @@ export const publicProfileSettingsSchema = z.strictObject({
     .trim()
     .refine(isCareerCardStyleId)
     .transform((v) => v as CareerCardStyleId),
+  nfcCompactSkinId: z
+    .string()
+    .trim()
+    .refine(isNfcCompactSkinId)
+    .transform((v) => v as NfcCompactSkinId),
 });
 
 export type PublicProfileSettingsInput = z.infer<
@@ -369,6 +379,8 @@ export type PublicCareerProfileDTO = {
   openToOpportunities: boolean;
   /** https://wa.me/<digits> — only when the number is flagged public. */
   whatsappUrl: string | null;
+  /** Resolved NFC Compact skin — only honored by the nfc-compact theme. */
+  nfcCompactSkinId: NfcCompactSkinId;
   links: {
     linkedin: string | null;
     github: string | null;
@@ -443,6 +455,7 @@ export function buildPublicProfileDTO(
     themeId: string;
     accentColorId: string;
     cardStyleId: string;
+    nfcCompactSkinId: string;
     profilePhotoKey: string | null;
     coverPhotoKey: string | null;
     coverPhotoFocalX: number;
@@ -504,6 +517,7 @@ export function buildPublicProfileDTO(
     themeId: resolveCareerCardTheme(profile.themeId),
     accentColorId: resolveCareerCardAccent(profile.accentColorId),
     cardStyleId: resolveCareerCardStyle(profile.cardStyleId),
+    nfcCompactSkinId: resolveNfcCompactSkin(profile.nfcCompactSkinId),
     shareUrl:
       profile.links?.length && profile.links[0].isActive
         ? `${env.PUBLIC_SHARE_ORIGIN}/n/${profile.links[0].token}`

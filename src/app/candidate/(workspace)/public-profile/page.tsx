@@ -5,6 +5,7 @@ import {
 } from "@/components/candidate/public-profile/company-profile-settings";
 import { prisma } from "@/server/db";
 import { parsePhoneNumberFromString } from "libphonenumber-js/min";
+import { resolveNfcCompactSkin } from "@/lib/nfc-compact-skins";
 
 import { env } from "@/server/env";
 import { resolveCareerCardTheme } from "@/lib/career-card-themes";
@@ -125,6 +126,9 @@ export default async function CandidatePublicProfilePage() {
                 themeId: resolveCareerCardTheme(profile.themeId),
                 accentColorId: resolveCareerCardAccent(profile.accentColorId),
                 cardStyleId: resolveCareerCardStyle(profile.cardStyleId),
+                nfcCompactSkinId: resolveNfcCompactSkin(
+                  profile.nfcCompactSkinId,
+                ),
               }
             : null
         }

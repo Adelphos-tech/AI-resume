@@ -7,6 +7,7 @@ import type {
   CompactCompany,
 } from "@/components/career-card/dev/nfc-compact-data";
 import { NfcCompactCard } from "@/components/career-card/compositions/nfc-compact/nfc-compact-card";
+import { CrimsonNightCard } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-card";
 import { nfcCompactAccentStyle } from "@/components/career-card/compositions/nfc-compact/nfc-compact-accents";
 import { completedYearsOfExperience } from "@/components/career-card/adapters/public-profile-to-career-card";
 import type { CompanyProfileDTO } from "@/server/public-profile/company-profile";
@@ -30,11 +31,28 @@ export function NfcCompactLibraryCard({
 }) {
   const [active, setActive] = useState<"candidate" | "company">("candidate");
   const candidate = toCompactCandidate(dto, slug);
-  const company = dto.company ? toCompactCompany(dto.company) : null;
+  const company = dto.company ? toCompactCompany(dto.company, dto) : null;
   const cta =
     active === "company" && company
       ? companyCta(company)
       : candidateCta(candidate);
+  // Crimson Night skin — same data, same /n/<token> identity, dark premium
+  // surface system. Accent stays independent (Passport honors it; Crimson
+  // keeps its approved crimson identity).
+  if (dto.nfcCompactSkinId === "crimson-night") {
+    return (
+      <main className="min-h-dvh bg-stone-950 px-3 py-6 sm:py-10">
+        <CrimsonNightCard
+          candidate={candidate}
+          company={company}
+          active={active}
+          onSwitch={setActive}
+          cta={cta}
+          shareUrl={dto.shareUrl}
+        />
+      </main>
+    );
+  }
   return (
     <main className="min-h-dvh bg-stone-100 px-3 py-6 sm:py-10">
       <NfcCompactCard
@@ -65,6 +83,10 @@ function toCompactCandidate(
     currentRole: current?.position,
     currentCompany: current?.company ?? undefined,
     portrait: dto.profilePhotoUrl ?? undefined,
+    cover: dto.coverPhotoUrl,
+    coverFocalX: dto.coverPhotoPosition.focalX,
+    coverFocalY: dto.coverPhotoPosition.focalY,
+    coverZoom: dto.coverPhotoPosition.zoom,
     // No public phone/email fields exist on the candidate DTO — never
     // synthesize them (see PublicCareerProfileDTO contract).
     linkedin: dto.links.linkedin,
@@ -97,10 +119,17 @@ function toCompactCandidate(
   };
 }
 
-function toCompactCompany(c: CompanyProfileDTO): CompactCompany {
+function toCompactCompany(
+  c: CompanyProfileDTO,
+  dto: PublicCareerProfileDTO,
+): CompactCompany {
   return {
     companyName: c.companyName,
     logo: c.logoUrl ?? undefined,
+    cover: dto.coverPhotoUrl,
+    coverFocalX: dto.coverPhotoPosition.focalX,
+    coverFocalY: dto.coverPhotoPosition.focalY,
+    coverZoom: dto.coverPhotoPosition.zoom,
     tagline: c.tagline ?? undefined,
     contactPerson: c.contactPersonName ?? undefined,
     contactPersonRole: c.contactPersonRole ?? undefined,
