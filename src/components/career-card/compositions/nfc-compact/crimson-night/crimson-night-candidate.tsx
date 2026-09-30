@@ -32,7 +32,7 @@ import {
  */
 export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* cover band — dark atmosphere over the real cover, crimson edge */}
       {c.cover && (
         <div
@@ -143,7 +143,7 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
       )}
 
       {/* three mini information cards */}
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-2">
         <CrimsonMiniCard
           icon={<GraduationCap className="size-3.5" />}
           label="Education"
@@ -177,7 +177,7 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
 
       {/* portfolio + availability pair */}
       {(c.portfolioAvailable || c.availability) && (
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-2">
           {c.portfolioAvailable && (
             <CrimsonActionCard
               icon={<FileText className="size-4" />}
@@ -187,7 +187,7 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
             />
           )}
           {c.availability && (
-            <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-[var(--cn-elev)] p-4">
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[var(--cn-elev)] p-4">
               <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--cn-cta)]/15 text-[var(--cn-hi)]">
                 <CheckCircle2 className="size-4" />
               </span>

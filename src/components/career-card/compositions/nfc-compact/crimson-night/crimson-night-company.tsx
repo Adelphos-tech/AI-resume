@@ -30,7 +30,7 @@ import {
 /** Crimson Night — company half. Same IA as Career Passport Light. */
 export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* cover band — shared card cover treatment */}
       {c.cover && (
         <div
@@ -135,7 +135,7 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
       )}
 
       {/* three company mini cards */}
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-2">
         <CrimsonMiniCard
           icon={<Factory className="size-3.5" />}
           label="Industry"

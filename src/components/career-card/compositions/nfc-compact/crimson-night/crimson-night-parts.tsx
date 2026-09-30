@@ -39,7 +39,7 @@ export function CrimsonSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-white/5 border-l-[3px] border-l-[var(--cn-cta)] bg-[var(--cn-elev)] p-4">
+    <section className="rounded-2xl border border-white/10 border-l-[3px] border-l-[var(--cn-cta)] bg-[var(--cn-elev)] p-4">
       <div className="flex items-center gap-2.5">
         <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--cn-cta)]/15 text-[var(--cn-hi)]">
           {icon}
@@ -84,7 +84,7 @@ export function CrimsonMiniCard({
   const items = lines.filter(Boolean) as string[];
   if (!items.length) return null;
   return (
-    <div className="relative min-w-0 rounded-xl border border-white/5 bg-[var(--cn-elev)] p-3.5">
+    <div className="relative min-w-0 rounded-xl border border-white/10 bg-[var(--cn-elev)] p-3.5">
       {/* credential corner mark */}
       <span
         aria-hidden
@@ -137,7 +137,7 @@ export function CrimsonActionCard({
   href?: string | null;
 }) {
   const cls =
-    "group flex w-full items-center gap-3 rounded-2xl border border-white/5 bg-[var(--cn-elev)] p-4 text-left transition hover:border-[var(--cn-cta)]/40 hover:ring-2 hover:ring-[var(--cn-cta)]/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cn-hi)]";
+    "group flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-[var(--cn-elev)] p-4 text-left transition hover:border-[var(--cn-cta)]/40 hover:ring-2 hover:ring-[var(--cn-cta)]/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cn-hi)]";
   const inner = (
     <>
       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--cn-cta)]/15 text-[var(--cn-hi)]">
@@ -243,7 +243,7 @@ export function CrimsonContactRow({
 /** Skill chip — charcoal chip, small crimson dot, warm-white text. */
 export function CrimsonSkillChip({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/5 bg-[var(--cn-raise)] px-2.5 py-1 text-[11px] font-semibold text-[var(--cn-muted)]">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[var(--cn-raise)] px-2.5 py-1 text-[11px] font-semibold text-[var(--cn-muted)]">
       <span aria-hidden className="size-1.5 rounded-full bg-[var(--cn-cta)]" />
       {label}
     </span>

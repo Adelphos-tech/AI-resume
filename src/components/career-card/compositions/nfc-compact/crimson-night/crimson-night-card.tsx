@@ -81,7 +81,7 @@ export function CrimsonNightCard({
         ))}
       </div>
 
-      <div className="relative m-3 rounded-3xl bg-[var(--cn-surface)] p-4 ring-1 ring-white/10 sm:p-5 lg:m-4 lg:p-6">
+      <div className="relative m-3 ml-4 rounded-3xl bg-[var(--cn-surface)] p-4 ring-1 ring-white/10 sm:p-5 lg:m-4 lg:ml-5 lg:p-6">
         {/* top brand bar */}
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-2">
