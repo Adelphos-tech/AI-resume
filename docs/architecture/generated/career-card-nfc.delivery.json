@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "43135c46-7ef1-4e76-8a00-ed76a5f903a8",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/shivang/Desktop/AI Resume/docs/architecture/source/career-card-nfc.sequence.json",
+  "output": "/Users/shivang/Desktop/AI Resume/docs/architecture/generated/career-card-nfc.html",
+  "specification": {
+    "sha256": "9c4b7f886e5c5386bdefc59f70aa0e59ec003047fe96b957818ec74dd74c356b",
+    "bytes": 8330
+  },
+  "artifact": {
+    "sha256": "eee9f639f3da5e654f213a5448bcf3fdcb0b6396b85a78699fdacc125aaa2f66",
+    "bytes": 767516
+  }
+}

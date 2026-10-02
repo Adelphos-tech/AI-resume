@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Career Card \u2014 Permanent Identity, Filtered Output",
+    "subtitle": "One opaque /n link for QR + NFC; publication and DTO rules enforced downstream",
+    "output": "docs/architecture/generated/career-card-nfc.html",
+    "column_fit": "spread",
+    "visual_preset": "blueprint",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@localhost:rolerace/AI-Resume.git",
+      "link_mode": "local-only",
+      "revision": "25146e7c892852a10c5a037a6abe84317a30b839"
+    }
+  },
+  "participants": [
+    {
+      "id": "candidate",
+      "type": "external",
+      "label": "Candidate",
+      "sublabel": "signed-in owner",
+      "sources": [
+        {
+          "path": "src/server/public-profile/public-profile.ts",
+          "line": 88,
+          "end_line": 91,
+          "label": "createPublicProfile"
+        }
+      ]
+    },
+    {
+      "id": "settings",
+      "type": "frontend",
+      "label": "Settings",
+      "sublabel": "publish + flags",
+      "sources": [
+        {
+          "path": "src/app/candidate/(workspace)/public-profile/page.tsx",
+          "line": 93,
+          "label": "shareUrl prop"
+        }
+      ]
+    },
+    {
+      "id": "share",
+      "type": "frontend",
+      "label": "Share layer",
+      "sublabel": "copy \u00b7 QR \u00b7 NFC writer",
+      "sources": [
+        {
+          "path": "src/components/career-card/compositions/nfc-compact/nfc-compact-qr.tsx",
+          "line": 33,
+          "label": "QRCode.toDataURL(url)"
+        },
+        {
+          "path": "src/components/candidate/public-profile/career-card-nfc-writer.tsx",
+          "line": 213,
+          "end_line": 222,
+          "label": "NDEF url record"
+        },
+        {
+          "path": "src/components/candidate/public-profile/career-card-nfc-writer.tsx",
+          "line": 236,
+          "end_line": 253,
+          "label": "scan-back verify"
+        }
+      ]
+    },
+    {
+      "id": "server",
+      "type": "backend",
+      "label": "Server",
+      "sublabel": "/n + /u routes",
+      "sources": [
+        {
+          "path": "src/app/n/[token]/route.ts",
+          "line": 9,
+          "end_line": 22,
+          "label": "token \u2192 /u redirect"
+        }
+      ]
+    },
+    {
+      "id": "dto",
+      "type": "security",
+      "label": "DTO builder",
+      "sublabel": "privacy filter",
+      "sources": [
+        {
+          "path": "src/server/public-profile/public-profile.ts",
+          "line": 445,
+          "end_line": 451,
+          "label": "no ids/email/phone"
+        },
+        {
+          "path": "src/server/public-profile/public-profile.ts",
+          "line": 505,
+          "label": "isPublished gate"
+        },
+        {
+          "path": "src/server/public-profile/public-profile.ts",
+          "line": 525,
+          "end_line": 528,
+          "label": "media via /u routes"
+        }
+      ]
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "PublicProfile + Link",
+      "sources": [
+        {
+          "path": "src/server/public-profile/public-profile.ts",
+          "line": 100,
+          "end_line": 115,
+          "label": "atomic create"
+        }
+      ]
+    },
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Visitor",
+      "sublabel": "tap / scan",
+      "sources": [
+        {
+          "path": "src/app/n/[token]/route.ts",
+          "line": 14,
+          "end_line": 19,
+          "label": "no session required"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 400,
+      "label": "Configure + publish identity"
+    },
+    {
+      "from": 420,
+      "to": 690,
+      "label": "Anonymous resolution"
+    }
+  ],
+  "messages": [
+    {
+      "id": "create",
+      "from": "candidate",
+      "to": "settings",
+      "y": 165,
+      "label": "enable public profile",
+      "variant": "emphasis"
+    },
+    {
+      "id": "create-action",
+      "from": "settings",
+      "to": "server",
+      "y": 193,
+      "label": "createPublicProfile (session-owned)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "tx",
+      "from": "server",
+      "to": "pg",
+      "y": 223,
+      "label": "$transaction: profile + link",
+      "variant": "default",
+      "note": "token = randomBytes(24) base64url \u2014 created once"
+    },
+    {
+      "id": "tx-ok",
+      "from": "pg",
+      "to": "server",
+      "y": 253,
+      "label": "profile + permanent token",
+      "variant": "return"
+    },
+    {
+      "id": "publish",
+      "from": "candidate",
+      "to": "settings",
+      "y": 286,
+      "label": "publish + choose visible fields",
+      "variant": "default"
+    },
+    {
+      "id": "persist",
+      "from": "settings",
+      "to": "server",
+      "y": 314,
+      "label": "isPublished + visibility flags",
+      "variant": "emphasis"
+    },
+    {
+      "id": "persist-db",
+      "from": "server",
+      "to": "pg",
+      "y": 342,
+      "label": "persist settings",
+      "variant": "default"
+    },
+    {
+      "id": "share-url",
+      "from": "server",
+      "to": "settings",
+      "y": 372,
+      "label": "shareUrl = ORIGIN + /n/<token>",
+      "variant": "return"
+    },
+    {
+      "id": "carry",
+      "from": "settings",
+      "to": "share",
+      "y": 402,
+      "label": "copy / QR / NFC write",
+      "variant": "emphasis",
+      "note": "all three carry the same /n URL"
+    },
+    {
+      "id": "nfc-write",
+      "from": "share",
+      "to": "candidate",
+      "y": 432,
+      "label": "NDEF url record \u2192 tag; scan-back verify",
+      "variant": "dashed"
+    },
+    {
+      "id": "scan",
+      "from": "visitor",
+      "to": "server",
+      "y": 470,
+      "label": "GET /n/<token>",
+      "variant": "emphasis",
+      "note": "routing only \u2014 not authentication"
+    },
+    {
+      "id": "lookup",
+      "from": "server",
+      "to": "pg",
+      "y": 500,
+      "label": "link findUnique(token)",
+      "variant": "default"
+    },
+    {
+      "id": "link-check",
+      "from": "pg",
+      "to": "server",
+      "y": 530,
+      "label": "isActive + isPublished \u2192 slug | 404",
+      "variant": "return"
+    },
+    {
+      "id": "redirect",
+      "from": "server",
+      "to": "visitor",
+      "y": 558,
+      "label": "302 \u2192 /u/<current-slug>",
+      "variant": "return"
+    },
+    {
+      "id": "get-u",
+      "from": "visitor",
+      "to": "server",
+      "y": 588,
+      "label": "GET /u/<slug>",
+      "variant": "default"
+    },
+    {
+      "id": "build-dto",
+      "from": "server",
+      "to": "dto",
+      "y": 618,
+      "label": "buildPublicProfileDTO",
+      "variant": "security",
+      "note": "drops ids, keys, unflagged contacts"
+    },
+    {
+      "id": "dto-ok",
+      "from": "dto",
+      "to": "server",
+      "y": 646,
+      "label": "public DTO \u2014 or 404 unpublished",
+      "variant": "return"
+    },
+    {
+      "id": "render",
+      "from": "server",
+      "to": "visitor",
+      "y": 674,
+      "label": "rendered card \u2014 public fields only",
+      "variant": "default"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "server",
+      "from": 193,
+      "to": 674,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "Token is routing, not auth",
+      "items": [
+        "192-bit opaque token \u2014 unrelated to candidate/profile ids",
+        "Possession grants nothing: isActive + isPublished still gate the redirect",
+        "Token never rotates on slug, content, or theme changes \u2014 only link create writes it"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "What the visitor receives",
+      "items": [
+        "Server-built public DTO \u2014 no Prisma rows, MCP data, ids, or storage keys",
+        "Email/phone/WhatsApp only when the candidate's visibility flags allow",
+        "Media served via /u/<slug>/photo + /cover routes \u2014 keys never exposed"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "NFC is convenience, not security",
+      "items": [
+        "Web NFC NDEF url record \u2014 plain text URL, no cryptographic tag binding",
+        "Verify mode compares scanned URL to shareUrl: verified / wrong / empty",
+        "Tag UID is not read or stored; nothing NFC-related persists server-side"
+      ]
+    }
+  ]
+}

@@ -54,6 +54,7 @@ ownership or remote authenticity — there is no configured upstream.
 | Auth & Trust Boundaries           | architecture | [auth-security.architecture.json](source/auth-security.architecture.json) | [auth-security.html](generated/auth-security.html)     | `8b8d21a` |
 | Resume Import → Variant Lifecycle | workflow     | [resume-pipeline.workflow.json](source/resume-pipeline.workflow.json)     | [resume-pipeline.html](generated/resume-pipeline.html) | `c79226f` |
 | AI Review Sequence                | sequence     | [ai-review.sequence.json](source/ai-review.sequence.json)                 | [ai-review.html](generated/ai-review.html)             | `944f3d0` |
+| Career Card / NFC Identity        | sequence     | [career-card-nfc.sequence.json](source/career-card-nfc.sequence.json)     | [career-card-nfc.html](generated/career-card-nfc.html) | `25146e7` |
 
 - **Runtime Architecture** — single-host deployment shape.
 - **Auth & Trust Boundaries** — who can access what: Better Auth credential
@@ -70,3 +71,6 @@ ownership or remote authenticity — there is no configured upstream.
   ownership-checked review of an existing ResumeVariant; Groq receives only a
   server-built block/inventory payload, returns qualitative findings validated
   against verbatim anchors, and nothing is persisted or applied.
+- **Career Card / NFC Identity** — one permanent `/n/<token>` URL for copy, QR,
+  and NFC; publication and DTO filtering are enforced downstream of the
+  redirect, so the token routes but never authenticates.
