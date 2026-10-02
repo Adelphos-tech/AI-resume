@@ -15,3 +15,6 @@ next-env.d.ts
 
 # local agent config
 .devin
+
+# archify delivered artifacts (derived, not hand-authored)
+docs/architecture/generated/

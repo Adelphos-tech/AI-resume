@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "4c21a3e0-d05b-4373-8195-e588f48a44b0",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/shivang/Desktop/AI Resume/docs/architecture/source/runtime.architecture.json",
+  "output": "/Users/shivang/Desktop/AI Resume/docs/architecture/generated/runtime.html",
+  "specification": {
+    "sha256": "6e4f0fac2f810188c336ef1320314af93ac4f2da4dff37689e3e474506a2525b",
+    "bytes": 8002
+  },
+  "artifact": {
+    "sha256": "2b63133c3fee4be5ef5e7f57d432864ea208feb5da1dde365bbe6c23775cb1be",
+    "bytes": 772101
+  }
+}

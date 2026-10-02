@@ -1,0 +1,356 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "RoleRace Runtime Architecture",
+    "subtitle": "Single-host production deployment \u2014 Next.js + PostgreSQL",
+    "output": "docs/architecture/generated/runtime.html",
+    "visual_preset": "blueprint",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@localhost:rolerace/AI-Resume.git",
+      "link_mode": "local-only",
+      "revision": "b0268407f5c0adf48f718b00034fab73ba78bd13"
+    }
+  },
+  "components": [
+    {
+      "id": "visitor",
+      "type": "external",
+      "label": "Browsers",
+      "sublabel": "candidates \u00b7 public visitors",
+      "pos": [30, 300],
+      "size": [130, 60],
+      "sources": [
+        {
+          "path": "src/app/u/[slug]/page.tsx",
+          "label": "public card route"
+        },
+        {
+          "path": "src/app/candidate/(workspace)/public-profile/page.tsx",
+          "label": "workspace route"
+        }
+      ]
+    },
+    {
+      "id": "devops",
+      "type": "external",
+      "label": "Deploy host",
+      "sublabel": "rsync \u2192 backup \u2192 deploy.sh",
+      "pos": [30, 520],
+      "size": [130, 60],
+      "sources": [
+        {
+          "path": "scripts/production/deploy.sh",
+          "line": 31,
+          "end_line": 60,
+          "label": "health-gated deploy"
+        },
+        {
+          "path": "scripts/production/backup.sh",
+          "label": "db + volume backup"
+        }
+      ]
+    },
+    {
+      "id": "nginx",
+      "type": "security",
+      "label": "nginx",
+      "sublabel": "TLS + proxy :80/:443",
+      "pos": [230, 300],
+      "size": [126, 60],
+      "sources": [
+        {
+          "path": "deploy/nginx/rolerace.conf",
+          "line": 9,
+          "end_line": 15,
+          "label": "server_name + proxy_pass"
+        }
+      ]
+    },
+    {
+      "id": "app",
+      "type": "backend",
+      "label": "rolerace-app",
+      "sublabel": "Next.js 16 standalone :3100",
+      "pos": [450, 300],
+      "size": [150, 62],
+      "tag": "app",
+      "sources": [
+        {
+          "path": "Dockerfile",
+          "line": 64,
+          "end_line": 80,
+          "label": "standalone server.js"
+        },
+        {
+          "path": "docker-compose.prod.yml",
+          "line": 33,
+          "end_line": 50,
+          "label": "service definition"
+        }
+      ]
+    },
+    {
+      "id": "auth",
+      "type": "security",
+      "label": "Better Auth",
+      "sublabel": "credential + session cookie",
+      "pos": [450, 140],
+      "size": [140, 60],
+      "tag": "app",
+      "sources": [
+        {
+          "path": "src/server/auth.ts",
+          "line": 10,
+          "label": "betterAuth config"
+        },
+        {
+          "path": "src/server/auth-options.ts",
+          "line": 7,
+          "label": "schema options"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Routes + server actions",
+      "sublabel": "candidate/admin workspace APIs",
+      "pos": [680, 140],
+      "size": [156, 60],
+      "tag": "app",
+      "sources": [
+        {
+          "path": "src/app/api/health/route.ts",
+          "line": 5,
+          "end_line": 8,
+          "label": "health probe"
+        },
+        {
+          "path": "src/server/public-profile/public-profile.ts",
+          "label": "public DTO builder"
+        }
+      ]
+    },
+    {
+      "id": "pubcard",
+      "type": "backend",
+      "label": "Public Career Card",
+      "sublabel": "/u/<slug> + /n/<token> redirect",
+      "pos": [680, 300],
+      "size": [156, 62],
+      "tag": "app",
+      "sources": [
+        {
+          "path": "src/app/n/[token]/route.ts",
+          "line": 14,
+          "end_line": 21,
+          "label": "permanent token redirect"
+        },
+        {
+          "path": "src/components/public-profile/premium-career-card.tsx",
+          "label": "theme/skin router"
+        }
+      ]
+    },
+    {
+      "id": "prisma",
+      "type": "backend",
+      "label": "Prisma",
+      "sublabel": "typed client",
+      "pos": [1000, 300],
+      "size": [126, 58],
+      "tag": "app",
+      "sources": [
+        {
+          "path": "src/server/db.ts",
+          "line": 12,
+          "label": "PrismaClient"
+        },
+        {
+          "path": "prisma/schema.prisma",
+          "label": "data model"
+        }
+      ]
+    },
+    {
+      "id": "pdf",
+      "type": "backend",
+      "label": "Playwright Chromium",
+      "sublabel": "deterministic PDF render",
+      "pos": [680, 520],
+      "size": [150, 60],
+      "tag": "app",
+      "sources": [
+        {
+          "path": "src/server/resume-variants/pdf.ts",
+          "line": 31,
+          "end_line": 48,
+          "label": "chromium launch"
+        }
+      ]
+    },
+    {
+      "id": "postgres",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "postgres:18 private :5432",
+      "pos": [1000, 460],
+      "size": [140, 60],
+      "tag": "data",
+      "sources": [
+        {
+          "path": "docker-compose.prod.yml",
+          "line": 10,
+          "end_line": 21,
+          "label": "no host port"
+        }
+      ]
+    },
+    {
+      "id": "storage",
+      "type": "database",
+      "label": "App data volume",
+      "sublabel": "/app/.data resumes+photos",
+      "pos": [1000, 600],
+      "size": [140, 60],
+      "tag": "data",
+      "sources": [
+        {
+          "path": "docker-compose.prod.yml",
+          "line": 48,
+          "end_line": 52,
+          "label": "named volume mount"
+        }
+      ]
+    },
+    {
+      "id": "groq",
+      "type": "cloud",
+      "label": "Groq API",
+      "sublabel": "opt-in AI review only",
+      "pos": [1000, 140],
+      "size": [136, 60],
+      "tag": "external",
+      "sources": [
+        {
+          "path": "src/server/ai/groq-client.ts",
+          "line": 27,
+          "end_line": 35,
+          "label": "model + client"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Production host \u2014 VPS 45.113.226.115 /opt/rolerace",
+      "wraps": [
+        "nginx",
+        "app",
+        "auth",
+        "api",
+        "pubcard",
+        "prisma",
+        "pdf",
+        "postgres",
+        "storage"
+      ],
+      "pad": 24
+    },
+    {
+      "kind": "security-group",
+      "label": "private compose network \u2014 no host exposure",
+      "wraps": ["postgres", "storage"],
+      "pad": 16
+    }
+  ],
+  "connections": [
+    {
+      "from": "visitor",
+      "to": "nginx",
+      "label": "HTTPS",
+      "variant": "emphasis"
+    },
+    {
+      "from": "nginx",
+      "to": "app",
+      "label": "proxy :3100",
+      "variant": "emphasis"
+    },
+    {
+      "from": "app",
+      "to": "auth",
+      "label": "session verify"
+    },
+    {
+      "from": "app",
+      "to": "api",
+      "label": "route"
+    },
+    {
+      "from": "app",
+      "to": "pubcard",
+      "label": "route"
+    },
+    {
+      "from": "api",
+      "to": "prisma",
+      "label": "read/write",
+      "variant": "dashed"
+    },
+    {
+      "from": "pubcard",
+      "to": "prisma",
+      "label": "DTO query",
+      "variant": "dashed"
+    },
+    {
+      "from": "prisma",
+      "to": "postgres",
+      "label": "SQL",
+      "variant": "emphasis"
+    },
+    {
+      "from": "app",
+      "to": "storage",
+      "label": "media files",
+      "variant": "dashed",
+      "route": "orthogonal-v",
+      "fromSide": "bottom",
+      "toSide": "bottom",
+      "via": [
+        [525, 670],
+        [1070, 670]
+      ]
+    },
+    {
+      "from": "app",
+      "to": "pdf",
+      "label": "export",
+      "variant": "dashed"
+    },
+    {
+      "from": "api",
+      "to": "groq",
+      "label": "AI review (opt-in)",
+      "variant": "dashed"
+    },
+    {
+      "from": "devops",
+      "to": "nginx",
+      "label": "rsync + compose up",
+      "variant": "dashed",
+      "route": "orthogonal-v",
+      "fromSide": "right",
+      "toSide": "bottom",
+      "via": [
+        [200, 550],
+        [200, 380],
+        [293, 380]
+      ]
+    }
+  ]
+}
