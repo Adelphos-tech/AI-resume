@@ -1,0 +1,377 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Deployment, Backup & Recovery Lifecycle",
+    "subtitle": "Health-gated redeploy \u2014 manual backup, manual restore, no auto-rollback",
+    "output": "docs/architecture/generated/deployment-resilience.html",
+    "visual_preset": "blueprint",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@localhost:rolerace/AI-Resume.git",
+      "link_mode": "local-only",
+      "revision": "1b7f56564d3b15b3556f0f0d241a547ce35ebf06"
+    }
+  },
+  "lanes": [
+    {
+      "id": "deploy",
+      "label": "Operator & deploy control"
+    },
+    {
+      "id": "state",
+      "label": "Persistent state"
+    },
+    {
+      "id": "backup",
+      "label": "Backup / recovery"
+    }
+  ],
+  "phases": [
+    {
+      "id": "p-safe",
+      "label": "Pre-deploy",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "p-build",
+      "label": "Build + migrate",
+      "fromCol": 2,
+      "toCol": 3
+    },
+    {
+      "id": "p-live",
+      "label": "Health + traffic",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "emphasis"
+    }
+  ],
+  "mainPath": ["operator", "preflight", "build", "migrate", "appgate", "nginx"],
+  "nodes": [
+    {
+      "id": "operator",
+      "lane": "deploy",
+      "col": 0,
+      "type": "external",
+      "label": "Operator",
+      "sublabel": "manual",
+      "width": 100,
+      "tag": "manual",
+      "sources": [
+        {
+          "path": "scripts/production/deploy.sh",
+          "line": 4,
+          "end_line": 9,
+          "label": "run from repo checkout"
+        }
+      ],
+      "height": 46
+    },
+    {
+      "id": "preflight",
+      "lane": "deploy",
+      "col": 1,
+      "type": "backend",
+      "label": "Preflight",
+      "sublabel": "env + disk",
+      "width": 100,
+      "sources": [
+        {
+          "path": "scripts/production/deploy.sh",
+          "line": 18,
+          "end_line": 28,
+          "label": "env + disk gates"
+        }
+      ],
+      "height": 46
+    },
+    {
+      "id": "build",
+      "lane": "deploy",
+      "col": 2,
+      "type": "backend",
+      "label": "Build",
+      "sublabel": "app+migrate",
+      "width": 100,
+      "sources": [
+        {
+          "path": "scripts/production/deploy.sh",
+          "line": 30,
+          "end_line": 31,
+          "label": "compose build"
+        },
+        {
+          "path": "docker-compose.prod.yml",
+          "line": 31,
+          "end_line": 34,
+          "label": "runner target"
+        }
+      ],
+      "height": 46
+    },
+    {
+      "id": "migrate",
+      "lane": "deploy",
+      "col": 3,
+      "type": "security",
+      "label": "Migrate",
+      "sublabel": "one-shot",
+      "width": 100,
+      "tag": "failure aborts deploy",
+      "sources": [
+        {
+          "path": "scripts/production/deploy.sh",
+          "line": 43,
+          "end_line": 44,
+          "label": "run --rm migrate"
+        },
+        {
+          "path": "docker-compose.prod.yml",
+          "line": 61,
+          "end_line": 74,
+          "label": "migrate profile"
+        },
+        {
+          "path": "scripts/production/deploy.sh",
+          "line": 34,
+          "end_line": 41,
+          "label": "postgres healthy wait"
+        }
+      ],
+      "height": 46
+    },
+    {
+      "id": "appgate",
+      "lane": "deploy",
+      "col": 4,
+      "type": "backend",
+      "label": "App + gate",
+      "sublabel": "health curl",
+      "width": 100,
+      "tag": "no auto-rollback",
+      "sources": [
+        {
+          "path": "scripts/production/deploy.sh",
+          "line": 46,
+          "end_line": 59,
+          "label": "up -d + curl loop"
+        },
+        {
+          "path": "src/app/api/health/route.ts",
+          "line": 10,
+          "end_line": 22,
+          "label": "SELECT 1 \u2192 ok/degraded"
+        }
+      ],
+      "height": 46
+    },
+    {
+      "id": "pgvol",
+      "lane": "state",
+      "col": 3,
+      "type": "database",
+      "label": "pg volume",
+      "sublabel": "private net",
+      "width": 100,
+      "tag": "persistent",
+      "sources": [
+        {
+          "path": "docker-compose.prod.yml",
+          "line": 18,
+          "end_line": 21,
+          "label": "named volume, no host port"
+        }
+      ],
+      "height": 46
+    },
+    {
+      "id": "datavol",
+      "lane": "state",
+      "col": 4,
+      "type": "database",
+      "label": ".data vol",
+      "sublabel": "persists",
+      "width": 100,
+      "tag": "persistent",
+      "sources": [
+        {
+          "path": "docker-compose.prod.yml",
+          "line": 40,
+          "end_line": 42,
+          "label": "rolerace_resumes"
+        }
+      ],
+      "height": 46
+    },
+    {
+      "id": "backupsh",
+      "lane": "backup",
+      "col": 0,
+      "type": "backend",
+      "label": "backup.sh",
+      "sublabel": "manual",
+      "width": 100,
+      "tag": "manual",
+      "sources": [
+        {
+          "path": "scripts/production/backup.sh",
+          "line": 2,
+          "end_line": 8,
+          "label": "run before deploy"
+        }
+      ],
+      "height": 46
+    },
+    {
+      "id": "artifacts",
+      "lane": "backup",
+      "col": 1,
+      "type": "database",
+      "label": "Backup set",
+      "sublabel": "dump+tar+sha",
+      "width": 100,
+      "tag": "timestamped",
+      "sources": [
+        {
+          "path": "scripts/production/backup.sh",
+          "line": 21,
+          "end_line": 35,
+          "label": "pg_dump + tar + sums"
+        }
+      ],
+      "height": 46
+    },
+    {
+      "id": "restore",
+      "lane": "backup",
+      "col": 4,
+      "type": "security",
+      "label": "Restore",
+      "sublabel": "manual",
+      "width": 100,
+      "tag": "operator procedure",
+      "sources": [
+        {
+          "path": "scripts/production/backup.sh",
+          "line": 6,
+          "end_line": 8,
+          "label": "backup-only script"
+        }
+      ],
+      "height": 46
+    },
+    {
+      "id": "nginx",
+      "lane": "deploy",
+      "col": 5,
+      "type": "backend",
+      "label": "Nginx",
+      "sublabel": "\u2192 :3100",
+      "width": 100,
+      "sources": [
+        {
+          "path": "deploy/nginx/rolerace.conf",
+          "line": 9,
+          "end_line": 15,
+          "label": "proxy to loopback app"
+        }
+      ],
+      "height": 46
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-op-deploy",
+      "from": "operator",
+      "to": "preflight",
+      "label": "deploy.sh",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-op-backup",
+      "from": "operator",
+      "to": "backupsh",
+      "label": "backup first",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-bak",
+      "from": "backupsh",
+      "to": "artifacts",
+      "label": "write",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-art-restore",
+      "from": "artifacts",
+      "to": "restore",
+      "label": "manual",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-pre-build",
+      "from": "preflight",
+      "to": "build",
+      "label": "ok",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-build-mig",
+      "from": "build",
+      "to": "migrate",
+      "label": "pg healthy",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-mig-pg",
+      "from": "migrate",
+      "to": "pgvol",
+      "label": "schema",
+      "variant": "default"
+    },
+    {
+      "id": "e-mig-app",
+      "from": "migrate",
+      "to": "appgate",
+      "label": "up -d app",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-app-data",
+      "from": "appgate",
+      "to": "datavol",
+      "label": "/app/.data",
+      "variant": "default"
+    },
+    {
+      "id": "e-app-ngx",
+      "from": "appgate",
+      "to": "nginx",
+      "label": "healthy",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "What is automated vs manual",
+      "items": [
+        "Automated: build, postgres health wait, one-shot migrate, app health curl loop",
+        "Manual: backup.sh must be run by the operator before deploy (deploy.sh comments instruct it)",
+        "Manual: no restore script, no rollback path \u2014 a failed health check leaves the new app container up and exits non-zero",
+        "Postgres exposes no host port; app binds 127.0.0.1:3100 \u2014 volumes survive container recreation"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Backup scope & limits",
+      "items": [
+        "pg_dump -Fc custom format + tar.gz of the /app/.data named volume + SHA256SUMS manifest",
+        "Sequential, not a coordinated snapshot \u2014 a deployment-time backup set, not point-in-time consistent",
+        "No retention/pruning and no restore verification \u2014 checksums are written, never re-checked"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "c0aca6d8-4af3-4f48-910d-de82712cadd8",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/shivang/Desktop/AI Resume/docs/architecture/source/deployment-resilience.workflow.json",
+  "output": "/Users/shivang/Desktop/AI Resume/docs/architecture/generated/deployment-resilience.html",
+  "specification": {
+    "sha256": "2c7216631f2e4d1a0e5fe2ed4ca734b27b7433031da97524ccc1120fd55f04c9",
+    "bytes": 8751
+  },
+  "artifact": {
+    "sha256": "be7aa1e711afc6961bbc21c1242b9831082973804ce43862e3407a22ad3eacd0",
+    "bytes": 766967
+  }
+}

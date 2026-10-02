@@ -48,13 +48,14 @@ ownership or remote authenticity — there is no configured upstream.
 
 ## Diagrams
 
-| Doc                               | Type         | Source                                                                    | Delivered                                              | Pinned    |
-| --------------------------------- | ------------ | ------------------------------------------------------------------------- | ------------------------------------------------------ | --------- |
-| Runtime Architecture              | architecture | [runtime.architecture.json](source/runtime.architecture.json)             | [runtime.html](generated/runtime.html)                 | `b026840` |
-| Auth & Trust Boundaries           | architecture | [auth-security.architecture.json](source/auth-security.architecture.json) | [auth-security.html](generated/auth-security.html)     | `8b8d21a` |
-| Resume Import → Variant Lifecycle | workflow     | [resume-pipeline.workflow.json](source/resume-pipeline.workflow.json)     | [resume-pipeline.html](generated/resume-pipeline.html) | `c79226f` |
-| AI Review Sequence                | sequence     | [ai-review.sequence.json](source/ai-review.sequence.json)                 | [ai-review.html](generated/ai-review.html)             | `944f3d0` |
-| Career Card / NFC Identity        | sequence     | [career-card-nfc.sequence.json](source/career-card-nfc.sequence.json)     | [career-card-nfc.html](generated/career-card-nfc.html) | `25146e7` |
+| Doc                               | Type         | Source                                                                            | Delivered                                                          | Pinned    |
+| --------------------------------- | ------------ | --------------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------- |
+| Runtime Architecture              | architecture | [runtime.architecture.json](source/runtime.architecture.json)                     | [runtime.html](generated/runtime.html)                             | `b026840` |
+| Auth & Trust Boundaries           | architecture | [auth-security.architecture.json](source/auth-security.architecture.json)         | [auth-security.html](generated/auth-security.html)                 | `8b8d21a` |
+| Resume Import → Variant Lifecycle | workflow     | [resume-pipeline.workflow.json](source/resume-pipeline.workflow.json)             | [resume-pipeline.html](generated/resume-pipeline.html)             | `c79226f` |
+| AI Review Sequence                | sequence     | [ai-review.sequence.json](source/ai-review.sequence.json)                         | [ai-review.html](generated/ai-review.html)                         | `944f3d0` |
+| Career Card / NFC Identity        | sequence     | [career-card-nfc.sequence.json](source/career-card-nfc.sequence.json)             | [career-card-nfc.html](generated/career-card-nfc.html)             | `25146e7` |
+| Deployment & Recovery Lifecycle   | workflow     | [deployment-resilience.workflow.json](source/deployment-resilience.workflow.json) | [deployment-resilience.html](generated/deployment-resilience.html) | `1b7f565` |
 
 - **Runtime Architecture** — single-host deployment shape.
 - **Auth & Trust Boundaries** — who can access what: Better Auth credential
@@ -74,3 +75,8 @@ ownership or remote authenticity — there is no configured upstream.
 - **Career Card / NFC Identity** — one permanent `/n/<token>` URL for copy, QR,
   and NFC; publication and DTO filtering are enforced downstream of the
   redirect, so the token routes but never authenticates.
+- **Deployment & Recovery Lifecycle** — health-gated `deploy.sh` redeploy,
+  operator-run `backup.sh` (pg_dump + data volume + checksums), and an
+  explicitly manual restore path — no automated rollback exists.
+
+A1–A6 above are the current core architecture set.
