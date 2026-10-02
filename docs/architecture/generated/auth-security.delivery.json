@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "fbd6dbd0-3b9e-444c-ab0e-41f5f3452099",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/shivang/Desktop/AI Resume/docs/architecture/source/auth-security.architecture.json",
+  "output": "/Users/shivang/Desktop/AI Resume/docs/architecture/generated/auth-security.html",
+  "specification": {
+    "sha256": "af4bee01aca6737b34510fb7bbf600ecfeab0d28ce73c141a2c7628de71db13d",
+    "bytes": 10256
+  },
+  "artifact": {
+    "sha256": "d5e1cfba9b7c3d2a005358d8e6f90bb0c578ccce09d78ed0993811e9ed98d9c5",
+    "bytes": 777039
+  }
+}

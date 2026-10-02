@@ -48,9 +48,16 @@ ownership or remote authenticity — there is no configured upstream.
 
 ## Diagrams
 
-| Doc                  | Type         | Source                                                        | Delivered                              |
-| -------------------- | ------------ | ------------------------------------------------------------- | -------------------------------------- |
-| Runtime Architecture | architecture | [runtime.architecture.json](source/runtime.architecture.json) | [runtime.html](generated/runtime.html) |
+| Doc                     | Type         | Source                                                                    | Delivered                                          | Pinned    |
+| ----------------------- | ------------ | ------------------------------------------------------------------------- | -------------------------------------------------- | --------- |
+| Runtime Architecture    | architecture | [runtime.architecture.json](source/runtime.architecture.json)             | [runtime.html](generated/runtime.html)             | `b026840` |
+| Auth & Trust Boundaries | architecture | [auth-security.architecture.json](source/auth-security.architecture.json) | [auth-security.html](generated/auth-security.html) | `8b8d21a` |
 
-Additional draft sources in `source/` are pre-Archify reference material and
-are migrated to the Archify schema as they are proven.
+- **Runtime Architecture** — single-host deployment shape.
+- **Auth & Trust Boundaries** — who can access what: Better Auth credential
+  sessions, role-scoped workspace guards, resource ownership checks, the
+  private→public DTO boundary, and the anonymous `/n/<token>` entry. Rendered
+  with real `region`/`security-group` boundaries: Public/Internet, Application
+  enforcement, Private data/storage, and External provider are distinct
+  zones — PostgreSQL and the media volume never share a boundary with the
+  public card surface.

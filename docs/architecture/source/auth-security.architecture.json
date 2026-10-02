@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "RoleRace Auth & Trust Boundaries",
+    "subtitle": "Who can access what \u2014 and how private data becomes public",
+    "output": "docs/architecture/generated/auth-security.html",
+    "visual_preset": "blueprint",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@localhost:rolerace/AI-Resume.git",
+      "link_mode": "local-only",
+      "revision": "8b8d21a1cd3b8ec6e9ce09bd8eef0767c7848591"
+    }
+  },
+  "components": [
+    {
+      "id": "candidate-browser",
+      "type": "external",
+      "label": "Candidate browser",
+      "sublabel": "email + password",
+      "pos": [30, 110],
+      "size": [150, 58],
+      "sources": [
+        {
+          "path": "src/lib/auth-client.ts",
+          "line": 3,
+          "label": "auth client"
+        },
+        {
+          "path": "src/server/auth-options.ts",
+          "line": 7,
+          "end_line": 12,
+          "label": "email+password"
+        }
+      ]
+    },
+    {
+      "id": "admin-browser",
+      "type": "external",
+      "label": "Admin browser",
+      "sublabel": "internal sign-in",
+      "pos": [30, 240],
+      "size": [150, 58],
+      "sources": [
+        {
+          "path": "src/server/session.ts",
+          "line": 9,
+          "end_line": 10,
+          "label": "ADMIN/STAFF roles"
+        }
+      ]
+    },
+    {
+      "id": "anon-visitor",
+      "type": "external",
+      "label": "Anonymous visitor",
+      "sublabel": "NFC / QR \u2014 no session",
+      "pos": [30, 490],
+      "size": [150, 58],
+      "sources": [
+        {
+          "path": "src/app/n/[token]/route.ts",
+          "line": 14,
+          "end_line": 21,
+          "label": "token \u2192 /u/<slug>"
+        }
+      ]
+    },
+    {
+      "id": "public-card",
+      "type": "frontend",
+      "label": "Public Career Card",
+      "sublabel": "/u + media \u00b7 published",
+      "pos": [30, 620],
+      "size": [150, 58],
+      "sources": [
+        {
+          "path": "src/app/u/[slug]/page.tsx",
+          "line": 52,
+          "end_line": 57,
+          "label": "isPublished query"
+        },
+        {
+          "path": "src/app/u/[slug]/page.tsx",
+          "line": 91,
+          "end_line": 99,
+          "label": "owner preview only"
+        },
+        {
+          "path": "src/app/u/[slug]/photo/route.ts",
+          "line": 19,
+          "end_line": 31,
+          "label": "media gate"
+        }
+      ]
+    },
+    {
+      "id": "better-auth",
+      "type": "security",
+      "label": "Better Auth",
+      "sublabel": "credential \u2192 session",
+      "pos": [290, 150],
+      "size": [150, 58],
+      "tag": "authn",
+      "sources": [
+        {
+          "path": "src/server/auth.ts",
+          "line": 10,
+          "end_line": 16,
+          "label": "betterAuth + adapter"
+        },
+        {
+          "path": "src/server/auth-options.ts",
+          "line": 10,
+          "end_line": 21,
+          "label": "disableSignUp + role"
+        }
+      ]
+    },
+    {
+      "id": "session-guards",
+      "type": "security",
+      "label": "Session guards",
+      "sublabel": "candidate + internal guards",
+      "pos": [290, 300],
+      "size": [160, 58],
+      "tag": "authz",
+      "sources": [
+        {
+          "path": "src/server/session.ts",
+          "line": 24,
+          "end_line": 31,
+          "label": "requireInternalSession"
+        },
+        {
+          "path": "src/server/session.ts",
+          "line": 55,
+          "end_line": 62,
+          "label": "requireCandidateSession"
+        }
+      ]
+    },
+    {
+      "id": "public-entry",
+      "type": "backend",
+      "label": "Public entry",
+      "sublabel": "/n/<token> \u2192 /u/<slug>",
+      "pos": [290, 490],
+      "size": [150, 58],
+      "sources": [
+        {
+          "path": "src/app/n/[token]/route.ts",
+          "line": 14,
+          "end_line": 21,
+          "label": "token lookup \u2192 slug"
+        }
+      ]
+    },
+    {
+      "id": "ownership",
+      "type": "security",
+      "label": "Ownership check",
+      "sublabel": "variant owner check",
+      "pos": [560, 110],
+      "size": [150, 58],
+      "tag": "authz",
+      "sources": [
+        {
+          "path": "src/app/candidate/(workspace)/resumes/[variantId]/pdf/route.ts",
+          "line": 18,
+          "end_line": 22,
+          "label": "variant owner check"
+        },
+        {
+          "path": "src/app/candidate/(workspace)/ai-review/[variantId]/page.tsx",
+          "line": 18,
+          "end_line": 22,
+          "label": "AI review owner check"
+        }
+      ]
+    },
+    {
+      "id": "candidate-routes",
+      "type": "backend",
+      "label": "Candidate workspace",
+      "sublabel": "role=CANDIDATE",
+      "pos": [560, 240],
+      "size": [160, 58],
+      "tag": "authenticated",
+      "sources": [
+        {
+          "path": "src/server/session.ts",
+          "line": 34,
+          "end_line": 50,
+          "label": "candidate ownership scope"
+        },
+        {
+          "path": "src/server/candidate-auth.ts",
+          "line": 24,
+          "end_line": 27,
+          "label": "role pinned CANDIDATE"
+        }
+      ]
+    },
+    {
+      "id": "admin-routes",
+      "type": "backend",
+      "label": "Admin workspace",
+      "sublabel": "ADMIN / STAFF",
+      "pos": [560, 370],
+      "size": [160, 58],
+      "tag": "internal",
+      "sources": [
+        {
+          "path": "src/server/session.ts",
+          "line": 12,
+          "end_line": 22,
+          "label": "internal role check"
+        }
+      ]
+    },
+    {
+      "id": "dto-builder",
+      "type": "security",
+      "label": "Public DTO builder",
+      "sublabel": "strips ids, email, keys",
+      "pos": [560, 500],
+      "size": [160, 58],
+      "tag": "privacy gate",
+      "sources": [
+        {
+          "path": "src/server/public-profile/public-profile.ts",
+          "line": 445,
+          "end_line": 451,
+          "label": "never exposes ids/email/phone"
+        },
+        {
+          "path": "src/server/public-profile/public-profile.ts",
+          "line": 552,
+          "end_line": 554,
+          "label": "showWhatsapp gate"
+        }
+      ]
+    },
+    {
+      "id": "stores",
+      "type": "database",
+      "label": "PostgreSQL + volume",
+      "sublabel": "rows + media keys/bytes",
+      "pos": [830, 430],
+      "size": [160, 58],
+      "sources": [
+        {
+          "path": "docker-compose.prod.yml",
+          "line": 10,
+          "end_line": 21,
+          "label": "private :5432"
+        },
+        {
+          "path": "docker-compose.prod.yml",
+          "line": 48,
+          "end_line": 52,
+          "label": "named volume"
+        }
+      ]
+    },
+    {
+      "id": "groq",
+      "type": "cloud",
+      "label": "Groq API",
+      "sublabel": "resume content only",
+      "pos": [1080, 300],
+      "size": [150, 58],
+      "sources": [
+        {
+          "path": "src/server/ai/groq-client.ts",
+          "line": 27,
+          "end_line": 35,
+          "label": "review client"
+        },
+        {
+          "path": "src/server/ai/resume-review.ts",
+          "line": 63,
+          "label": "session-owned candidate"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Public / Internet",
+      "wraps": [
+        "candidate-browser",
+        "admin-browser",
+        "anon-visitor",
+        "public-card"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "security-group",
+      "label": "Application enforcement \u2014 private server logic",
+      "wraps": [
+        "better-auth",
+        "session-guards",
+        "public-entry",
+        "ownership",
+        "candidate-routes",
+        "admin-routes",
+        "dto-builder"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "security-group",
+      "label": "Private data / storage",
+      "wraps": ["stores"],
+      "pad": 18
+    },
+    {
+      "kind": "region",
+      "label": "External provider",
+      "wraps": ["groq"],
+      "pad": 18
+    }
+  ],
+  "connections": [
+    {
+      "from": "candidate-browser",
+      "to": "better-auth",
+      "label": "sign-in",
+      "variant": "emphasis"
+    },
+    {
+      "from": "admin-browser",
+      "to": "better-auth",
+      "label": "sign-in"
+    },
+    {
+      "from": "better-auth",
+      "to": "session-guards",
+      "label": "session+role",
+      "variant": "emphasis"
+    },
+    {
+      "from": "session-guards",
+      "to": "candidate-routes",
+      "label": "CANDIDATE"
+    },
+    {
+      "from": "session-guards",
+      "to": "admin-routes",
+      "label": "ADMIN"
+    },
+    {
+      "from": "anon-visitor",
+      "to": "public-entry",
+      "label": "/n/<token>"
+    },
+    {
+      "from": "public-entry",
+      "to": "dto-builder",
+      "label": "profile load"
+    },
+    {
+      "from": "candidate-routes",
+      "to": "ownership",
+      "label": "scope"
+    },
+    {
+      "from": "ownership",
+      "to": "stores",
+      "label": "owned only",
+      "variant": "emphasis"
+    },
+    {
+      "from": "admin-routes",
+      "to": "stores",
+      "label": "internal"
+    },
+    {
+      "from": "dto-builder",
+      "to": "stores",
+      "label": "row read"
+    },
+    {
+      "from": "dto-builder",
+      "to": "public-card",
+      "label": "public DTO",
+      "variant": "emphasis"
+    },
+    {
+      "from": "ownership",
+      "to": "groq",
+      "label": "resume only",
+      "variant": "dashed",
+      "route": "orthogonal-v",
+      "fromSide": "top",
+      "toSide": "top",
+      "via": [
+        [635, 60],
+        [1155, 60]
+      ]
+    }
+  ]
+}
