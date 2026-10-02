@@ -109,6 +109,7 @@ model Candidate {
   careerProfile MasterCareerProfile?
   resumeVariants ResumeVariant[]
   publicProfile PublicProfile?
+  careerSite   CareerSite?
 
   @@index([status])
   @@index([createdAt])
@@ -234,6 +235,21 @@ model ResumeVariant {
 
   @@index([candidateId])
   @@map("resume_variant")
+}
+
+/**
+ * Career Site — at most one per Candidate, created only by explicit
+ * candidate action. No public surface exists yet (no slug, no
+ * publication); persistence-only domain brick.
+ */
+model CareerSite {
+  id          String    @id @default(cuid())
+  candidateId String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  @@map("career_site")
 }
 
 model PublicProfile {
