@@ -106,6 +106,7 @@ when the database check fails. Responses are never cached.
 - `pnpm lint` — ESLint
 - `pnpm typecheck` — TypeScript (generates route types first)
 - `pnpm build` — production build
+- `pnpm test` — Vitest regression suite (privacy/access-control invariants)
 - `pnpm check` — runs format:check, lint, typecheck, and build
 
 GitHub Actions runs the same non-mutating checks on pushes to `main` and on
