@@ -48,10 +48,11 @@ ownership or remote authenticity — there is no configured upstream.
 
 ## Diagrams
 
-| Doc                     | Type         | Source                                                                    | Delivered                                          | Pinned    |
-| ----------------------- | ------------ | ------------------------------------------------------------------------- | -------------------------------------------------- | --------- |
-| Runtime Architecture    | architecture | [runtime.architecture.json](source/runtime.architecture.json)             | [runtime.html](generated/runtime.html)             | `b026840` |
-| Auth & Trust Boundaries | architecture | [auth-security.architecture.json](source/auth-security.architecture.json) | [auth-security.html](generated/auth-security.html) | `8b8d21a` |
+| Doc                               | Type         | Source                                                                    | Delivered                                              | Pinned    |
+| --------------------------------- | ------------ | ------------------------------------------------------------------------- | ------------------------------------------------------ | --------- |
+| Runtime Architecture              | architecture | [runtime.architecture.json](source/runtime.architecture.json)             | [runtime.html](generated/runtime.html)                 | `b026840` |
+| Auth & Trust Boundaries           | architecture | [auth-security.architecture.json](source/auth-security.architecture.json) | [auth-security.html](generated/auth-security.html)     | `8b8d21a` |
+| Resume Import → Variant Lifecycle | workflow     | [resume-pipeline.workflow.json](source/resume-pipeline.workflow.json)     | [resume-pipeline.html](generated/resume-pipeline.html) | `c79226f` |
 
 - **Runtime Architecture** — single-host deployment shape.
 - **Auth & Trust Boundaries** — who can access what: Better Auth credential
@@ -61,3 +62,6 @@ ownership or remote authenticity — there is no configured upstream.
   enforcement, Private data/storage, and External provider are distinct
   zones — PostgreSQL and the media volume never share a boundary with the
   public card surface.
+- **Resume Import → Variant Lifecycle** — deterministic extraction (unpdf /
+  mammoth, no AI), candidate-confirmed apply with fill-empty merge semantics,
+  and the server-side ResumeVariant snapshot boundary.

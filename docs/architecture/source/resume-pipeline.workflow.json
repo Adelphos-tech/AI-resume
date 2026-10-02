@@ -1,0 +1,406 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Resume Import \u2192 Career Profile \u2192 Variant Lifecycle",
+    "subtitle": "Deterministic extraction, candidate-confirmed import, server-side snapshots",
+    "output": "docs/architecture/generated/resume-pipeline.html",
+    "visual_preset": "blueprint",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@localhost:rolerace/AI-Resume.git",
+      "link_mode": "local-only",
+      "revision": "c79226fc5eb7ebfcf9ee5024c5bae78c026715e0"
+    }
+  },
+  "lanes": [
+    {
+      "id": "input",
+      "label": "Upload & extraction"
+    },
+    {
+      "id": "review",
+      "label": "Candidate review & apply",
+      "variant": "exception"
+    },
+    {
+      "id": "canonical",
+      "label": "Canonical career data"
+    },
+    {
+      "id": "variants",
+      "label": "Resume variants"
+    }
+  ],
+  "phases": [
+    {
+      "id": "p-input",
+      "label": "Input",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "p-extract",
+      "label": "Deterministic extraction",
+      "fromCol": 2,
+      "toCol": 2
+    },
+    {
+      "id": "p-review",
+      "label": "Review + confirm",
+      "fromCol": 3,
+      "toCol": 4,
+      "variant": "emphasis"
+    },
+    {
+      "id": "p-canonical",
+      "label": "Canonical persist",
+      "fromCol": 5,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "upload",
+    "upload-api",
+    "extract",
+    "extract-row",
+    "review-ui",
+    "confirm",
+    "mcp",
+    "variant-core",
+    "variant-row"
+  ],
+  "nodes": [
+    {
+      "id": "upload",
+      "lane": "input",
+      "col": 0,
+      "type": "external",
+      "label": "Candidate upload",
+      "sublabel": ".pdf / .docx \u226412MB",
+      "width": 118,
+      "tag": "ephemeral",
+      "sources": [
+        {
+          "path": "src/server/resume-storage/upload-resume.ts",
+          "line": 17,
+          "end_line": 24,
+          "label": "size + mime allowlist"
+        },
+        {
+          "path": "src/app/api/candidate/resume/route.ts",
+          "line": 15,
+          "end_line": 28,
+          "label": "candidate route"
+        }
+      ]
+    },
+    {
+      "id": "upload-api",
+      "lane": "input",
+      "col": 1,
+      "type": "backend",
+      "label": "Upload + validate",
+      "sublabel": "sha256 \u00b7 storageKey",
+      "width": 118,
+      "tag": "validated",
+      "sources": [
+        {
+          "path": "src/server/resume-storage/upload-resume.ts",
+          "line": 17,
+          "end_line": 36,
+          "label": "parseResumeUpload"
+        },
+        {
+          "path": "prisma/schema.prisma",
+          "line": 155,
+          "end_line": 170,
+          "label": "CandidateResumeSource"
+        }
+      ]
+    },
+    {
+      "id": "extract",
+      "lane": "input",
+      "col": 2,
+      "type": "backend",
+      "label": "Text extraction",
+      "sublabel": "unpdf \u00b7 mammoth",
+      "width": 118,
+      "tag": "deterministic \u2014 no AI",
+      "sources": [
+        {
+          "path": "src/server/resume-extraction/extract-resume.ts",
+          "line": 64,
+          "end_line": 78,
+          "label": "unpdf + mammoth"
+        },
+        {
+          "path": "src/server/resume-extraction/extract-resume.ts",
+          "line": 39,
+          "end_line": 48,
+          "label": "normalize only"
+        }
+      ]
+    },
+    {
+      "id": "extract-row",
+      "lane": "input",
+      "col": 3,
+      "type": "database",
+      "label": "Extraction draft",
+      "sublabel": "extraction row",
+      "width": 118,
+      "tag": "ephemeral / derived",
+      "sources": [
+        {
+          "path": "prisma/schema.prisma",
+          "line": 177,
+          "end_line": 191,
+          "label": "extractedText + status"
+        }
+      ]
+    },
+    {
+      "id": "structure",
+      "lane": "input",
+      "col": 3,
+      "type": "backend",
+      "label": "Section parser",
+      "sublabel": "rule-based",
+      "width": 118,
+      "yOffset": 110,
+      "tag": "deterministic",
+      "sources": [
+        {
+          "path": "src/server/resume-import/parse-resume.ts",
+          "line": 5,
+          "end_line": 6,
+          "label": "pure rules \u2014 no AI"
+        }
+      ]
+    },
+    {
+      "id": "review-ui",
+      "lane": "review",
+      "col": 3,
+      "type": "frontend",
+      "label": "Review screen",
+      "sublabel": "inspect draft",
+      "width": 118,
+      "tag": "candidate decides",
+      "sources": [
+        {
+          "path": "src/app/candidate/(workspace)/profile/import/review/page.tsx",
+          "label": "review surface"
+        },
+        {
+          "path": "src/app/candidate/(workspace)/profile/import/review/actions.ts",
+          "line": 5,
+          "label": "confirm action"
+        }
+      ]
+    },
+    {
+      "id": "confirm",
+      "lane": "review",
+      "col": 4,
+      "type": "security",
+      "label": "Apply import",
+      "sublabel": "revision check + merge",
+      "width": 118,
+      "tag": "write boundary",
+      "sources": [
+        {
+          "path": "src/server/resume-import/import-to-profile.ts",
+          "line": 56,
+          "end_line": 70,
+          "label": "stale-review sha256 gate"
+        },
+        {
+          "path": "src/server/resume-import/import-to-profile.ts",
+          "line": 128,
+          "end_line": 146,
+          "label": "fill empty only \u2014 no overwrite"
+        }
+      ]
+    },
+    {
+      "id": "mcp",
+      "lane": "canonical",
+      "col": 5,
+      "type": "database",
+      "label": "Career Profile",
+      "sublabel": "profileData JSON",
+      "width": 118,
+      "tag": "canonical",
+      "sources": [
+        {
+          "path": "prisma/schema.prisma",
+          "line": 195,
+          "end_line": 206,
+          "label": "model"
+        },
+        {
+          "path": "src/server/resume-import/import-to-profile.ts",
+          "line": 364,
+          "end_line": 365,
+          "label": "upsert point"
+        }
+      ]
+    },
+    {
+      "id": "variant-core",
+      "lane": "variants",
+      "col": 5,
+      "type": "backend",
+      "label": "create variant",
+      "sublabel": "compose from MCP",
+      "width": 118,
+      "tag": "server-side",
+      "sources": [
+        {
+          "path": "src/server/resume-variants/resume-variants.ts",
+          "line": 66,
+          "end_line": 78,
+          "label": "entry"
+        },
+        {
+          "path": "src/server/candidates/resumes.ts",
+          "line": 52,
+          "end_line": 54,
+          "label": "candidate session guard"
+        }
+      ],
+      "yOffset": -8
+    },
+    {
+      "id": "variant-row",
+      "lane": "variants",
+      "col": 5,
+      "type": "database",
+      "label": "ResumeVariant",
+      "sublabel": "profileSnapshot + data",
+      "width": 118,
+      "tag": "snapshot \u2014 no update path",
+      "sources": [
+        {
+          "path": "prisma/schema.prisma",
+          "line": 220,
+          "end_line": 236,
+          "label": "model"
+        },
+        {
+          "path": "src/server/resume-variants/resume-variants.ts",
+          "line": 124,
+          "end_line": 136,
+          "label": "snapshot write"
+        }
+      ],
+      "yOffset": 95
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-upload",
+      "from": "upload",
+      "to": "upload-api",
+      "label": "file bytes",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-store",
+      "from": "upload-api",
+      "to": "extract",
+      "label": "stored",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-extract",
+      "from": "extract",
+      "to": "extract-row",
+      "label": "normalized",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-draft-review",
+      "from": "extract-row",
+      "to": "review-ui",
+      "label": "draft",
+      "variant": "default"
+    },
+    {
+      "id": "e-parse",
+      "from": "extract-row",
+      "to": "structure",
+      "label": "draft text",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-confirm",
+      "from": "review-ui",
+      "to": "confirm",
+      "label": "confirm",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-merge",
+      "from": "confirm",
+      "to": "mcp",
+      "label": "fill-empty merge",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-mcp",
+      "from": "mcp",
+      "to": "variant-core",
+      "label": "current MCP"
+    },
+    {
+      "id": "e-variant",
+      "from": "variant-core",
+      "to": "variant-row",
+      "label": "snapshot write",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-late-edits",
+      "from": "mcp",
+      "to": "variant-row",
+      "label": "frozen",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Deterministic only",
+      "items": [
+        "Extraction = unpdf/mammoth + text normalization \u2014 no interpretation (extract-resume.ts:39)",
+        "Structuring is pure rules \u2014 'no AI, no fuzzy matching' (parse-resume.ts:5)",
+        "No Groq call exists anywhere in the import path",
+        "Review screen renders the structured draft \u2014 candidate sees the parsed sections, not raw text"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Write boundary",
+      "items": [
+        "Nothing reaches MasterCareerProfile until the candidate confirms",
+        "Confirm re-checks the reviewed extraction sha256 (stale-review guard)",
+        "Basics fill empty fields only \u2014 existing canonical values are never overwritten",
+        "Sections append with duplicate keys skipped (ImportSummary counts)"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Variant snapshot",
+      "items": [
+        "profileSnapshot + resumeData are composed server-side at create time",
+        "No update/edit function exists for ResumeVariant rows (logical immutability)",
+        "Later MCP edits cannot reach an existing variant"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "340291e0-ff9e-42f7-a3f3-fbd479fa2906",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/shivang/Desktop/AI Resume/docs/architecture/source/resume-pipeline.workflow.json",
+  "output": "/Users/shivang/Desktop/AI Resume/docs/architecture/generated/resume-pipeline.html",
+  "specification": {
+    "sha256": "7a8ce0ccd9baf9e289f7ea831c4e2fe4e32c46f6f2477a6b309c31e26e2d6d0d",
+    "bytes": 9852
+  },
+  "artifact": {
+    "sha256": "ef3f97a005a086b9c74893b0293c555ecee8381ab0ae21f5e594c72b4f8b5b52",
+    "bytes": 769012
+  }
+}
