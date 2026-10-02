@@ -1,0 +1,326 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "AI Review \u2014 Explicit, Ownership-Checked, Non-Persisted",
+    "subtitle": "Advisory findings only \u2014 validated, anchored, never written back",
+    "output": "docs/architecture/generated/ai-review.html",
+    "column_fit": "spread",
+    "visual_preset": "blueprint",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "git@localhost:rolerace/AI-Resume.git",
+      "link_mode": "local-only",
+      "revision": "944f3d04332fccae773ca7311ddc15bf38990b15"
+    }
+  },
+  "participants": [
+    {
+      "id": "candidate",
+      "type": "external",
+      "label": "Candidate",
+      "sublabel": "signed-in browser",
+      "sources": [
+        {
+          "path": "src/components/candidate/ai-review/review-panel.tsx",
+          "line": 307,
+          "end_line": 317,
+          "label": "onReview click only"
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "type": "frontend",
+      "label": "Review panel",
+      "sublabel": "calls review action",
+      "sources": [
+        {
+          "path": "src/components/candidate/ai-review/review-panel.tsx",
+          "line": 314,
+          "end_line": 317,
+          "label": "startTransition"
+        }
+      ]
+    },
+    {
+      "id": "action",
+      "type": "backend",
+      "label": "Server action",
+      "sublabel": "review core",
+      "sources": [
+        {
+          "path": "src/app/candidate/(workspace)/ai-review/actions.ts",
+          "line": 14,
+          "end_line": 24,
+          "label": "session + strict input"
+        },
+        {
+          "path": "src/server/ai/resume-review.ts",
+          "line": 54,
+          "end_line": 58,
+          "label": "core"
+        }
+      ]
+    },
+    {
+      "id": "guards",
+      "type": "security",
+      "label": "Session+owner",
+      "sublabel": "session \u00b7 owner match",
+      "sources": [
+        {
+          "path": "src/app/candidate/(workspace)/ai-review/actions.ts",
+          "line": 16,
+          "end_line": 17,
+          "label": "requireCandidateSession"
+        },
+        {
+          "path": "src/server/ai/resume-review.ts",
+          "line": 74,
+          "end_line": 76,
+          "label": "owner check"
+        }
+      ]
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "ResumeVariant",
+      "sources": [
+        {
+          "path": "src/server/ai/resume-review.ts",
+          "line": 65,
+          "end_line": 73,
+          "label": "findUnique + owner check"
+        }
+      ]
+    },
+    {
+      "id": "blocks",
+      "type": "backend",
+      "label": "Payload",
+      "sublabel": "blocks \u00b7 anchors",
+      "sources": [
+        {
+          "path": "src/server/ai/review-blocks.ts",
+          "line": 14,
+          "end_line": 68,
+          "label": "buildReviewBlocks"
+        },
+        {
+          "path": "src/server/ai/review-blocks.ts",
+          "line": 101,
+          "end_line": 110,
+          "label": "validateReviewAnchors"
+        }
+      ]
+    },
+    {
+      "id": "groq",
+      "type": "cloud",
+      "label": "Groq API",
+      "sublabel": "env model",
+      "sources": [
+        {
+          "path": "src/server/ai/groq-client.ts",
+          "line": 27,
+          "end_line": 39,
+          "label": "env key + model"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 205,
+      "label": "Explicit trigger"
+    },
+    {
+      "from": 215,
+      "to": 402,
+      "label": "Authorize + load"
+    },
+    {
+      "from": 415,
+      "to": 540,
+      "label": "Review call"
+    },
+    {
+      "from": 550,
+      "to": 670,
+      "label": "Validate + render"
+    }
+  ],
+  "messages": [
+    {
+      "id": "click",
+      "from": "candidate",
+      "to": "panel",
+      "y": 165,
+      "label": "click \u201cReview with AI\u201d",
+      "variant": "emphasis",
+      "note": "user action only \u2014 no auto-run"
+    },
+    {
+      "id": "call",
+      "from": "panel",
+      "to": "action",
+      "y": 195,
+      "label": "{ variantId } \u2014 strictObject",
+      "variant": "emphasis"
+    },
+    {
+      "id": "session",
+      "from": "action",
+      "to": "guards",
+      "y": 230,
+      "label": "requireCandidateSession",
+      "variant": "security"
+    },
+    {
+      "id": "session-ok",
+      "from": "guards",
+      "to": "action",
+      "y": 262,
+      "label": "session candidate",
+      "variant": "return"
+    },
+    {
+      "id": "load",
+      "from": "action",
+      "to": "pg",
+      "y": 295,
+      "label": "resumeVariant.findUnique",
+      "variant": "default"
+    },
+    {
+      "id": "row",
+      "from": "pg",
+      "to": "action",
+      "y": 327,
+      "label": "row \u2014 else 404",
+      "variant": "return"
+    },
+    {
+      "id": "own",
+      "from": "action",
+      "to": "guards",
+      "y": 360,
+      "label": "candidateId === row owner",
+      "variant": "security"
+    },
+    {
+      "id": "own-ok",
+      "from": "guards",
+      "to": "action",
+      "y": 392,
+      "label": "owned \u2014 else reject",
+      "variant": "return"
+    },
+    {
+      "id": "build",
+      "from": "action",
+      "to": "blocks",
+      "y": 425,
+      "label": "buildReviewBlocks + inventory",
+      "variant": "default"
+    },
+    {
+      "id": "payload",
+      "from": "blocks",
+      "to": "action",
+      "y": 457,
+      "label": "blocks + inventory payload",
+      "variant": "return"
+    },
+    {
+      "id": "call-groq",
+      "from": "action",
+      "to": "groq",
+      "y": 492,
+      "label": "{targetRole,country,blocks,inventory}",
+      "variant": "emphasis",
+      "note": "strict JSON schema \u00b7 temp 0.2"
+    },
+    {
+      "id": "groq-resp",
+      "from": "groq",
+      "to": "action",
+      "y": 530,
+      "label": "findings[] + gaps[] JSON",
+      "variant": "return"
+    },
+    {
+      "id": "validate",
+      "from": "action",
+      "to": "blocks",
+      "y": 565,
+      "label": "zod + verbatim anchor check",
+      "variant": "security"
+    },
+    {
+      "id": "validated",
+      "from": "blocks",
+      "to": "action",
+      "y": 597,
+      "label": "valid | reject malformed",
+      "variant": "return"
+    },
+    {
+      "id": "result",
+      "from": "action",
+      "to": "panel",
+      "y": 628,
+      "label": "{ success, review }",
+      "variant": "return"
+    },
+    {
+      "id": "render",
+      "from": "panel",
+      "to": "candidate",
+      "y": 656,
+      "label": "anchored findings + highlights",
+      "variant": "default"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "action",
+      "from": 195,
+      "to": 628,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "What leaves RoleRace",
+      "items": [
+        "Groq receives only {targetRole, targetCountry, blocks, inventory} \u2014 built server-side from stored resumeData",
+        "No DB credentials, storage keys, or profile fields; Groq never touches PostgreSQL",
+        "Block text is marked untrusted data in the system prompt \u2014 not instructions"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Advisory contract",
+      "items": [
+        "Schema is qualitative only \u2014 no scores, percentages, or ATS ratings exist in the contract",
+        "findings[] need verbatim block quotes; absent content goes to gaps[]",
+        "guidance explains strengthening \u2014 replacement/rewrite output is rejected by design"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "No writes, no apply path",
+      "items": [
+        "Review is request/response \u2014 the only DB call is resumeVariant.findUnique",
+        "Nothing writes to ResumeVariant, MasterCareerProfile, or PublicProfile",
+        "No apply/rewrite/auto-fix path exists in the inspected code"
+      ]
+    }
+  ]
+}

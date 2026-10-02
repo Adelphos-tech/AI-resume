@@ -53,6 +53,7 @@ ownership or remote authenticity — there is no configured upstream.
 | Runtime Architecture              | architecture | [runtime.architecture.json](source/runtime.architecture.json)             | [runtime.html](generated/runtime.html)                 | `b026840` |
 | Auth & Trust Boundaries           | architecture | [auth-security.architecture.json](source/auth-security.architecture.json) | [auth-security.html](generated/auth-security.html)     | `8b8d21a` |
 | Resume Import → Variant Lifecycle | workflow     | [resume-pipeline.workflow.json](source/resume-pipeline.workflow.json)     | [resume-pipeline.html](generated/resume-pipeline.html) | `c79226f` |
+| AI Review Sequence                | sequence     | [ai-review.sequence.json](source/ai-review.sequence.json)                 | [ai-review.html](generated/ai-review.html)             | `944f3d0` |
 
 - **Runtime Architecture** — single-host deployment shape.
 - **Auth & Trust Boundaries** — who can access what: Better Auth credential
@@ -65,3 +66,7 @@ ownership or remote authenticity — there is no configured upstream.
 - **Resume Import → Variant Lifecycle** — deterministic extraction (unpdf /
   mammoth, no AI), candidate-confirmed apply with fill-empty merge semantics,
   and the server-side ResumeVariant snapshot boundary.
+- **AI Review Sequence** — explicit button-triggered, session- and
+  ownership-checked review of an existing ResumeVariant; Groq receives only a
+  server-built block/inventory payload, returns qualitative findings validated
+  against verbatim anchors, and nothing is persisted or applied.

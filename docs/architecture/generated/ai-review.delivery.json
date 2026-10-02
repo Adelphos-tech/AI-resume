@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "9f6b5565-6e84-4d32-aff3-9bb9ef88528f",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Users/shivang/Desktop/AI Resume/docs/architecture/source/ai-review.sequence.json",
+  "output": "/Users/shivang/Desktop/AI Resume/docs/architecture/generated/ai-review.html",
+  "specification": {
+    "sha256": "8e122c8464372840fac0fae04f6413323bb198d83e163812ae4491136be27f1a",
+    "bytes": 7801
+  },
+  "artifact": {
+    "sha256": "24514558855616c822fce1b2bdb472c3e83be93053cab0cbca37db45a9701209",
+    "bytes": 766460
+  }
+}
