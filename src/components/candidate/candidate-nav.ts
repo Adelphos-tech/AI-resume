@@ -4,6 +4,7 @@ import {
   HelpCircle,
   LayoutDashboard,
   LayoutTemplate,
+  PanelsTopLeft,
   Settings,
   Sparkles,
   UserRound,
@@ -23,6 +24,11 @@ export const CANDIDATE_NAV_PRIMARY: readonly CandidateNavItem[] = [
   { href: "/candidate/ai-review", label: "AI Review", icon: Sparkles },
   { href: "/candidate/templates", label: "Templates", icon: LayoutTemplate },
   { href: "/candidate/public-profile", label: "Career Card", icon: Globe },
+  {
+    href: "/candidate/career-site",
+    label: "Career Site",
+    icon: PanelsTopLeft,
+  },
 ];
 
 export const CANDIDATE_NAV_SECONDARY: readonly CandidateNavItem[] = [
