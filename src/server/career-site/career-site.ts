@@ -12,6 +12,42 @@ const createPageSchema = z.strictObject({
   title: z.string().trim().min(1).max(200),
 });
 
+const createBlockSchema = z.strictObject({
+  type: z.enum(["HERO", "CUSTOM_TEXT"]),
+});
+
+const pageIdSchema = z.cuid();
+
+export type CareerSiteBlock = {
+  id: string;
+  careerSitePageId: string;
+  type: "HERO" | "CUSTOM_TEXT";
+  position: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type CareerSiteBlocksResult =
+  | { success: true; blocks: CareerSiteBlock[] }
+  | { success: false; message: string };
+
+export type CareerSiteBlockResult =
+  | { success: true; block: CareerSiteBlock }
+  | { success: false; message: string };
+
+/**
+ * Resolves the page only when the ownership chain proves it belongs to
+ * the candidate's CareerSite — existence is never revealed otherwise.
+ */
+async function ownedPage(candidateId: string, pageId: string) {
+  const page = await prisma.careerSitePage.findUnique({
+    where: { id: pageId },
+    include: { careerSite: { select: { candidateId: true } } },
+  });
+  if (!page || page.careerSite.candidateId !== candidateId) return null;
+  return page;
+}
+
 export type CareerSitePage = {
   id: string;
   careerSiteId: string;
@@ -160,4 +196,76 @@ export async function createMyCareerSitePage(
 export async function listMyCareerSitePages(): Promise<CareerSitePagesResult> {
   const { candidate } = await requireCandidateSession();
   return listCandidateCareerSitePages(candidate.id);
+}
+
+/**
+ * Blocks: ownership is proven through Candidate → CareerSite → Page.
+ * Position is computed server-side (max+1, 0-based) inside a transaction;
+ * the caller never supplies it. A page the candidate does not own is
+ * indistinguishable from a missing one.
+ */
+export async function createCandidateCareerSiteBlock(
+  candidateId: string,
+  pageId: string,
+  input: unknown,
+): Promise<CareerSiteBlockResult> {
+  const candidate = candidateIdSchema.safeParse(candidateId);
+  const page = pageIdSchema.safeParse(pageId);
+  const body = createBlockSchema.safeParse(input);
+  if (!candidate.success || !page.success || !body.success) {
+    return { success: false, message: "Invalid input." };
+  }
+
+  const owned = await ownedPage(candidate.data, page.data);
+  if (!owned) return { success: false, message: "Page not found." };
+
+  const block = await prisma.$transaction(async (tx) => {
+    const max = await tx.careerSiteBlock.aggregate({
+      where: { careerSitePageId: page.data },
+      _max: { position: true },
+    });
+    return tx.careerSiteBlock.create({
+      data: {
+        careerSitePageId: page.data,
+        type: body.data.type,
+        position: (max._max.position ?? -1) + 1,
+      },
+    });
+  });
+  return { success: true, block };
+}
+
+export async function listCandidateCareerSiteBlocks(
+  candidateId: string,
+  pageId: string,
+): Promise<CareerSiteBlocksResult> {
+  const candidate = candidateIdSchema.safeParse(candidateId);
+  const page = pageIdSchema.safeParse(pageId);
+  if (!candidate.success || !page.success) {
+    return { success: false, message: "Not found." };
+  }
+
+  const owned = await ownedPage(candidate.data, page.data);
+  if (!owned) return { success: false, message: "Page not found." };
+
+  const blocks = await prisma.careerSiteBlock.findMany({
+    where: { careerSitePageId: page.data },
+    orderBy: [{ position: "asc" }, { id: "asc" }],
+  });
+  return { success: true, blocks };
+}
+
+export async function createMyCareerSiteBlock(
+  pageId: string,
+  input: unknown,
+): Promise<CareerSiteBlockResult> {
+  const { candidate } = await requireCandidateSession();
+  return createCandidateCareerSiteBlock(candidate.id, pageId, input);
+}
+
+export async function listMyCareerSiteBlocks(
+  pageId: string,
+): Promise<CareerSiteBlocksResult> {
+  const { candidate } = await requireCandidateSession();
+  return listCandidateCareerSiteBlocks(candidate.id, pageId);
 }

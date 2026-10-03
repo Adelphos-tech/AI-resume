@@ -264,9 +264,33 @@ model CareerSitePage {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   careerSite   CareerSite @relation(fields: [careerSiteId], references: [id], onDelete: Cascade)
+  blocks       CareerSiteBlock[]
 
   @@index([careerSiteId])
   @@map("career_site_page")
+}
+
+enum CareerSiteBlockType {
+  HERO
+  CUSTOM_TEXT
+}
+
+/**
+ * A LEGO slot on a CareerSitePage — ordered container only. Content
+ * schemas are a later brick; this row proves type + position + ownership.
+ */
+model CareerSiteBlock {
+  id               String              @id @default(cuid())
+  careerSitePageId String
+  type             CareerSiteBlockType
+  /** 0-based sequential position, computed server-side as max+1. */
+  position         Int
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  page             CareerSitePage      @relation(fields: [careerSitePageId], references: [id], onDelete: Cascade)
+
+  @@index([careerSitePageId, position])
+  @@map("career_site_block")
 }
 
 model PublicProfile {
