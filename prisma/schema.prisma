@@ -248,8 +248,25 @@ model CareerSite {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  pages       CareerSitePage[]
 
   @@map("career_site")
+}
+
+/**
+ * A page belonging to a CareerSite. No slug/public routing yet —
+ * internal identity only. Ordering is deterministic by createdAt, id.
+ */
+model CareerSitePage {
+  id           String     @id @default(cuid())
+  careerSiteId String
+  title        String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  careerSite   CareerSite @relation(fields: [careerSiteId], references: [id], onDelete: Cascade)
+
+  @@index([careerSiteId])
+  @@map("career_site_page")
 }
 
 model PublicProfile {
