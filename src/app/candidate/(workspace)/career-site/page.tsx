@@ -1,4 +1,5 @@
-import { Globe, PanelsTopLeft } from "lucide-react";
+import { ChevronRight, Globe, PanelsTopLeft } from "lucide-react";
+import Link from "next/link";
 
 import { AddPageForm } from "@/components/candidate/career-site/add-page-form";
 import {
@@ -89,20 +90,23 @@ export default async function CandidateCareerSitePage() {
             ) : (
               <ul className="mt-4 divide-y divide-stone-100">
                 {pages.map((page) => (
-                  <li
-                    key={page.id}
-                    className="flex items-center justify-between py-2.5"
-                  >
-                    <span className="text-sm font-medium text-stone-900">
-                      {page.title}
-                    </span>
-                    <span className="text-xs text-stone-500">
-                      {page.createdAt.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </span>
+                  <li key={page.id}>
+                    <Link
+                      href={`/candidate/career-site/pages/${page.id}`}
+                      className="flex items-center justify-between py-2.5 transition-colors hover:text-stone-900"
+                    >
+                      <span className="text-sm font-medium text-stone-900">
+                        {page.title}
+                      </span>
+                      <span className="flex items-center gap-1 text-xs text-stone-500">
+                        {page.createdAt.toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                        <ChevronRight className="size-3.5" aria-hidden />
+                      </span>
+                    </Link>
                   </li>
                 ))}
               </ul>

@@ -199,6 +199,42 @@ export async function listMyCareerSitePages(): Promise<CareerSitePagesResult> {
 }
 
 /**
+ * Retrieves one page only when the ownership chain proves it belongs to
+ * the candidate's CareerSite — pageId alone never grants access.
+ */
+export async function getCandidateCareerSitePage(
+  candidateId: string,
+  pageId: string,
+): Promise<CareerSitePageResult> {
+  const candidate = candidateIdSchema.safeParse(candidateId);
+  const parsedPageId = pageIdSchema.safeParse(pageId);
+  if (!candidate.success || !parsedPageId.success) {
+    return { success: false, message: "Page not found." };
+  }
+
+  const owned = await ownedPage(candidate.data, parsedPageId.data);
+  if (!owned) return { success: false, message: "Page not found." };
+
+  return {
+    success: true,
+    page: {
+      id: owned.id,
+      careerSiteId: owned.careerSiteId,
+      title: owned.title,
+      createdAt: owned.createdAt,
+      updatedAt: owned.updatedAt,
+    },
+  };
+}
+
+export async function getMyCareerSitePage(
+  pageId: string,
+): Promise<CareerSitePageResult> {
+  const { candidate } = await requireCandidateSession();
+  return getCandidateCareerSitePage(candidate.id, pageId);
+}
+
+/**
  * Blocks: ownership is proven through Candidate → CareerSite → Page.
  * Position is computed server-side (max+1, 0-based) inside a transaction;
  * the caller never supplies it. A page the candidate does not own is
