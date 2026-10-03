@@ -2,15 +2,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const createMyCareerSite = vi.fn();
 const getMyCareerSite = vi.fn();
+const listMyCareerSitePages = vi.fn();
+const createMyCareerSitePage = vi.fn();
 
 vi.mock("@/server/career-site/career-site", () => ({
   createMyCareerSite,
   getMyCareerSite,
+  listMyCareerSitePages,
+  createMyCareerSitePage,
 }));
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
-const { createCareerSiteAction } =
+const { createCareerSiteAction, createCareerSitePageAction } =
   await import("@/app/candidate/(workspace)/career-site/actions");
 const { default: CandidateCareerSitePage } =
   await import("@/app/candidate/(workspace)/career-site/page");
@@ -43,11 +47,37 @@ describe("career-site workspace — explicit creation", () => {
     await CandidateCareerSitePage();
     expect(getMyCareerSite).toHaveBeenCalledTimes(1);
     expect(createMyCareerSite).not.toHaveBeenCalled();
+    expect(listMyCareerSitePages).not.toHaveBeenCalled();
   });
 
   it("does not create a site when one already exists on render", async () => {
     getMyCareerSite.mockResolvedValue({ success: true, careerSite: SITE });
+    listMyCareerSitePages.mockResolvedValue({ success: true, pages: [] });
     await CandidateCareerSitePage();
     expect(createMyCareerSite).not.toHaveBeenCalled();
+    expect(listMyCareerSitePages).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("career-site pages — workspace action", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it("page-create action delegates to the session-scoped path", async () => {
+    createMyCareerSitePage.mockResolvedValue({
+      success: true,
+      page: { id: "cpageaaaaaaaaaaaaaaaaaaaa" },
+    });
+    const result = await createCareerSitePageAction({ title: "About" });
+    expect(createMyCareerSitePage).toHaveBeenCalledWith({ title: "About" });
+    expect(result.success).toBe(true);
+  });
+
+  it("propagates page-create failure without throwing", async () => {
+    createMyCareerSitePage.mockResolvedValue({
+      success: false,
+      message: "Career Site not found.",
+    });
+    const result = await createCareerSitePageAction({ title: "About" });
+    expect(result.success).toBe(false);
   });
 });

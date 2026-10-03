@@ -1,6 +1,10 @@
 import { Globe, PanelsTopLeft } from "lucide-react";
 
-import { getMyCareerSite } from "@/server/career-site/career-site";
+import { AddPageForm } from "@/components/candidate/career-site/add-page-form";
+import {
+  getMyCareerSite,
+  listMyCareerSitePages,
+} from "@/server/career-site/career-site";
 
 import { createCareerSiteAction } from "./actions";
 
@@ -9,6 +13,8 @@ export const metadata = { title: "Career Site — RoleRace" };
 export default async function CandidateCareerSitePage() {
   const result = await getMyCareerSite();
   const site = result.success ? result.careerSite : null;
+  const pagesResult = site ? await listMyCareerSitePages() : null;
+  const pages = pagesResult?.success ? pagesResult.pages : [];
 
   return (
     <div className="space-y-6">
@@ -70,11 +76,37 @@ export default async function CandidateCareerSitePage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-dashed border-stone-300 bg-stone-50/60 p-5">
+          <section className="rounded-2xl border border-stone-200 bg-white p-5">
             <h2 className="text-sm font-semibold text-stone-900">Pages</h2>
-            <p className="mt-1 text-sm text-stone-500">
-              Page building arrives in the next step.
-            </p>
+            <div className="mt-3">
+              <AddPageForm />
+            </div>
+            {pages.length === 0 ? (
+              <p className="mt-4 text-sm text-stone-500">
+                No pages yet — add your first page to start shaping your Career
+                Site.
+              </p>
+            ) : (
+              <ul className="mt-4 divide-y divide-stone-100">
+                {pages.map((page) => (
+                  <li
+                    key={page.id}
+                    className="flex items-center justify-between py-2.5"
+                  >
+                    <span className="text-sm font-medium text-stone-900">
+                      {page.title}
+                    </span>
+                    <span className="text-xs text-stone-500">
+                      {page.createdAt.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </div>
       )}
