@@ -4,18 +4,23 @@ const createMyCareerSite = vi.fn();
 const getMyCareerSite = vi.fn();
 const listMyCareerSitePages = vi.fn();
 const createMyCareerSitePage = vi.fn();
+const createMyCareerSiteBlock = vi.fn();
 
 vi.mock("@/server/career-site/career-site", () => ({
   createMyCareerSite,
   getMyCareerSite,
   listMyCareerSitePages,
   createMyCareerSitePage,
+  createMyCareerSiteBlock,
 }));
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
-const { createCareerSiteAction, createCareerSitePageAction } =
-  await import("@/app/candidate/(workspace)/career-site/actions");
+const {
+  createCareerSiteAction,
+  createCareerSitePageAction,
+  createCareerSiteBlockAction,
+} = await import("@/app/candidate/(workspace)/career-site/actions");
 const { default: CandidateCareerSitePage } =
   await import("@/app/candidate/(workspace)/career-site/page");
 
@@ -79,5 +84,63 @@ describe("career-site pages — workspace action", () => {
     });
     const result = await createCareerSitePageAction({ title: "About" });
     expect(result.success).toBe(false);
+  });
+});
+
+describe("career-site blocks — workspace action", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  const PAGE_ID = "cpageaaaaaaaaaaaaaaaaaaaa";
+
+  it("delegates to the session-scoped block creation path", async () => {
+    createMyCareerSiteBlock.mockResolvedValue({
+      success: true,
+      block: { id: "cblockaaaaaaaaaaaaaaaaaaa", position: 0 },
+    });
+    const result = await createCareerSiteBlockAction(PAGE_ID, {
+      type: "HERO",
+    });
+    expect(createMyCareerSiteBlock).toHaveBeenCalledWith(PAGE_ID, {
+      type: "HERO",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("supports explicit CUSTOM_TEXT creation", async () => {
+    createMyCareerSiteBlock.mockResolvedValue({
+      success: true,
+      block: { id: "cblockbbbbbbbbbbbbbbbbbbb", position: 1 },
+    });
+    const result = await createCareerSiteBlockAction(PAGE_ID, {
+      type: "CUSTOM_TEXT",
+    });
+    expect(createMyCareerSiteBlock).toHaveBeenCalledWith(PAGE_ID, {
+      type: "CUSTOM_TEXT",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("propagates domain failure without throwing", async () => {
+    createMyCareerSiteBlock.mockResolvedValue({
+      success: false,
+      message: "Page not found.",
+    });
+    const result = await createCareerSiteBlockAction(PAGE_ID, {
+      type: "HERO",
+    });
+    expect(result).toEqual({ success: false, message: "Page not found." });
+  });
+
+  it("permits repeated creation of the same block type", async () => {
+    createMyCareerSiteBlock.mockResolvedValue({ success: true, block: {} });
+    const first = await createCareerSiteBlockAction(PAGE_ID, {
+      type: "CUSTOM_TEXT",
+    });
+    const second = await createCareerSiteBlockAction(PAGE_ID, {
+      type: "CUSTOM_TEXT",
+    });
+    expect(first.success).toBe(true);
+    expect(second.success).toBe(true);
+    expect(createMyCareerSiteBlock).toHaveBeenCalledTimes(2);
   });
 });

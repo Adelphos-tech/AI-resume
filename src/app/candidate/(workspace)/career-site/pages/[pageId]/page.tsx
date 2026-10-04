@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AddBlockForm } from "@/components/candidate/career-site/add-block-form";
 import { CAREER_SITE_BLOCK_LABELS } from "@/lib/career-site-blocks";
 import {
   getMyCareerSitePage,
@@ -43,6 +44,7 @@ export default async function CareerSitePageDetail({
 
       <section className="rounded-2xl border border-stone-200 bg-white p-5">
         <h2 className="text-sm font-semibold text-stone-900">Blocks</h2>
+        <AddBlockForm pageId={result.page.id} />
         {blocks.length === 0 ? (
           <p className="mt-3 text-sm text-stone-500">
             No blocks yet — blocks will appear here as you build this page.
