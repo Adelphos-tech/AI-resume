@@ -5,6 +5,7 @@ const getMyCareerSite = vi.fn();
 const listMyCareerSitePages = vi.fn();
 const createMyCareerSitePage = vi.fn();
 const createMyCareerSiteBlock = vi.fn();
+const updateMyCustomTextBlock = vi.fn();
 
 vi.mock("@/server/career-site/career-site", () => ({
   createMyCareerSite,
@@ -12,6 +13,7 @@ vi.mock("@/server/career-site/career-site", () => ({
   listMyCareerSitePages,
   createMyCareerSitePage,
   createMyCareerSiteBlock,
+  updateMyCustomTextBlock,
 }));
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
@@ -20,6 +22,7 @@ const {
   createCareerSiteAction,
   createCareerSitePageAction,
   createCareerSiteBlockAction,
+  updateCustomTextBlockAction,
 } = await import("@/app/candidate/(workspace)/career-site/actions");
 const { default: CandidateCareerSitePage } =
   await import("@/app/candidate/(workspace)/career-site/page");
@@ -142,5 +145,70 @@ describe("career-site blocks — workspace action", () => {
     expect(first.success).toBe(true);
     expect(second.success).toBe(true);
     expect(createMyCareerSiteBlock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("career-site custom text — workspace update action", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  const PAGE_ID = "cpageaaaaaaaaaaaaaaaaaaaa";
+  const BLOCK_ID = "cblockaaaaaaaaaaaaaaaaaaa";
+
+  it("delegates to the session-scoped custom text updater", async () => {
+    updateMyCustomTextBlock.mockResolvedValue({ success: true, block: {} });
+    const result = await updateCustomTextBlockAction(PAGE_ID, BLOCK_ID, {
+      text: "Hello world",
+    });
+    expect(updateMyCustomTextBlock).toHaveBeenCalledWith(PAGE_ID, BLOCK_ID, {
+      text: "Hello world",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("passes multiline text through unchanged", async () => {
+    updateMyCustomTextBlock.mockResolvedValue({ success: true, block: {} });
+    await updateCustomTextBlockAction(PAGE_ID, BLOCK_ID, {
+      text: "First line\nSecond line",
+    });
+    expect(updateMyCustomTextBlock).toHaveBeenCalledWith(PAGE_ID, BLOCK_ID, {
+      text: "First line\nSecond line",
+    });
+  });
+
+  it("passes an explicit empty string through unchanged", async () => {
+    updateMyCustomTextBlock.mockResolvedValue({ success: true, block: {} });
+    await updateCustomTextBlockAction(PAGE_ID, BLOCK_ID, { text: "" });
+    expect(updateMyCustomTextBlock).toHaveBeenCalledWith(PAGE_ID, BLOCK_ID, {
+      text: "",
+    });
+  });
+
+  it("passes the caller input through raw so the strict domain schema stays authoritative", async () => {
+    updateMyCustomTextBlock.mockResolvedValue({
+      success: false,
+      message: "Invalid input.",
+    });
+    const result = await updateCustomTextBlockAction(PAGE_ID, BLOCK_ID, {
+      text: "x",
+      position: 9,
+      type: "HERO",
+    });
+    expect(updateMyCustomTextBlock).toHaveBeenCalledWith(PAGE_ID, BLOCK_ID, {
+      text: "x",
+      position: 9,
+      type: "HERO",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("propagates domain failure without throwing", async () => {
+    updateMyCustomTextBlock.mockResolvedValue({
+      success: false,
+      message: "Block not found.",
+    });
+    const result = await updateCustomTextBlockAction(PAGE_ID, BLOCK_ID, {
+      text: "x",
+    });
+    expect(result).toEqual({ success: false, message: "Block not found." });
   });
 });

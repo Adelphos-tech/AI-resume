@@ -3,7 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddBlockForm } from "@/components/candidate/career-site/add-block-form";
-import { CAREER_SITE_BLOCK_LABELS } from "@/lib/career-site-blocks";
+import { CustomTextBlock } from "@/components/candidate/career-site/custom-text-block";
+import {
+  CAREER_SITE_BLOCK_LABELS,
+  readCustomTextContent,
+} from "@/lib/career-site-blocks";
 import {
   getMyCareerSitePage,
   listMyCareerSiteBlocks,
@@ -51,19 +55,39 @@ export default async function CareerSitePageDetail({
           </p>
         ) : (
           <ul className="mt-3 space-y-2">
-            {blocks.map((block, index) => (
-              <li
-                key={block.id}
-                className="flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50/60 px-4 py-3"
-              >
-                <span className="text-sm font-medium text-stone-900">
-                  {CAREER_SITE_BLOCK_LABELS[block.type] ?? block.type}
-                </span>
-                <span className="text-xs text-stone-500">
-                  Block {index + 1}
-                </span>
-              </li>
-            ))}
+            {blocks.map((block, index) => {
+              const content =
+                block.type === "CUSTOM_TEXT"
+                  ? readCustomTextContent(block.content)
+                  : null;
+              return (
+                <li
+                  key={block.id}
+                  className="rounded-xl border border-stone-200 bg-stone-50/60 px-4 py-3"
+                >
+                  {block.type === "CUSTOM_TEXT" ? (
+                    <CustomTextBlock
+                      pageId={result.page.id}
+                      blockId={block.id}
+                      ordinal={`Block ${index + 1}`}
+                      initialText={
+                        content?.kind === "text" ? content.text : null
+                      }
+                      invalid={content?.kind === "invalid"}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-stone-900">
+                        {CAREER_SITE_BLOCK_LABELS[block.type] ?? block.type}
+                      </span>
+                      <span className="text-xs text-stone-500">
+                        Block {index + 1}
+                      </span>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>

@@ -6,6 +6,7 @@ import {
   createMyCareerSite,
   createMyCareerSiteBlock,
   createMyCareerSitePage,
+  updateMyCustomTextBlock,
 } from "@/server/career-site/career-site";
 
 export async function createCareerSiteAction() {
@@ -25,6 +26,18 @@ export async function createCareerSiteBlockAction(
   input: unknown,
 ) {
   const result = await createMyCareerSiteBlock(pageId, input);
+  if (result.success) {
+    revalidatePath(`/candidate/career-site/pages/${pageId}`);
+  }
+  return result;
+}
+
+export async function updateCustomTextBlockAction(
+  pageId: string,
+  blockId: string,
+  input: unknown,
+) {
+  const result = await updateMyCustomTextBlock(pageId, blockId, input);
   if (result.success) {
     revalidatePath(`/candidate/career-site/pages/${pageId}`);
   }

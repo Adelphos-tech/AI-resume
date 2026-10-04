@@ -3,6 +3,7 @@ import "server-only";
 import { Prisma } from "@/generated/prisma/client";
 import { z } from "zod";
 
+import { customTextContentSchema } from "@/lib/career-site-block-content";
 import { prisma } from "@/server/db";
 import { requireCandidateSession } from "@/server/session";
 
@@ -16,15 +17,6 @@ const createBlockSchema = z.strictObject({
   type: z.enum(["HERO", "CUSTOM_TEXT"]),
 });
 
-/**
- * CUSTOM_TEXT content contract — user-authored site text (not a second
- * copy of canonical MCP career data). null = uninitialized; explicit
- * empty string = intentionally cleared.
- */
-export const customTextContentSchema = z.strictObject({
-  text: z.string().max(20_000),
-});
-
 const blockIdSchema = z.cuid();
 const pageIdSchema = z.cuid();
 
@@ -33,6 +25,8 @@ export type CareerSiteBlock = {
   careerSitePageId: string;
   type: "HERO" | "CUSTOM_TEXT";
   position: number;
+  /** Structured per-type content; null until explicitly initialized. */
+  content: unknown;
   createdAt: Date;
   updatedAt: Date;
 };
