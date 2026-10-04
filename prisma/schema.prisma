@@ -285,6 +285,11 @@ model CareerSiteBlock {
   type             CareerSiteBlockType
   /** 0-based sequential position, computed server-side as max+1. */
   position         Int
+  /**
+   * Nullable typed content. null = not yet initialized; the valid shape is
+   * enforced per block type by Zod at the domain boundary, never trusted raw.
+   */
+  content          Json?
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @updatedAt
   page             CareerSitePage      @relation(fields: [careerSitePageId], references: [id], onDelete: Cascade)

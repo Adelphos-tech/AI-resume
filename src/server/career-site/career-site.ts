@@ -16,6 +16,16 @@ const createBlockSchema = z.strictObject({
   type: z.enum(["HERO", "CUSTOM_TEXT"]),
 });
 
+/**
+ * CUSTOM_TEXT content contract — user-authored site text (not a second
+ * copy of canonical MCP career data). null = uninitialized; explicit
+ * empty string = intentionally cleared.
+ */
+export const customTextContentSchema = z.strictObject({
+  text: z.string().max(20_000),
+});
+
+const blockIdSchema = z.cuid();
 const pageIdSchema = z.cuid();
 
 export type CareerSiteBlock = {
@@ -46,6 +56,32 @@ async function ownedPage(candidateId: string, pageId: string) {
   });
   if (!page || page.careerSite.candidateId !== candidateId) return null;
   return page;
+}
+
+/**
+ * Resolves the block only when the full ownership chain proves
+ * Candidate → CareerSite → Page → Block. Nonexistent, mis-scoped, or
+ * foreign-owned blocks are indistinguishable.
+ */
+async function ownedBlock(
+  candidateId: string,
+  pageId: string,
+  blockId: string,
+) {
+  const block = await prisma.careerSiteBlock.findUnique({
+    where: { id: blockId },
+    include: {
+      page: { include: { careerSite: { select: { candidateId: true } } } },
+    },
+  });
+  if (
+    !block ||
+    block.careerSitePageId !== pageId ||
+    block.page.careerSite.candidateId !== candidateId
+  ) {
+    return null;
+  }
+  return block;
 }
 
 export type CareerSitePage = {
@@ -304,4 +340,47 @@ export async function listMyCareerSiteBlocks(
 ): Promise<CareerSiteBlocksResult> {
   const { candidate } = await requireCandidateSession();
   return listCandidateCareerSiteBlocks(candidate.id, pageId);
+}
+
+/**
+ * Type-specific content update: CUSTOM_TEXT only. The strict schema makes
+ * arbitrary JSON persistence impossible; the type check makes writing text
+ * content to a non-CUSTOM_TEXT block impossible. Block type and position
+ * are never mutated here.
+ */
+export async function updateCandidateCustomTextBlock(
+  candidateId: string,
+  pageId: string,
+  blockId: string,
+  input: unknown,
+): Promise<CareerSiteBlockResult> {
+  const candidate = candidateIdSchema.safeParse(candidateId);
+  const page = pageIdSchema.safeParse(pageId);
+  const block = blockIdSchema.safeParse(blockId);
+  const body = customTextContentSchema.safeParse(input);
+  if (!candidate.success || !page.success || !block.success || !body.success) {
+    return { success: false, message: "Invalid input." };
+  }
+
+  const owned = await ownedBlock(candidate.data, page.data, block.data);
+  if (!owned) return { success: false, message: "Block not found." };
+
+  if (owned.type !== "CUSTOM_TEXT") {
+    return { success: false, message: "Invalid input." };
+  }
+
+  const updated = await prisma.careerSiteBlock.update({
+    where: { id: owned.id },
+    data: { content: { text: body.data.text } },
+  });
+  return { success: true, block: updated };
+}
+
+export async function updateMyCustomTextBlock(
+  pageId: string,
+  blockId: string,
+  input: unknown,
+): Promise<CareerSiteBlockResult> {
+  const { candidate } = await requireCandidateSession();
+  return updateCandidateCustomTextBlock(candidate.id, pageId, blockId, input);
 }
