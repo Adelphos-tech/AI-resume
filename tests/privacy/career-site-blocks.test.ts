@@ -87,6 +87,19 @@ describe("CareerSiteBlock — creation", () => {
     });
   });
 
+  it("does not compact positions — max+1 after a deleted gap", async () => {
+    pageFindUnique.mockResolvedValue(pageRow(CANDIDATE_A));
+    // Positions {0, 2} remain after deleting position 1; next = 3.
+    blockAggregate.mockResolvedValue({ _max: { position: 2 } });
+    blockCreate.mockResolvedValue({ ...BLOCK, position: 3 });
+    await createCandidateCareerSiteBlock(CANDIDATE_A, PAGE_A, {
+      type: "HERO",
+    });
+    expect(blockCreate).toHaveBeenCalledWith({
+      data: { careerSitePageId: PAGE_A, type: "HERO", position: 3 },
+    });
+  });
+
   it("rejects an unknown block type without touching the database", async () => {
     const result = await createCandidateCareerSiteBlock(CANDIDATE_A, PAGE_A, {
       type: "INSTAGRAM_FEED",

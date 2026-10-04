@@ -378,3 +378,38 @@ export async function updateMyCustomTextBlock(
   const { candidate } = await requireCandidateSession();
   return updateCandidateCustomTextBlock(candidate.id, pageId, blockId, input);
 }
+
+export type CareerSiteDeleteResult =
+  { success: true } | { success: false; message: string };
+
+/**
+ * Hard-deletes exactly one owned block row after the full ownership chain
+ * resolves. Positions are intentionally not compacted — remaining blocks
+ * keep their positions and ordering stays position ASC, id ASC.
+ */
+export async function deleteCandidateCareerSiteBlock(
+  candidateId: string,
+  pageId: string,
+  blockId: string,
+): Promise<CareerSiteDeleteResult> {
+  const candidate = candidateIdSchema.safeParse(candidateId);
+  const page = pageIdSchema.safeParse(pageId);
+  const block = blockIdSchema.safeParse(blockId);
+  if (!candidate.success || !page.success || !block.success) {
+    return { success: false, message: "Invalid input." };
+  }
+
+  const owned = await ownedBlock(candidate.data, page.data, block.data);
+  if (!owned) return { success: false, message: "Block not found." };
+
+  await prisma.careerSiteBlock.delete({ where: { id: owned.id } });
+  return { success: true };
+}
+
+export async function deleteMyCareerSiteBlock(
+  pageId: string,
+  blockId: string,
+): Promise<CareerSiteDeleteResult> {
+  const { candidate } = await requireCandidateSession();
+  return deleteCandidateCareerSiteBlock(candidate.id, pageId, blockId);
+}
