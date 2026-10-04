@@ -413,3 +413,64 @@ export async function deleteMyCareerSiteBlock(
   const { candidate } = await requireCandidateSession();
   return deleteCandidateCareerSiteBlock(candidate.id, pageId, blockId);
 }
+
+const reorderBlocksSchema = z.strictObject({
+  blockIds: z.array(blockIdSchema).max(500),
+});
+
+/**
+ * Explicit, all-or-nothing reorder of every block on one owned page. The
+ * submitted id list must be exactly the page's current block set —
+ * positions are rewritten contiguously as 0..n-1 from array order. This
+ * is the only compaction event: deletes never compact, and nothing else
+ * rewrites positions.
+ */
+export async function reorderCandidateCareerSiteBlocks(
+  candidateId: string,
+  pageId: string,
+  input: unknown,
+): Promise<CareerSiteDeleteResult> {
+  const candidate = candidateIdSchema.safeParse(candidateId);
+  const page = pageIdSchema.safeParse(pageId);
+  const body = reorderBlocksSchema.safeParse(input);
+  if (!candidate.success || !page.success || !body.success) {
+    return { success: false, message: "Invalid input." };
+  }
+  const blockIds = body.data.blockIds;
+  if (new Set(blockIds).size !== blockIds.length) {
+    return { success: false, message: "Invalid input." };
+  }
+
+  const owned = await ownedPage(candidate.data, page.data);
+  if (!owned) return { success: false, message: "Page not found." };
+
+  const current = await prisma.careerSiteBlock.findMany({
+    where: { careerSitePageId: owned.id },
+    select: { id: true },
+  });
+  const currentIds = new Set(current.map((b) => b.id));
+  if (
+    currentIds.size !== blockIds.length ||
+    !blockIds.every((id) => currentIds.has(id))
+  ) {
+    return { success: false, message: "Invalid input." };
+  }
+
+  await prisma.$transaction(
+    blockIds.map((id, position) =>
+      prisma.careerSiteBlock.update({
+        where: { id },
+        data: { position },
+      }),
+    ),
+  );
+  return { success: true };
+}
+
+export async function reorderMyCareerSiteBlocks(
+  pageId: string,
+  input: unknown,
+): Promise<CareerSiteDeleteResult> {
+  const { candidate } = await requireCandidateSession();
+  return reorderCandidateCareerSiteBlocks(candidate.id, pageId, input);
+}
