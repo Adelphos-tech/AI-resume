@@ -6,6 +6,7 @@ const listMyCareerSitePages = vi.fn();
 const createMyCareerSitePage = vi.fn();
 const createMyCareerSiteBlock = vi.fn();
 const updateMyCustomTextBlock = vi.fn();
+const deleteMyCareerSiteBlock = vi.fn();
 
 vi.mock("@/server/career-site/career-site", () => ({
   createMyCareerSite,
@@ -14,6 +15,7 @@ vi.mock("@/server/career-site/career-site", () => ({
   createMyCareerSitePage,
   createMyCareerSiteBlock,
   updateMyCustomTextBlock,
+  deleteMyCareerSiteBlock,
 }));
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
@@ -23,6 +25,7 @@ const {
   createCareerSitePageAction,
   createCareerSiteBlockAction,
   updateCustomTextBlockAction,
+  deleteCareerSiteBlockAction,
 } = await import("@/app/candidate/(workspace)/career-site/actions");
 const { default: CandidateCareerSitePage } =
   await import("@/app/candidate/(workspace)/career-site/page");
@@ -209,6 +212,39 @@ describe("career-site custom text — workspace update action", () => {
     const result = await updateCustomTextBlockAction(PAGE_ID, BLOCK_ID, {
       text: "x",
     });
+    expect(result).toEqual({ success: false, message: "Block not found." });
+  });
+});
+
+describe("career-site blocks — delete action", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  const PAGE_ID = "cpageaaaaaaaaaaaaaaaaaaaa";
+  const BLOCK_ID = "cblockaaaaaaaaaaaaaaaaaaa";
+
+  it("delegates to the session-scoped block deletion path", async () => {
+    deleteMyCareerSiteBlock.mockResolvedValue({ success: true });
+    const result = await deleteCareerSiteBlockAction(PAGE_ID, BLOCK_ID);
+    expect(deleteMyCareerSiteBlock).toHaveBeenCalledWith(PAGE_ID, BLOCK_ID);
+    expect(deleteMyCareerSiteBlock).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({ success: true });
+  });
+
+  it("accepts only locators — no candidateId path exists on the action", async () => {
+    deleteMyCareerSiteBlock.mockResolvedValue({ success: true });
+    await deleteCareerSiteBlockAction(PAGE_ID, BLOCK_ID);
+    // The action signature is (pageId, blockId); any caller-supplied
+    // candidateId cannot reach the domain — the wrapper derives the
+    // session candidate itself.
+    expect(deleteMyCareerSiteBlock.mock.calls[0]).toHaveLength(2);
+  });
+
+  it("propagates domain failure without throwing", async () => {
+    deleteMyCareerSiteBlock.mockResolvedValue({
+      success: false,
+      message: "Block not found.",
+    });
+    const result = await deleteCareerSiteBlockAction(PAGE_ID, BLOCK_ID);
     expect(result).toEqual({ success: false, message: "Block not found." });
   });
 });

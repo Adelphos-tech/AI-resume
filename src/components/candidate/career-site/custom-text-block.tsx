@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { Pencil } from "lucide-react";
 
 import { updateCustomTextBlockAction } from "@/app/candidate/(workspace)/career-site/actions";
+import { DeleteBlockButton } from "@/components/candidate/career-site/delete-block-button";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -68,11 +69,12 @@ export function CustomTextBlock({
               variant="ghost"
               size="sm"
               onClick={openEditor}
-              className="-mr-2 h-7 text-stone-500"
+              className="h-7 text-stone-500"
             >
               <Pencil className="size-3.5" aria-hidden />
               Edit
             </Button>
+            <DeleteBlockButton pageId={pageId} blockId={blockId} />
             <span className="text-xs text-stone-400">{ordinal}</span>
           </span>
         )}

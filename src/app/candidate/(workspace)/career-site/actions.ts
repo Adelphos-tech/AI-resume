@@ -6,6 +6,7 @@ import {
   createMyCareerSite,
   createMyCareerSiteBlock,
   createMyCareerSitePage,
+  deleteMyCareerSiteBlock,
   updateMyCustomTextBlock,
 } from "@/server/career-site/career-site";
 
@@ -38,6 +39,17 @@ export async function updateCustomTextBlockAction(
   input: unknown,
 ) {
   const result = await updateMyCustomTextBlock(pageId, blockId, input);
+  if (result.success) {
+    revalidatePath(`/candidate/career-site/pages/${pageId}`);
+  }
+  return result;
+}
+
+export async function deleteCareerSiteBlockAction(
+  pageId: string,
+  blockId: string,
+) {
+  const result = await deleteMyCareerSiteBlock(pageId, blockId);
   if (result.success) {
     revalidatePath(`/candidate/career-site/pages/${pageId}`);
   }

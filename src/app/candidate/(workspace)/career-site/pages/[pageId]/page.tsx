@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { AddBlockForm } from "@/components/candidate/career-site/add-block-form";
 import { CustomTextBlock } from "@/components/candidate/career-site/custom-text-block";
+import { DeleteBlockButton } from "@/components/candidate/career-site/delete-block-button";
 import {
   CAREER_SITE_BLOCK_LABELS,
   readCustomTextContent,
@@ -80,8 +81,14 @@ export default async function CareerSitePageDetail({
                       <span className="text-sm font-medium text-stone-900">
                         {CAREER_SITE_BLOCK_LABELS[block.type] ?? block.type}
                       </span>
-                      <span className="text-xs text-stone-500">
-                        Block {index + 1}
+                      <span className="flex items-center gap-2">
+                        <DeleteBlockButton
+                          pageId={result.page.id}
+                          blockId={block.id}
+                        />
+                        <span className="text-xs text-stone-500">
+                          Block {index + 1}
+                        </span>
                       </span>
                     </div>
                   )}
