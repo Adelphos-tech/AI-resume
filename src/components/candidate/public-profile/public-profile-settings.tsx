@@ -54,6 +54,8 @@ import {
 } from "@/lib/nfc-compact-skins";
 import { CareerCardNfcWriter } from "@/components/candidate/public-profile/career-card-nfc-writer";
 import { Button } from "@/components/ui/button";
+import { CareerCardBuilderSection } from "@/components/candidate/public-profile/career-card-builder-section";
+import type { BuilderStep } from "@/components/candidate/public-profile/career-card-builder";
 
 type VariantOption = {
   id: string;
@@ -144,6 +146,7 @@ export function PublicProfileSettings({
   coverUrl,
   coverKey: initialCoverKey,
   coverPosition,
+  activeStep,
 }: {
   slug: string | null;
   isPublished: boolean;
@@ -167,6 +170,7 @@ export function PublicProfileSettings({
    * cover editor; never trusted for ownership server-side. */
   coverKey: string | null;
   coverPosition: PhotoPosition;
+  activeStep: BuilderStep;
 }) {
   const [slugValue, setSlugValue] = useState(slug ?? "");
   const [form, setForm] = useState<PublicProfileSettingsState>(
@@ -401,7 +405,7 @@ export function PublicProfileSettings({
       {/* public profile card */}
       <section
         aria-labelledby="pp-profile"
-        className="rounded-2xl border border-stone-200 bg-white p-6"
+        className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "basics" ? "block" : "hidden"}`}
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -501,7 +505,7 @@ export function PublicProfileSettings({
       {/* theme selector */}
       <section
         aria-labelledby="pp-appearance"
-        className="rounded-2xl border border-stone-200 bg-white p-6"
+        className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "design" ? "block" : "hidden"}`}
       >
         <h2
           id="pp-appearance"
@@ -1044,7 +1048,7 @@ export function PublicProfileSettings({
       {/* public identity */}
       <section
         aria-labelledby="pp-identity"
-        className="rounded-2xl border border-stone-200 bg-white p-6"
+        className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "basics" ? "block" : "hidden"}`}
       >
         <h2 id="pp-identity" className="text-base font-semibold text-stone-900">
           Public identity
@@ -1161,7 +1165,7 @@ export function PublicProfileSettings({
       {/* visibility */}
       <section
         aria-labelledby="pp-visibility"
-        className="rounded-2xl border border-stone-200 bg-white p-6"
+        className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "basics" ? "block" : "hidden"}`}
       >
         <h2
           id="pp-visibility"
@@ -1211,7 +1215,7 @@ export function PublicProfileSettings({
       {/* featured resume */}
       <section
         aria-labelledby="pp-featured"
-        className="rounded-2xl border border-stone-200 bg-white p-6"
+        className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "basics" ? "block" : "hidden"}`}
       >
         <h2 id="pp-featured" className="text-base font-semibold text-stone-900">
           Featured resume
@@ -1245,7 +1249,7 @@ export function PublicProfileSettings({
       {/* links */}
       <section
         aria-labelledby="pp-links"
-        className="rounded-2xl border border-stone-200 bg-white p-6"
+        className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "basics" ? "block" : "hidden"}`}
       >
         <h2 id="pp-links" className="text-base font-semibold text-stone-900">
           Links
@@ -1342,7 +1346,9 @@ export function PublicProfileSettings({
       </section>
 
       {/* save */}
-      <div className="flex items-center gap-3">
+      <div
+        className={`flex items-center gap-3 ${activeStep === "basics" ? "" : "hidden"}`}
+      >
         <Button
           type="button"
           onClick={() =>
@@ -1397,7 +1403,7 @@ export function PublicProfileSettings({
       {shareUrl && (
         <section
           aria-labelledby="pp-card-link"
-          className="rounded-2xl border border-stone-200 bg-white p-6"
+          className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "basics" ? "block" : "hidden"}`}
         >
           <h2
             id="pp-card-link"
@@ -1438,7 +1444,25 @@ export function PublicProfileSettings({
       )}
 
       {/* program physical NFC card — browser-side only, no server writes */}
-      {shareUrl && <CareerCardNfcWriter careerCardUrl={shareUrl} />}
+      {shareUrl && (
+        <div className={activeStep === "basics" ? "block" : "hidden"}>
+          <CareerCardNfcWriter careerCardUrl={shareUrl} />
+        </div>
+      )}
+
+      {/* preview */}
+      {activeStep === "preview" && (
+        <CareerCardBuilderSection
+          title="Preview"
+          description="Review how your Career Card looks to others."
+        >
+          <p className="text-sm text-stone-500">
+            Your live preview is shown in the panel
+            <span className="hidden lg:inline"> to the right</span>
+            <span className="lg:hidden"> above</span>.
+          </p>
+        </CareerCardBuilderSection>
+      )}
 
       {/* photo position editor — metadata only, image bytes unchanged */}
       {coverEditorOpen && cover && coverKey && (

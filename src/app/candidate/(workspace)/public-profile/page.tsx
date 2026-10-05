@@ -3,6 +3,8 @@ import {
   CompanyProfileSettings,
   type CompanyProfileState,
 } from "@/components/candidate/public-profile/company-profile-settings";
+import { CareerCardBuilder } from "@/components/candidate/public-profile/career-card-builder";
+import { CareerCardBuilderPreview } from "@/components/candidate/public-profile/career-card-builder-preview";
 import { prisma } from "@/server/db";
 import { parsePhoneNumberFromString } from "libphonenumber-js/min";
 import { resolveNfcCompactSkin } from "@/lib/nfc-compact-skins";
@@ -75,96 +77,110 @@ export default async function CandidatePublicProfilePage() {
     },
   });
 
+  const initialState = profile
+    ? {
+        publicHeadline: profile.publicHeadline ?? "",
+        publicBio: profile.publicBio ?? "",
+        publicLocation: profile.publicLocation ?? "",
+        currentFocus: profile.currentFocus ?? "",
+        workAuthorization: profile.workAuthorization ?? "",
+        openToOpportunities: profile.openToOpportunities,
+        linkedinUrl: profile.linkedinUrl ?? "",
+        githubUrl: profile.githubUrl ?? "",
+        websiteUrl: profile.websiteUrl ?? "",
+        whatsappNumber: profile.whatsappNumber
+          ? (parsePhoneNumberFromString(
+              profile.whatsappNumber,
+            )?.formatNational() ?? profile.whatsappNumber)
+          : "",
+        whatsappCountry:
+          profile.whatsappCountry ??
+          (profile.whatsappNumber
+            ? (parsePhoneNumberFromString(profile.whatsappNumber)?.country ??
+              "")
+            : ""),
+        showWhatsapp: profile.showWhatsapp,
+        showExperience: profile.showExperience,
+        showEducation: profile.showEducation,
+        showSkills: profile.showSkills,
+        showProjects: profile.showProjects,
+        showCertifications: profile.showCertifications,
+        showLanguages: profile.showLanguages,
+        featuredResumeVariantId: profile.featuredResumeVariantId ?? "",
+        themeId: resolveCareerCardTheme(profile.themeId),
+        accentColorId: resolveCareerCardAccent(profile.accentColorId),
+        cardStyleId: resolveCareerCardStyle(profile.cardStyleId),
+        nfcCompactSkinId: resolveNfcCompactSkin(profile.nfcCompactSkinId),
+      }
+    : null;
+
+  const commonSettingsProps = {
+    slug: profile?.slug ?? null,
+    isPublished: profile?.isPublished ?? false,
+    shareUrl: link ? `${env.PUBLIC_SHARE_ORIGIN}/n/${link.token}` : null,
+    publicUrl: profile ? `/u/${profile.slug}` : null,
+    initial: initialState,
+    variants,
+    photoUrl: profile?.profilePhotoKey ? `/u/${profile.slug}/photo` : null,
+    displayName: `${candidate.firstName} ${candidate.lastName}`.trim(),
+    photoKey: profile?.profilePhotoKey ?? null,
+    photoPosition: profile
+      ? {
+          focalX: profile.profilePhotoFocalX,
+          focalY: profile.profilePhotoFocalY,
+          zoom: profile.profilePhotoZoom,
+        }
+      : { focalX: 0.5, focalY: 0.5, zoom: 1 },
+    coverUrl: profile?.coverPhotoKey ? `/u/${profile.slug}/cover` : null,
+    coverKey: profile?.coverPhotoKey ?? null,
+    coverPosition: profile
+      ? {
+          focalX: profile.coverPhotoFocalX,
+          focalY: profile.coverPhotoFocalY,
+          zoom: profile.coverPhotoZoom,
+        }
+      : { focalX: 0.5, focalY: 0.5, zoom: 1 },
+  };
+
+  const preview = (
+    <CareerCardBuilderPreview
+      state={initialState}
+      displayName={commonSettingsProps.displayName}
+      photoUrl={commonSettingsProps.photoUrl}
+      coverUrl={commonSettingsProps.coverUrl}
+      photoPosition={commonSettingsProps.photoPosition}
+      coverPosition={commonSettingsProps.coverPosition}
+      isPublished={commonSettingsProps.isPublished}
+    />
+  );
+
   return (
-    <div className="max-w-4xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-          Career Card
-        </h1>
-        <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
-          Create a professional page you can share with recruiters, clients, and
-          professional contacts.
-        </p>
-      </div>
-      <PublicProfileSettings
-        key={profile?.slug ?? "none"}
-        slug={profile?.slug ?? null}
-        isPublished={profile?.isPublished ?? false}
-        shareUrl={link ? `${env.PUBLIC_SHARE_ORIGIN}/n/${link.token}` : null}
-        publicUrl={profile ? `/u/${profile.slug}` : null}
-        initial={
-          profile
-            ? {
-                publicHeadline: profile.publicHeadline ?? "",
-                publicBio: profile.publicBio ?? "",
-                publicLocation: profile.publicLocation ?? "",
-                currentFocus: profile.currentFocus ?? "",
-                workAuthorization: profile.workAuthorization ?? "",
-                openToOpportunities: profile.openToOpportunities,
-                linkedinUrl: profile.linkedinUrl ?? "",
-                githubUrl: profile.githubUrl ?? "",
-                websiteUrl: profile.websiteUrl ?? "",
-                whatsappNumber: profile.whatsappNumber
-                  ? (parsePhoneNumberFromString(
-                      profile.whatsappNumber,
-                    )?.formatNational() ?? profile.whatsappNumber)
-                  : "",
-                whatsappCountry:
-                  profile.whatsappCountry ??
-                  (profile.whatsappNumber
-                    ? (parsePhoneNumberFromString(profile.whatsappNumber)
-                        ?.country ?? "")
-                    : ""),
-                showWhatsapp: profile.showWhatsapp,
-                showExperience: profile.showExperience,
-                showEducation: profile.showEducation,
-                showSkills: profile.showSkills,
-                showProjects: profile.showProjects,
-                showCertifications: profile.showCertifications,
-                showLanguages: profile.showLanguages,
-                featuredResumeVariantId: profile.featuredResumeVariantId ?? "",
-                themeId: resolveCareerCardTheme(profile.themeId),
-                accentColorId: resolveCareerCardAccent(profile.accentColorId),
-                cardStyleId: resolveCareerCardStyle(profile.cardStyleId),
-                nfcCompactSkinId: resolveNfcCompactSkin(
-                  profile.nfcCompactSkinId,
-                ),
-              }
-            : null
-        }
-        variants={variants}
-        photoUrl={profile?.profilePhotoKey ? `/u/${profile.slug}/photo` : null}
-        coverUrl={profile?.coverPhotoKey ? `/u/${profile.slug}/cover` : null}
-        coverKey={profile?.coverPhotoKey ?? null}
-        coverPosition={
-          profile
-            ? {
-                focalX: profile.coverPhotoFocalX,
-                focalY: profile.coverPhotoFocalY,
-                zoom: profile.coverPhotoZoom,
-              }
-            : { focalX: 0.5, focalY: 0.5, zoom: 1 }
-        }
-        photoKey={profile?.profilePhotoKey ?? null}
-        photoPosition={
-          profile
-            ? {
-                focalX: profile.profilePhotoFocalX,
-                focalY: profile.profilePhotoFocalY,
-                zoom: profile.profilePhotoZoom,
-              }
-            : { focalX: 0.5, focalY: 0.5, zoom: 1 }
-        }
-        displayName={`${candidate.firstName} ${candidate.lastName}`.trim()}
-      />
-      <CompanyProfileSettings
-        initial={companyInitial}
-        logoUrl={
-          profile && company?.companyLogoKey
-            ? `/u/${profile.slug}/company-logo`
-            : null
-        }
-      />
-    </div>
+    <CareerCardBuilder
+      stepContent={{
+        basics: (
+          <PublicProfileSettings {...commonSettingsProps} activeStep="basics" />
+        ),
+        design: (
+          <PublicProfileSettings {...commonSettingsProps} activeStep="design" />
+        ),
+        company: (
+          <CompanyProfileSettings
+            initial={companyInitial}
+            logoUrl={
+              profile && company?.companyLogoKey
+                ? `/u/${profile.slug}/company-logo`
+                : null
+            }
+          />
+        ),
+        preview: (
+          <PublicProfileSettings
+            {...commonSettingsProps}
+            activeStep="preview"
+          />
+        ),
+      }}
+      preview={preview}
+    />
   );
 }
