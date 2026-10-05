@@ -6,6 +6,10 @@ import { z } from "zod";
 import { customTextContentSchema } from "@/lib/career-site-block-content";
 import { prisma } from "@/server/db";
 import { requireCandidateSession } from "@/server/session";
+import {
+  getMasterCareerProfileCore,
+  type GetMasterCareerProfileResult,
+} from "@/server/career-profile/master-career-profile";
 
 const candidateIdSchema = z.cuid();
 
@@ -65,7 +69,18 @@ async function ownedBlock(
   const block = await prisma.careerSiteBlock.findUnique({
     where: { id: blockId },
     include: {
-      page: { include: { careerSite: { select: { candidateId: true } } } },
+      page: {
+        include: {
+          careerSite: {
+            select: {
+              candidateId: true,
+              candidate: {
+                select: { firstName: true, lastName: true },
+              },
+            },
+          },
+        },
+      },
     },
   });
   if (
@@ -473,4 +488,70 @@ export async function reorderMyCareerSiteBlocks(
 ): Promise<CareerSiteDeleteResult> {
   const { candidate } = await requireCandidateSession();
   return reorderCandidateCareerSiteBlocks(candidate.id, pageId, input);
+}
+
+/**
+ * HERO block read DTO — canonical identity only, no persistent content.
+ * Reads from MasterCareerProfile at render time; never duplicates into
+ * CareerSiteBlock.content.
+ */
+export type HeroBlockData = {
+  displayName: string;
+  headline: string | null;
+};
+
+export type HeroBlockResult =
+  { success: true; data: HeroBlockData } | { success: false; message: string };
+
+/**
+ * Resolves HERO data for an owned HERO block from canonical identity
+ * sources. Requires HERO type exactly; CUSTOM_TEXT blocks are rejected.
+ * No content is written — this is read-only.
+ */
+export async function getCandidateHeroBlockData(
+  candidateId: string,
+  pageId: string,
+  blockId: string,
+): Promise<HeroBlockResult> {
+  const candidate = candidateIdSchema.safeParse(candidateId);
+  const page = pageIdSchema.safeParse(pageId);
+  const block = blockIdSchema.safeParse(blockId);
+  if (!candidate.success || !page.success || !block.success) {
+    return { success: false, message: "Block not found." };
+  }
+
+  const owned = await ownedBlock(candidate.data, page.data, block.data);
+  if (!owned) return { success: false, message: "Block not found." };
+
+  if (owned.type !== "HERO") {
+    return { success: false, message: "Block not found." };
+  }
+
+  const profile: GetMasterCareerProfileResult =
+    await getMasterCareerProfileCore(candidate.data);
+  if (!profile.success || !profile.profile) {
+    return { success: false, message: "Block not found." };
+  }
+
+  const basics = profile.profile.basics;
+  const candidateName = owned.page.careerSite.candidate;
+  const displayName =
+    basics.fullName ||
+    `${candidateName.firstName} ${candidateName.lastName}`.trim();
+
+  return {
+    success: true,
+    data: {
+      displayName,
+      headline: basics.headline || null,
+    },
+  };
+}
+
+export async function getMyHeroBlockData(
+  pageId: string,
+  blockId: string,
+): Promise<HeroBlockResult> {
+  const { candidate } = await requireCandidateSession();
+  return getCandidateHeroBlockData(candidate.id, pageId, blockId);
 }
