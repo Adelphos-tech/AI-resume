@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { AddBlockForm } from "@/components/candidate/career-site/add-block-form";
 import { CustomTextBlock } from "@/components/candidate/career-site/custom-text-block";
 import { DeleteBlockButton } from "@/components/candidate/career-site/delete-block-button";
+import { MoveBlockButtons } from "@/components/candidate/career-site/move-block-buttons";
 import {
   CAREER_SITE_BLOCK_LABELS,
   readCustomTextContent,
@@ -57,6 +58,7 @@ export default async function CareerSitePageDetail({
         ) : (
           <ul className="mt-3 space-y-2">
             {blocks.map((block, index) => {
+              const orderIds = blocks.map((b) => b.id);
               const content =
                 block.type === "CUSTOM_TEXT"
                   ? readCustomTextContent(block.content)
@@ -75,6 +77,8 @@ export default async function CareerSitePageDetail({
                         content?.kind === "text" ? content.text : null
                       }
                       invalid={content?.kind === "invalid"}
+                      orderIds={orderIds}
+                      orderIndex={index}
                     />
                   ) : (
                     <div className="flex items-center justify-between">
@@ -82,6 +86,11 @@ export default async function CareerSitePageDetail({
                         {CAREER_SITE_BLOCK_LABELS[block.type] ?? block.type}
                       </span>
                       <span className="flex items-center gap-2">
+                        <MoveBlockButtons
+                          pageId={result.page.id}
+                          orderIds={orderIds}
+                          index={index}
+                        />
                         <DeleteBlockButton
                           pageId={result.page.id}
                           blockId={block.id}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { readCustomTextContent } from "@/lib/career-site-blocks";
+import { moveBlock, readCustomTextContent } from "@/lib/career-site-blocks";
 
 describe("readCustomTextContent", () => {
   it("reads NULL as uninitialized", () => {
@@ -39,5 +39,36 @@ describe("readCustomTextContent", () => {
     expect(readCustomTextContent({ text: "x", color: "red" })).toEqual({
       kind: "invalid",
     });
+  });
+});
+
+describe("moveBlock", () => {
+  const ORDER = ["a", "b", "c"];
+
+  it("swaps the block up one position", () => {
+    expect(moveBlock(ORDER, 1, "up")).toEqual(["b", "a", "c"]);
+  });
+
+  it("swaps the block down one position", () => {
+    expect(moveBlock(ORDER, 1, "down")).toEqual(["a", "c", "b"]);
+  });
+
+  it("first block cannot move up", () => {
+    expect(moveBlock(ORDER, 0, "up")).toEqual(ORDER);
+  });
+
+  it("last block cannot move down", () => {
+    expect(moveBlock(ORDER, 2, "down")).toEqual(ORDER);
+  });
+
+  it("single block stays unchanged in both directions", () => {
+    expect(moveBlock(["a"], 0, "up")).toEqual(["a"]);
+    expect(moveBlock(["a"], 0, "down")).toEqual(["a"]);
+  });
+
+  it("does not mutate the input array", () => {
+    const order = ["a", "b", "c"];
+    moveBlock(order, 1, "up");
+    expect(order).toEqual(["a", "b", "c"]);
   });
 });

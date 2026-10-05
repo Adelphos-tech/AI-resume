@@ -7,6 +7,7 @@ const createMyCareerSitePage = vi.fn();
 const createMyCareerSiteBlock = vi.fn();
 const updateMyCustomTextBlock = vi.fn();
 const deleteMyCareerSiteBlock = vi.fn();
+const reorderMyCareerSiteBlocks = vi.fn();
 
 vi.mock("@/server/career-site/career-site", () => ({
   createMyCareerSite,
@@ -16,6 +17,7 @@ vi.mock("@/server/career-site/career-site", () => ({
   createMyCareerSiteBlock,
   updateMyCustomTextBlock,
   deleteMyCareerSiteBlock,
+  reorderMyCareerSiteBlocks,
 }));
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
@@ -26,6 +28,7 @@ const {
   createCareerSiteBlockAction,
   updateCustomTextBlockAction,
   deleteCareerSiteBlockAction,
+  reorderCareerSiteBlocksAction,
 } = await import("@/app/candidate/(workspace)/career-site/actions");
 const { default: CandidateCareerSitePage } =
   await import("@/app/candidate/(workspace)/career-site/page");
@@ -246,5 +249,52 @@ describe("career-site blocks — delete action", () => {
     });
     const result = await deleteCareerSiteBlockAction(PAGE_ID, BLOCK_ID);
     expect(result).toEqual({ success: false, message: "Block not found." });
+  });
+});
+
+describe("career-site blocks — reorder action", () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  const PAGE_ID = "cpageaaaaaaaaaaaaaaaaaaaa";
+  const IDS = ["cblock1aaaaaaaaaaaaaaaaaa1", "cblock1bbbbbbbbbbbbbbbbb2"];
+
+  it("delegates the complete ordered list to the domain", async () => {
+    reorderMyCareerSiteBlocks.mockResolvedValue({ success: true });
+    const result = await reorderCareerSiteBlocksAction(PAGE_ID, {
+      blockIds: IDS,
+    });
+    expect(reorderMyCareerSiteBlocks).toHaveBeenCalledWith(PAGE_ID, {
+      blockIds: IDS,
+    });
+    expect(result).toEqual({ success: true });
+  });
+
+  it("passes input through so the strict domain schema stays authoritative", async () => {
+    reorderMyCareerSiteBlocks.mockResolvedValue({
+      success: false,
+      message: "Invalid input.",
+    });
+    const result = await reorderCareerSiteBlocksAction(PAGE_ID, {
+      blockIds: IDS,
+      positions: [1, 0],
+      candidateId: "cczzzzzzzzzzzzzzzzzzzzzzzz",
+    });
+    expect(reorderMyCareerSiteBlocks).toHaveBeenCalledWith(PAGE_ID, {
+      blockIds: IDS,
+      positions: [1, 0],
+      candidateId: "cczzzzzzzzzzzzzzzzzzzzzzzz",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("propagates domain failure without throwing", async () => {
+    reorderMyCareerSiteBlocks.mockResolvedValue({
+      success: false,
+      message: "Page not found.",
+    });
+    const result = await reorderCareerSiteBlocksAction(PAGE_ID, {
+      blockIds: IDS,
+    });
+    expect(result).toEqual({ success: false, message: "Page not found." });
   });
 });

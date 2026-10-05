@@ -6,6 +6,7 @@ import { Pencil } from "lucide-react";
 
 import { updateCustomTextBlockAction } from "@/app/candidate/(workspace)/career-site/actions";
 import { DeleteBlockButton } from "@/components/candidate/career-site/delete-block-button";
+import { MoveBlockButtons } from "@/components/candidate/career-site/move-block-buttons";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -18,6 +19,10 @@ type Props = {
   initialText: string | null;
   /** True when persisted content exists but is malformed. */
   invalid: boolean;
+  /** Complete ordered id list of this page's blocks. */
+  orderIds: string[];
+  /** Rendered index of this block within orderIds. */
+  orderIndex: number;
 };
 
 export function CustomTextBlock({
@@ -26,6 +31,8 @@ export function CustomTextBlock({
   ordinal,
   initialText,
   invalid,
+  orderIds,
+  orderIndex,
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -64,6 +71,11 @@ export function CustomTextBlock({
           <span className="shrink-0 text-xs text-stone-400">{ordinal}</span>
         ) : (
           <span className="flex shrink-0 items-center gap-2">
+            <MoveBlockButtons
+              pageId={pageId}
+              orderIds={orderIds}
+              index={orderIndex}
+            />
             <Button
               type="button"
               variant="ghost"
