@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { AddBlockForm } from "@/components/candidate/career-site/add-block-form";
 import { CustomTextBlock } from "@/components/candidate/career-site/custom-text-block";
 import { DeleteBlockButton } from "@/components/candidate/career-site/delete-block-button";
+import { HeroBlock } from "@/components/candidate/career-site/hero-block";
 import { MoveBlockButtons } from "@/components/candidate/career-site/move-block-buttons";
 import {
   CAREER_SITE_BLOCK_LABELS,
@@ -12,6 +13,7 @@ import {
 } from "@/lib/career-site-blocks";
 import {
   getMyCareerSitePage,
+  getMyHeroBlockData,
   listMyCareerSiteBlocks,
 } from "@/server/career-site/career-site";
 
@@ -28,6 +30,32 @@ export default async function CareerSitePageDetail({
 
   const blocksResult = await listMyCareerSiteBlocks(pageId);
   const blocks = blocksResult.success ? blocksResult.blocks : [];
+
+  const heroBlocks = blocks.filter((b) => b.type === "HERO");
+  const heroDataResults =
+    heroBlocks.length > 0
+      ? await Promise.all(
+          heroBlocks.map(async (b) => ({
+            blockId: b.id,
+            result: await getMyHeroBlockData(pageId, b.id),
+          })),
+        )
+      : [];
+
+  const heroDataMap = new Map(
+    heroDataResults
+      .filter(
+        (
+          r,
+        ): r is typeof r & {
+          result: {
+            success: true;
+            data: { displayName: string; headline: string | null };
+          };
+        } => r.result.success,
+      )
+      .map((r) => [r.blockId, r.result.data]),
+  );
 
   return (
     <div className="space-y-6">
@@ -79,6 +107,15 @@ export default async function CareerSitePageDetail({
                       invalid={content?.kind === "invalid"}
                       orderIds={orderIds}
                       orderIndex={index}
+                    />
+                  ) : block.type === "HERO" ? (
+                    <HeroBlock
+                      pageId={result.page.id}
+                      blockId={block.id}
+                      data={heroDataMap.get(block.id)}
+                      orderIds={orderIds}
+                      orderIndex={index}
+                      ordinal={`Block ${index + 1}`}
                     />
                   ) : (
                     <div className="flex items-center justify-between">
