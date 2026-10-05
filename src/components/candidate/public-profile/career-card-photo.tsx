@@ -277,6 +277,7 @@ export function CoverPositionEditor({
   message,
   onClose,
   onSave,
+  frameClassName = "aspect-2/1 w-full",
 }: {
   src: string;
   name: string;
@@ -285,6 +286,8 @@ export function CoverPositionEditor({
   message: string | null;
   onClose: () => void;
   onSave: (position: PhotoPosition) => void;
+  /** Theme-aware frame class — defaults to the legacy 2:1 ratio. */
+  frameClassName?: string;
 }) {
   const [pos, setPos] = useState<PhotoPosition>(initial);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -334,7 +337,7 @@ export function CoverPositionEditor({
           Drag the cover to reposition it, or use the sliders.
         </DialogDescription>
 
-        {/* preview frame — wide 2:1, drag target */}
+        {/* preview frame — theme-aware, drag target */}
         <div className="mt-4">
           <div
             ref={frameRef}
@@ -342,14 +345,14 @@ export function CoverPositionEditor({
             onPointerMove={onPointerMove}
             onPointerUp={endDrag}
             onPointerCancel={endDrag}
-            className="cursor-grab touch-none rounded-2xl ring-1 ring-stone-200 active:cursor-grabbing"
+            className="cursor-grab touch-none overflow-hidden rounded-2xl ring-1 ring-stone-200 active:cursor-grabbing"
             role="presentation"
           >
             <CareerCardCoverPhoto
               src={src}
               alt=""
               position={pos}
-              frameClassName="aspect-2/1 w-full"
+              frameClassName={frameClassName}
             />
           </div>
         </div>

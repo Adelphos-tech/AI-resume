@@ -26,6 +26,7 @@ import {
   CAREER_CARD_STYLES,
   type CareerCardStyleId,
 } from "@/lib/career-card-styles";
+import { cardStyleTokens } from "@/lib/career-card-theme-styles";
 
 import {
   createPublicProfileAction,
@@ -216,6 +217,15 @@ export function PublicProfileSettings({
   const adjustCoverBtnRef = useRef<HTMLButtonElement>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [posMsg, setPosMsg] = useState<string | null>(null);
+
+  const themeTokens = cardStyleTokens(
+    form.themeId,
+    form.accentColorId,
+    form.cardStyleId,
+  );
+  const coverWrapClass =
+    themeTokens.premium?.coverWrap ?? themeTokens.base.coverWrap;
+
   const [reco, setReco] = useState<ThemeRecommendation | null>(null);
   const [recoBusy, setRecoBusy] = useState(false);
   const [recoErr, setRecoErr] = useState<string | null>(null);
@@ -609,7 +619,7 @@ export function PublicProfileSettings({
                 src={`${cover}${cover.includes("?") ? "&" : "?"}v=${coverV}`}
                 alt=""
                 position={coverPos}
-                frameClassName="aspect-2/1 w-full rounded-xl"
+                frameClassName={`${coverWrapClass} rounded-xl`}
               />
             </div>
           ) : (
@@ -1438,6 +1448,7 @@ export function PublicProfileSettings({
           initial={coverPos}
           busy={coverBusy}
           message={coverMsg}
+          frameClassName={coverWrapClass}
           onClose={() => {
             setCoverEditorOpen(false);
             // Conditional mount means Radix focus-restore has no trigger —
