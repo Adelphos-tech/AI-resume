@@ -147,6 +147,12 @@ export function PublicProfileSettings({
   coverKey: initialCoverKey,
   coverPosition,
   activeStep,
+  formState,
+  onFormChange,
+  onPhotoUrlChange,
+  onCoverUrlChange,
+  onPhotoPositionChange,
+  onCoverPositionChange,
 }: {
   slug: string | null;
   isPublished: boolean;
@@ -171,9 +177,25 @@ export function PublicProfileSettings({
   coverKey: string | null;
   coverPosition: PhotoPosition;
   activeStep: BuilderStep;
+  /** Optional controlled form state for shared preview editing. */
+  formState?: PublicProfileSettingsState;
+  /** Optional controlled form setter for shared preview editing. */
+  onFormChange?: React.Dispatch<
+    React.SetStateAction<PublicProfileSettingsState>
+  >;
+  /** Optional callback when a profile-photo upload or remove changes the
+   * server-backed photo URL. */
+  onPhotoUrlChange?: (url: string | null) => void;
+  /** Optional callback when a cover-photo upload or remove changes the
+   * server-backed cover URL. */
+  onCoverUrlChange?: (url: string | null) => void;
+  /** Optional callback when a profile-photo position/zoom is saved. */
+  onPhotoPositionChange?: (pos: PhotoPosition) => void;
+  /** Optional callback when a cover-photo position/zoom is saved. */
+  onCoverPositionChange?: (pos: PhotoPosition) => void;
 }) {
   const [slugValue, setSlugValue] = useState(slug ?? "");
-  const [form, setForm] = useState<PublicProfileSettingsState>(
+  const [internalForm, setInternalForm] = useState<PublicProfileSettingsState>(
     initial ?? {
       publicHeadline: "",
       publicBio: "",
@@ -200,6 +222,8 @@ export function PublicProfileSettings({
       nfcCompactSkinId: "career-passport",
     },
   );
+  const form = formState ?? internalForm;
+  const setForm = onFormChange ?? setInternalForm;
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -270,11 +294,14 @@ export function PublicProfileSettings({
       } = await res.json().catch(() => ({ success: false }));
       if (!r.success) setPhotoMsg(r.message ?? "Upload failed. Try again.");
       else {
-        setPhoto(r.photoUrl ?? null);
+        const nextUrl = r.photoUrl ?? null;
+        setPhoto(nextUrl);
         setPhotoKey(r.photoKey ?? null);
         setPos(DEFAULT_PHOTO_POSITION); // new photo → centered presentation
         setPhotoV((v) => v + 1); // refresh the preview even at the same URL
         setPhotoMsg("Profile photo updated");
+        onPhotoUrlChange?.(nextUrl);
+        onPhotoPositionChange?.(DEFAULT_PHOTO_POSITION);
       }
     } catch {
       setPhotoMsg("Upload failed. Try again.");
@@ -294,6 +321,8 @@ export function PublicProfileSettings({
         setPhotoKey(null);
         setPos(DEFAULT_PHOTO_POSITION);
         setPhotoMsg("Profile photo removed");
+        onPhotoUrlChange?.(null);
+        onPhotoPositionChange?.(DEFAULT_PHOTO_POSITION);
       }
     } catch {
       setPhotoMsg("Upload failed. Try again.");
@@ -323,11 +352,14 @@ export function PublicProfileSettings({
       } = await res.json().catch(() => ({ success: false }));
       if (!r.success) setCoverMsg(r.message ?? "Upload failed. Try again.");
       else {
-        setCover(r.coverUrl ?? null);
+        const nextUrl = r.coverUrl ?? null;
+        setCover(nextUrl);
         setCoverKey(r.coverKey ?? null);
         setCoverV((v) => v + 1); // refresh the preview even at the same URL
         setCoverPos(DEFAULT_PHOTO_POSITION); // new cover → centered framing
         setCoverMsg("Cover photo updated");
+        onCoverUrlChange?.(nextUrl);
+        onCoverPositionChange?.(DEFAULT_PHOTO_POSITION);
       }
     } catch {
       setCoverMsg("Upload failed. Try again.");
@@ -347,6 +379,8 @@ export function PublicProfileSettings({
         setCoverKey(null);
         setCoverPos(DEFAULT_PHOTO_POSITION);
         setCoverMsg("Cover photo removed");
+        onCoverUrlChange?.(null);
+        onCoverPositionChange?.(DEFAULT_PHOTO_POSITION);
       }
     } catch {
       setCoverMsg("Upload failed. Try again.");
@@ -502,21 +536,17 @@ export function PublicProfileSettings({
         )}
       </section>
 
-      {/* theme selector */}
+      {/* photos */}
       <section
-        aria-labelledby="pp-appearance"
-        className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "design" ? "block" : "hidden"}`}
+        aria-labelledby="pp-photos"
+        className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "basics" ? "block" : "hidden"}`}
       >
-        <h2
-          id="pp-appearance"
-          className="flex items-center gap-2 text-base font-semibold text-stone-900"
-        >
-          <Palette className="size-4 text-emerald-700" aria-hidden />
-          Career Card Appearance
+        <h2 id="pp-photos" className="text-base font-semibold text-stone-900">
+          Photos
         </h2>
         <p className="mt-1 text-sm leading-relaxed text-stone-500">
-          Choose how your public Career Card looks. Changes apply after Save
-          profile — your link and data stay the same.
+          Upload and adjust your profile and cover photos. Changes apply
+          immediately.
         </p>
 
         {/* profile photo — immediate media actions, separate from Save */}
@@ -692,6 +722,24 @@ export function PublicProfileSettings({
             onChange={onCoverSelected}
           />
         </div>
+      </section>
+
+      {/* theme selector */}
+      <section
+        aria-labelledby="pp-appearance"
+        className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "design" ? "block" : "hidden"}`}
+      >
+        <h2
+          id="pp-appearance"
+          className="flex items-center gap-2 text-base font-semibold text-stone-900"
+        >
+          <Palette className="size-4 text-emerald-700" aria-hidden />
+          Career Card Appearance
+        </h2>
+        <p className="mt-1 text-sm leading-relaxed text-stone-500">
+          Choose how your public Career Card looks. Changes apply after Save
+          profile — your link and data stay the same.
+        </p>
 
         <fieldset className="mt-5 border-t border-stone-200 pt-5">
           <legend className="sr-only">Career Card theme</legend>
@@ -1494,6 +1542,7 @@ export function PublicProfileSettings({
                 setCoverPos(next);
                 setCoverEditorOpen(false);
                 setCoverMsg("Cover position updated");
+                onCoverPositionChange?.(next);
               }
             } catch {
               setCoverMsg("Couldn't save position. Try again.");
@@ -1531,6 +1580,7 @@ export function PublicProfileSettings({
                 setPos(next);
                 setEditorOpen(false);
                 setPhotoMsg("Photo position updated");
+                onPhotoPositionChange?.(next);
               }
             } catch {
               setPosMsg("Couldn't save position. Try again.");

@@ -1,10 +1,5 @@
-import { PublicProfileSettings } from "@/components/candidate/public-profile/public-profile-settings";
-import {
-  CompanyProfileSettings,
-  type CompanyProfileState,
-} from "@/components/candidate/public-profile/company-profile-settings";
-import { CareerCardBuilder } from "@/components/candidate/public-profile/career-card-builder";
-import { CareerCardBuilderPreview } from "@/components/candidate/public-profile/career-card-builder-preview";
+import { CareerCardBuilderPageClient } from "@/components/candidate/public-profile/career-card-builder-client";
+import { type CompanyProfileState } from "@/components/candidate/public-profile/company-profile-settings";
 import { prisma } from "@/server/db";
 import { parsePhoneNumberFromString } from "libphonenumber-js/min";
 import { resolveNfcCompactSkin } from "@/lib/nfc-compact-skins";
@@ -114,73 +109,44 @@ export default async function CandidatePublicProfilePage() {
       }
     : null;
 
-  const commonSettingsProps = {
-    slug: profile?.slug ?? null,
-    isPublished: profile?.isPublished ?? false,
-    shareUrl: link ? `${env.PUBLIC_SHARE_ORIGIN}/n/${link.token}` : null,
-    publicUrl: profile ? `/u/${profile.slug}` : null,
-    initial: initialState,
-    variants,
-    photoUrl: profile?.profilePhotoKey ? `/u/${profile.slug}/photo` : null,
-    displayName: `${candidate.firstName} ${candidate.lastName}`.trim(),
-    photoKey: profile?.profilePhotoKey ?? null,
-    photoPosition: profile
-      ? {
-          focalX: profile.profilePhotoFocalX,
-          focalY: profile.profilePhotoFocalY,
-          zoom: profile.profilePhotoZoom,
-        }
-      : { focalX: 0.5, focalY: 0.5, zoom: 1 },
-    coverUrl: profile?.coverPhotoKey ? `/u/${profile.slug}/cover` : null,
-    coverKey: profile?.coverPhotoKey ?? null,
-    coverPosition: profile
-      ? {
-          focalX: profile.coverPhotoFocalX,
-          focalY: profile.coverPhotoFocalY,
-          zoom: profile.coverPhotoZoom,
-        }
-      : { focalX: 0.5, focalY: 0.5, zoom: 1 },
-  };
-
-  const preview = (
-    <CareerCardBuilderPreview
-      state={initialState}
-      displayName={commonSettingsProps.displayName}
-      photoUrl={commonSettingsProps.photoUrl}
-      coverUrl={commonSettingsProps.coverUrl}
-      photoPosition={commonSettingsProps.photoPosition}
-      coverPosition={commonSettingsProps.coverPosition}
-      isPublished={commonSettingsProps.isPublished}
-    />
-  );
-
   return (
-    <CareerCardBuilder
-      stepContent={{
-        basics: (
-          <PublicProfileSettings {...commonSettingsProps} activeStep="basics" />
-        ),
-        design: (
-          <PublicProfileSettings {...commonSettingsProps} activeStep="design" />
-        ),
-        company: (
-          <CompanyProfileSettings
-            initial={companyInitial}
-            logoUrl={
-              profile && company?.companyLogoKey
-                ? `/u/${profile.slug}/company-logo`
-                : null
+    <CareerCardBuilderPageClient
+      key={profile?.slug ?? "none"}
+      initialState={initialState}
+      slug={profile?.slug ?? null}
+      isPublished={profile?.isPublished ?? false}
+      shareUrl={link ? `${env.PUBLIC_SHARE_ORIGIN}/n/${link.token}` : null}
+      publicUrl={profile ? `/u/${profile.slug}` : null}
+      variants={variants}
+      photoUrl={profile?.profilePhotoKey ? `/u/${profile.slug}/photo` : null}
+      displayName={`${candidate.firstName} ${candidate.lastName}`.trim()}
+      photoKey={profile?.profilePhotoKey ?? null}
+      photoPosition={
+        profile
+          ? {
+              focalX: profile.profilePhotoFocalX,
+              focalY: profile.profilePhotoFocalY,
+              zoom: profile.profilePhotoZoom,
             }
-          />
-        ),
-        preview: (
-          <PublicProfileSettings
-            {...commonSettingsProps}
-            activeStep="preview"
-          />
-        ),
-      }}
-      preview={preview}
+          : { focalX: 0.5, focalY: 0.5, zoom: 1 }
+      }
+      coverUrl={profile?.coverPhotoKey ? `/u/${profile.slug}/cover` : null}
+      coverKey={profile?.coverPhotoKey ?? null}
+      coverPosition={
+        profile
+          ? {
+              focalX: profile.coverPhotoFocalX,
+              focalY: profile.coverPhotoFocalY,
+              zoom: profile.coverPhotoZoom,
+            }
+          : { focalX: 0.5, focalY: 0.5, zoom: 1 }
+      }
+      companyInitial={companyInitial}
+      logoUrl={
+        profile && company?.companyLogoKey
+          ? `/u/${profile.slug}/company-logo`
+          : null
+      }
     />
   );
 }
