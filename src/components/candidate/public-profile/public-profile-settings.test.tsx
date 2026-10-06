@@ -121,4 +121,66 @@ describe("PublicProfileSettings — step visibility", () => {
     );
     expect(html).not.toContain("Adjust cover");
   });
+
+  it("renders Identity section in Basics step", () => {
+    const html = renderToStaticMarkup(
+      createElement(PublicProfileSettings, {
+        ...BASE_PROPS,
+        activeStep: "basics",
+      }),
+    );
+    expect(html).toContain('id="pp-identity"');
+    expect(html).toContain("Headline");
+    expect(html).toContain("About");
+    expect(html).toContain("Location");
+    expect(html).toContain("Current focus");
+    expect(html).toContain("Open to opportunities");
+    const identityMatch = html.match(
+      /<section[^>]*aria-labelledby="pp-identity"[^>]*>/,
+    );
+    expect(identityMatch).toBeTruthy();
+    expect(identityMatch![0]).not.toContain("hidden");
+  });
+
+  it("hides Identity section in Design step", () => {
+    const html = renderToStaticMarkup(
+      createElement(PublicProfileSettings, {
+        ...BASE_PROPS,
+        activeStep: "design",
+      }),
+    );
+    const identityMatch = html.match(
+      /<section[^>]*aria-labelledby="pp-identity"[^>]*>/,
+    );
+    expect(identityMatch).toBeTruthy();
+    expect(identityMatch![0]).toContain("hidden");
+  });
+
+  it("renders identity fields with descriptions in Basics", () => {
+    const html = renderToStaticMarkup(
+      createElement(PublicProfileSettings, {
+        ...BASE_PROPS,
+        activeStep: "basics",
+      }),
+    );
+    expect(html).toContain("A short professional headline shown on your card.");
+    expect(html).toContain("Introduce yourself in a few sentences.");
+    expect(html).toContain("Where you&#x27;re currently based.");
+    expect(html).toContain("What you&#x27;re focused on right now.");
+  });
+
+  it("headline input is wired to shared form state", () => {
+    const html = renderToStaticMarkup(
+      createElement(PublicProfileSettings, {
+        ...BASE_PROPS,
+        activeStep: "basics",
+      }),
+    );
+    expect(html).toContain('id="pp-headline"');
+    expect(html).toContain('id="pp-bio"');
+    expect(html).toContain('id="pp-publicLocation"');
+    expect(html).toContain('id="pp-currentFocus"');
+    expect(html).toContain('id="pp-workAuthorization"');
+    expect(html).toContain('id="pp-openToOpportunities"');
+  });
 });

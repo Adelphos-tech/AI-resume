@@ -40,8 +40,6 @@ import {
   updateSlugAction,
 } from "@/app/candidate/(workspace)/public-profile/actions";
 import {
-  CareerCardCoverPhoto,
-  CareerCardProfilePhoto,
   CoverPositionEditor,
   DEFAULT_PHOTO_POSITION,
   PhotoPositionEditor,
@@ -56,6 +54,8 @@ import { CareerCardNfcWriter } from "@/components/candidate/public-profile/caree
 import { Button } from "@/components/ui/button";
 import { CareerCardBuilderSection } from "@/components/candidate/public-profile/career-card-builder-section";
 import type { BuilderStep } from "@/components/candidate/public-profile/career-card-builder";
+import { CareerCardIdentitySettings } from "@/components/candidate/public-profile/career-card-identity-settings";
+import { CareerCardPhotoSettings } from "@/components/candidate/public-profile/career-card-photo-settings";
 
 type VariantOption = {
   id: string;
@@ -545,181 +545,40 @@ export function PublicProfileSettings({
           Photos
         </h2>
         <p className="mt-1 text-sm leading-relaxed text-stone-500">
-          Upload and adjust your profile and cover photos. Changes apply
-          immediately.
+          Personalize how your Career Card looks.
         </p>
-
-        {/* profile photo — immediate media actions, separate from Save */}
-        <div className="mt-5 border-t border-stone-200 pt-5">
-          <p className="text-sm font-semibold text-stone-900">Profile photo</p>
-          <div className="mt-3 flex items-center gap-4">
-            {photo ? (
-              <CareerCardProfilePhoto
-                key={photoV}
-                src={`${photo}?v=${photoV}`}
-                alt={`${displayName} profile photo`}
-                position={pos}
-                frameClassName="size-16 rounded-full ring-4 ring-emerald-50"
-              />
-            ) : (
-              <div
-                aria-hidden
-                className="grid size-16 place-items-center rounded-full bg-emerald-700 text-xl font-bold text-white ring-4 ring-emerald-50"
-              >
-                {displayName
-                  .split(/\s+/)
-                  .slice(0, 2)
-                  .map((w) => w[0] ?? "")
-                  .join("")
-                  .toUpperCase()}
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="text-sm text-stone-500">
-                Add a professional photo to personalize your Career Card.
-              </p>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  disabled={photoBusy}
-                  onClick={() => fileRef.current?.click()}
-                  className="inline-flex min-h-10 items-center rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 disabled:opacity-50"
-                >
-                  {photoBusy
-                    ? "Uploading…"
-                    : photo
-                      ? "Replace photo"
-                      : "Upload photo"}
-                </button>
-                {photo && photoKey && (
-                  <button
-                    ref={adjustBtnRef}
-                    type="button"
-                    disabled={photoBusy}
-                    onClick={() => {
-                      setPosMsg(null);
-                      setEditorOpen(true);
-                    }}
-                    className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:border-emerald-600/40 hover:text-emerald-800 disabled:opacity-50"
-                  >
-                    Adjust photo
-                  </button>
-                )}
-                {photo && (
-                  <button
-                    type="button"
-                    disabled={photoBusy}
-                    onClick={onRemovePhoto}
-                    className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-600 transition-colors hover:border-red-300 hover:text-red-700 disabled:opacity-50"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-              <p className="mt-1.5 text-xs text-stone-400">
-                JPG, PNG or WebP · up to 8 MB · applies immediately
-              </p>
-              {photoMsg && (
-                <p
-                  role="status"
-                  className={`mt-1.5 text-xs font-medium ${
-                    photoMsg.includes("ed") || photoMsg.includes("removed")
-                      ? "text-emerald-700"
-                      : "text-red-600"
-                  }`}
-                >
-                  {photoMsg}
-                </p>
-              )}
-            </div>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              aria-label="Choose profile photo"
-              onChange={onPhotoSelected}
-            />
-          </div>
-        </div>
-
-        {/* cover photo — presentation only; independent of the profile
-            photo. Uploads go through the dedicated multipart route. */}
-        <div className="mt-5 border-t border-stone-200 pt-5">
-          <p className={labelCls}>Cover photo</p>
-          {cover ? (
-            <div className="mt-2 rounded-xl border border-stone-200 bg-stone-100">
-              <CareerCardCoverPhoto
-                src={`${cover}${cover.includes("?") ? "&" : "?"}v=${coverV}`}
-                alt=""
-                position={coverPos}
-                frameClassName={`${coverWrapClass} rounded-xl`}
-              />
-            </div>
-          ) : (
-            <div className="mt-2 grid aspect-2/1 w-full place-items-center rounded-xl border border-dashed border-stone-300 bg-stone-50 text-sm text-stone-400">
-              Add a cover photo
-            </div>
-          )}
-          <p className="mt-2 text-sm text-stone-500">
-            Add a wide image to personalize your Career Card.
-          </p>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              disabled={coverBusy}
-              onClick={() => coverRef.current?.click()}
-              className="inline-flex min-h-10 items-center rounded-xl bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-800 disabled:opacity-50"
-            >
-              {coverBusy ? "Uploading…" : cover ? "Replace" : "Upload cover"}
-            </button>
-            {cover && coverKey && (
-              <button
-                ref={adjustCoverBtnRef}
-                type="button"
-                disabled={coverBusy}
-                onClick={() => {
-                  setCoverMsg(null);
-                  setCoverEditorOpen(true);
-                }}
-                className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition-colors hover:border-emerald-600/40 hover:text-emerald-800 disabled:opacity-50"
-              >
-                Adjust cover
-              </button>
-            )}
-            {cover && (
-              <button
-                type="button"
-                disabled={coverBusy}
-                onClick={onRemoveCover}
-                className="inline-flex min-h-10 items-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-600 transition-colors hover:border-red-300 hover:text-red-700 disabled:opacity-50"
-              >
-                Remove
-              </button>
-            )}
-          </div>
-          <p className="mt-1.5 text-xs text-stone-400">
-            JPG, PNG or WebP · up to 8 MB · applies immediately
-          </p>
-          {coverMsg && (
-            <p
-              role="status"
-              className={`mt-1.5 text-xs font-medium ${
-                coverMsg.includes("updated") || coverMsg.includes("removed")
-                  ? "text-emerald-700"
-                  : "text-red-600"
-              }`}
-            >
-              {coverMsg}
-            </p>
-          )}
-          <input
-            ref={coverRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            className="hidden"
-            aria-label="Choose cover photo"
-            onChange={onCoverSelected}
+        <div className="mt-5">
+          <CareerCardPhotoSettings
+            displayName={displayName}
+            photoUrl={photo}
+            photoKey={photoKey}
+            photoPosition={pos}
+            photoVersion={photoV}
+            photoBusy={photoBusy}
+            photoMessage={photoMsg}
+            coverUrl={cover}
+            coverKey={coverKey}
+            coverPosition={coverPos}
+            coverVersion={coverV}
+            coverBusy={coverBusy}
+            coverMessage={coverMsg}
+            coverWrapClass={coverWrapClass}
+            fileInputRef={fileRef}
+            coverInputRef={coverRef}
+            adjustPhotoBtnRef={adjustBtnRef}
+            adjustCoverBtnRef={adjustCoverBtnRef}
+            onPhotoFileSelect={onPhotoSelected}
+            onRemovePhoto={onRemovePhoto}
+            onCoverFileSelect={onCoverSelected}
+            onRemoveCover={onRemoveCover}
+            onAdjustPhoto={() => {
+              setPosMsg(null);
+              setEditorOpen(true);
+            }}
+            onAdjustCover={() => {
+              setCoverMsg(null);
+              setCoverEditorOpen(true);
+            }}
           />
         </div>
       </section>
@@ -1093,120 +952,19 @@ export function PublicProfileSettings({
         </fieldset>
       </section>
 
-      {/* public identity */}
+      {/* identity */}
       <section
         aria-labelledby="pp-identity"
         className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "basics" ? "block" : "hidden"}`}
       >
         <h2 id="pp-identity" className="text-base font-semibold text-stone-900">
-          Public identity
+          Identity
         </h2>
         <p className="mt-1 text-sm leading-relaxed text-stone-500">
-          Shown on your public page. If left empty, your Career Profile headline
-          and summary are used.
+          How you appear on your Career Card.
         </p>
-        <div className="mt-4 space-y-4">
-          <div>
-            <label htmlFor="pp-headline" className={labelCls}>
-              Public headline
-            </label>
-            <input
-              id="pp-headline"
-              type="text"
-              value={form.publicHeadline}
-              maxLength={300}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, publicHeadline: e.target.value }))
-              }
-              className={`mt-1.5 ${inputCls}`}
-              placeholder="Senior Product Manager · AI products"
-            />
-          </div>
-          <div>
-            <label htmlFor="pp-bio" className={labelCls}>
-              Public About
-            </label>
-            <textarea
-              id="pp-bio"
-              value={form.publicBio}
-              maxLength={1500}
-              rows={4}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, publicBio: e.target.value }))
-              }
-              className={`mt-1.5 resize-none ${inputCls}`}
-              placeholder="A short professional introduction for public viewers."
-            />
-            <p className="mt-1 text-xs text-stone-400">
-              {form.publicBio.length}/1500
-            </p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {(
-              [
-                ["publicLocation", "Public location", "Berlin, Germany"],
-                ["currentFocus", "Current focus", "AI product strategy"],
-                [
-                  "workAuthorization",
-                  "Work authorization",
-                  "EU work authorization",
-                ],
-              ] as const
-            ).map(([key, label, ph]) => (
-              <div key={key}>
-                <label htmlFor={`pp-${key}`} className={labelCls}>
-                  {label}
-                </label>
-                <input
-                  id={`pp-${key}`}
-                  type="text"
-                  value={form[key]}
-                  maxLength={200}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, [key]: e.target.value }))
-                  }
-                  className={`mt-1.5 ${inputCls}`}
-                  placeholder={ph}
-                />
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center justify-between rounded-xl border border-stone-200 px-4 py-3">
-            <div>
-              <label
-                htmlFor="pp-openToOpportunities"
-                className="text-sm font-medium text-stone-800"
-              >
-                Open to opportunities
-              </label>
-              <p className="text-xs text-stone-500">
-                Shows an availability badge on your Career Card.
-              </p>
-            </div>
-            <button
-              id="pp-openToOpportunities"
-              type="button"
-              role="switch"
-              aria-checked={form.openToOpportunities}
-              aria-label="Show open to opportunities badge"
-              onClick={() =>
-                setForm((f) => ({
-                  ...f,
-                  openToOpportunities: !f.openToOpportunities,
-                }))
-              }
-              className={`relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
-                form.openToOpportunities ? "bg-emerald-600" : "bg-stone-300"
-              }`}
-            >
-              <span
-                aria-hidden
-                className={`absolute top-0.5 size-5 rounded-full bg-white shadow transition-all ${
-                  form.openToOpportunities ? "left-[22px]" : "left-0.5"
-                }`}
-              />
-            </button>
-          </div>
+        <div className="mt-5">
+          <CareerCardIdentitySettings form={form} setForm={setForm} />
         </div>
       </section>
 
