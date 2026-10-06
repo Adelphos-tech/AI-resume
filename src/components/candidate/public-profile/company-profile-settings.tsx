@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, ImagePlus, Plus, Trash2, Upload, X } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
 
 import {
@@ -9,6 +9,7 @@ import {
 } from "@/app/candidate/(workspace)/public-profile/actions";
 import { Button } from "@/components/ui/button";
 import { WhatsappCountrySelect } from "@/components/candidate/public-profile/whatsapp-fields";
+import { CareerCardCompanyIdentitySettings } from "@/components/candidate/public-profile/career-card-company-identity-settings";
 
 export type CompanyProfileState = {
   companyName: string;
@@ -77,8 +78,9 @@ export const EMPTY_COMPANY: CompanyProfileState = {
 const inputCls =
   "w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20";
 const labelCls = "text-xs font-semibold uppercase tracking-wide text-stone-500";
-const groupCls = "rounded-2xl border border-stone-200 bg-white p-6 space-y-4";
+const groupCls = "rounded-2xl border border-stone-200 bg-white p-6 space-y-5";
 const groupTitleCls = "text-sm font-semibold text-stone-900";
+const groupDescCls = "mt-0.5 text-xs text-stone-500";
 
 function Toggle({
   checked,
@@ -279,135 +281,43 @@ export function CompanyProfileSettings({
   return (
     <section
       aria-labelledby="cp-title"
-      className="rounded-2xl border border-stone-200 bg-stone-50/50 p-1.5"
+      className="rounded-2xl border border-stone-200 bg-white p-6"
     >
-      <div className="space-y-4 rounded-[0.9rem] bg-stone-50/50 p-4 sm:p-5">
-        <div>
-          <h2
-            id="cp-title"
-            className="flex items-center gap-2 text-base font-semibold text-stone-900"
-          >
-            <Building2 className="size-4 text-emerald-700" aria-hidden />
-            Company Profile
-          </h2>
-          <p className="mt-1 text-sm leading-relaxed text-stone-600">
-            Add an optional company identity for NFC Compact. Nothing becomes
-            public until you enable visibility.{" "}
-            <strong className="font-medium text-stone-700">
-              Company Profile is saved separately from your Career Card settings
-              — use the button at the bottom of this section.
-            </strong>
-          </p>
-        </div>
+      <h2 id="cp-title" className="text-base font-semibold text-stone-900">
+        Company
+      </h2>
+      <p className="mt-1 text-sm leading-relaxed text-stone-500">
+        Tell people about your organization.
+      </p>
 
+      <div className="mt-5 space-y-6">
         {/* ── Company identity ──────────────────────────────────── */}
         <div className={groupCls}>
-          <p className={groupTitleCls}>Company identity</p>
           <div>
-            <label htmlFor="cp-name" className={labelCls}>
-              Company Name *
-            </label>
-            <input
-              id="cp-name"
-              value={form.companyName}
-              onChange={(e) => set("companyName", e.target.value)}
-              className={`mt-1.5 ${inputCls}`}
-              placeholder="Acme Platforms"
-            />
+            <p className={groupTitleCls}>Company identity</p>
+            <p className={groupDescCls}>
+              Name, logo, and what your company does.
+            </p>
           </div>
-          <div>
-            <label htmlFor="cp-tagline" className={labelCls}>
-              Tagline
-            </label>
-            <input
-              id="cp-tagline"
-              value={form.tagline}
-              onChange={(e) => set("tagline", e.target.value)}
-              className={`mt-1.5 ${inputCls}`}
-              placeholder="Enterprise agentic platforms"
-            />
-          </div>
-          <div>
-            <p className={labelCls}>Company Logo</p>
-            <div className="mt-2 flex items-center gap-3">
-              {logo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={`${logo}?v=${logoV}`}
-                  alt="Company logo"
-                  className="size-16 rounded-xl border border-stone-200 object-cover"
-                />
-              ) : (
-                <div className="grid size-16 place-items-center rounded-xl border border-dashed border-stone-300 text-stone-400">
-                  <ImagePlus className="size-5" aria-hidden />
-                </div>
-              )}
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={logoBusy}
-                  onClick={() => logoRef.current?.click()}
-                >
-                  <Upload className="mr-1.5 size-3.5" aria-hidden />
-                  {logo ? "Replace" : "Upload"}
-                </Button>
-                {logo && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={logoBusy}
-                    onClick={onRemoveLogo}
-                  >
-                    <X className="mr-1.5 size-3.5" aria-hidden />
-                    Remove
-                  </Button>
-                )}
-              </div>
-              <input
-                ref={logoRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="hidden"
-                onChange={onLogoSelected}
-              />
-            </div>
-            {logoMsg && (
-              <p className="mt-2 text-xs text-stone-500">{logoMsg}</p>
-            )}
-          </div>
-          <div>
-            <label htmlFor="cp-about" className={labelCls}>
-              About Us
-            </label>
-            <textarea
-              id="cp-about"
-              value={form.about}
-              onChange={(e) => set("about", e.target.value)}
-              rows={4}
-              className={`mt-1.5 ${inputCls}`}
-              placeholder="What your company does…"
-            />
-          </div>
-          <div>
-            <label htmlFor="cp-industry" className={labelCls}>
-              Industry
-            </label>
-            <input
-              id="cp-industry"
-              value={form.industry}
-              onChange={(e) => set("industry", e.target.value)}
-              className={`mt-1.5 ${inputCls}`}
-              placeholder="AI Platforms & Enterprise Software"
-            />
-          </div>
+          <CareerCardCompanyIdentitySettings
+            form={form}
+            setForm={setForm}
+            logo={logo}
+            logoV={logoV}
+            logoBusy={logoBusy}
+            logoMsg={logoMsg}
+            logoRef={logoRef}
+            onLogoSelected={onLogoSelected}
+            onRemoveLogo={onRemoveLogo}
+          />
         </div>
 
         {/* ── Company details ───────────────────────────────────── */}
         <div className={groupCls}>
-          <p className={groupTitleCls}>Company details</p>
+          <div>
+            <p className={groupTitleCls}>Company details</p>
+            <p className={groupDescCls}>Locations and services you offer.</p>
+          </div>
           <ListEditor
             label="Locations"
             addLabel="Add a location"
@@ -424,161 +334,214 @@ export function CompanyProfileSettings({
 
         {/* ── Contact & links ───────────────────────────────────── */}
         <div className={groupCls}>
-          <p className={groupTitleCls}>Contact & links</p>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label htmlFor="cp-cperson" className={labelCls}>
-                Contact Person
-              </label>
-              <input
-                id="cp-cperson"
-                value={form.contactPersonName}
-                onChange={(e) => set("contactPersonName", e.target.value)}
-                className={`mt-1.5 ${inputCls}`}
-              />
-            </div>
-            <div>
-              <label htmlFor="cp-crole" className={labelCls}>
-                Contact Person Role
-              </label>
-              <input
-                id="cp-crole"
-                value={form.contactPersonRole}
-                onChange={(e) => set("contactPersonRole", e.target.value)}
-                className={`mt-1.5 ${inputCls}`}
-              />
-            </div>
+          <div>
+            <p className={groupTitleCls}>Contact &amp; links</p>
+            <p className={groupDescCls}>How people can reach your company.</p>
           </div>
-          <Toggle
-            checked={form.showContactPerson}
-            onChange={(v) => set("showContactPerson", v)}
-            label="Show contact person publicly"
-          />
-          {form.contactPersonName.trim() &&
-            (form.showContactPerson ? publicHint : privateHint)}
-          <div className="grid gap-4 sm:grid-cols-2">
+
+          <div className="space-y-5">
+            {/* Contact person */}
             <div>
-              <label htmlFor="cp-phone" className={labelCls}>
-                Public Phone
-              </label>
-              <input
-                id="cp-phone"
-                value={form.publicPhone}
-                onChange={(e) => set("publicPhone", e.target.value)}
-                className={`mt-1.5 ${inputCls}`}
-                placeholder="+1 415 555 0100"
-              />
-              <div className="mt-2">
-                <Toggle
-                  checked={form.showPublicPhone}
-                  onChange={(v) => set("showPublicPhone", v)}
-                  label="Show publicly"
-                />
-                {form.publicPhone.trim() &&
-                  (form.showPublicPhone ? publicHint : privateHint)}
-              </div>
-            </div>
-            <div>
-              <label htmlFor="cp-whatsapp" className={labelCls}>
-                WhatsApp
-              </label>
-              <div className="mt-1.5 grid gap-2 sm:grid-cols-[190px_minmax(0,1fr)]">
-                <WhatsappCountrySelect
-                  id="cp-whatsapp-country"
-                  value={form.whatsappCountry}
-                  onChange={(v) => set("whatsappCountry", v)}
-                  className={inputCls}
-                />
-                <input
-                  id="cp-whatsapp"
-                  inputMode="tel"
-                  value={form.whatsappNumber}
-                  onChange={(e) => set("whatsappNumber", e.target.value)}
-                  className={inputCls}
-                  placeholder="98765 43210"
-                />
-              </div>
-              <div className="mt-2">
-                <Toggle
-                  checked={form.showWhatsapp}
-                  onChange={(v) => set("showWhatsapp", v)}
-                  label="Show publicly"
-                />
-                {form.whatsappNumber.trim() &&
-                  (form.showWhatsapp ? publicHint : privateHint)}
-                {!form.whatsappNumber.trim() && (
-                  <p className="mt-1.5 text-xs text-stone-500">
-                    Pick the country, then enter your normal national number.
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="cp-cperson" className={labelCls}>
+                    Contact person
+                  </label>
+                  <p className="mt-0.5 text-xs text-stone-500">
+                    The name shown for inquiries.
                   </p>
-                )}
+                  <input
+                    id="cp-cperson"
+                    value={form.contactPersonName}
+                    onChange={(e) => set("contactPersonName", e.target.value)}
+                    className={`mt-1.5 ${inputCls}`}
+                    placeholder="Jane Doe"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="cp-crole" className={labelCls}>
+                    Role
+                  </label>
+                  <p className="mt-0.5 text-xs text-stone-500">
+                    Their title at the company.
+                  </p>
+                  <input
+                    id="cp-crole"
+                    value={form.contactPersonRole}
+                    onChange={(e) => set("contactPersonRole", e.target.value)}
+                    className={`mt-1.5 ${inputCls}`}
+                    placeholder="Head of Talent"
+                  />
+                </div>
               </div>
-            </div>
-            <div>
-              <label htmlFor="cp-email" className={labelCls}>
-                Public Email
-              </label>
-              <input
-                id="cp-email"
-                type="email"
-                value={form.publicEmail}
-                onChange={(e) => set("publicEmail", e.target.value)}
-                className={`mt-1.5 ${inputCls}`}
-                placeholder="hello@example.com"
-              />
               <div className="mt-2">
                 <Toggle
-                  checked={form.showPublicEmail}
-                  onChange={(v) => set("showPublicEmail", v)}
-                  label="Show publicly"
+                  checked={form.showContactPerson}
+                  onChange={(v) => set("showContactPerson", v)}
+                  label="Show contact person publicly"
                 />
-                {form.publicEmail.trim() &&
-                  (form.showPublicEmail ? publicHint : privateHint)}
+                {form.contactPersonName.trim() &&
+                  (form.showContactPerson ? publicHint : privateHint)}
               </div>
             </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {(
-              [
-                ["websiteUrl", "Website", "https://…"],
-                ["linkedinUrl", "LinkedIn", "https://linkedin.com/company/…"],
-                ["facebookUrl", "Facebook", "https://facebook.com/…"],
-                ["instagramUrl", "Instagram", "https://instagram.com/…"],
-                ["xUrl", "X", "https://x.com/…"],
-                ["youtubeUrl", "YouTube", "https://youtube.com/…"],
-                ["tiktokUrl", "TikTok", "https://tiktok.com/…"],
-              ] as const
-            ).map(([key, label, placeholder]) => (
-              <div key={key}>
-                <label htmlFor={`cp-${key}`} className={labelCls}>
-                  {label}
+
+            {/* Phone / WhatsApp / Email */}
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label htmlFor="cp-phone" className={labelCls}>
+                  Public phone
                 </label>
+                <p className="mt-0.5 text-xs text-stone-500">
+                  A business phone number.
+                </p>
                 <input
-                  id={`cp-${key}`}
-                  type="url"
-                  value={form[key]}
-                  onChange={(e) => set(key, e.target.value)}
+                  id="cp-phone"
+                  value={form.publicPhone}
+                  onChange={(e) => set("publicPhone", e.target.value)}
                   className={`mt-1.5 ${inputCls}`}
-                  placeholder={placeholder}
-                  autoComplete="off"
+                  placeholder="+1 415 555 0100"
                 />
+                <div className="mt-2">
+                  <Toggle
+                    checked={form.showPublicPhone}
+                    onChange={(v) => set("showPublicPhone", v)}
+                    label="Show publicly"
+                  />
+                  {form.publicPhone.trim() &&
+                    (form.showPublicPhone ? publicHint : privateHint)}
+                </div>
               </div>
-            ))}
+
+              <div>
+                <label htmlFor="cp-whatsapp" className={labelCls}>
+                  WhatsApp
+                </label>
+                <p className="mt-0.5 text-xs text-stone-500">
+                  Let people reach you directly.
+                </p>
+                <div className="mt-1.5 grid gap-2 sm:grid-cols-[200px_minmax(0,1fr)]">
+                  <WhatsappCountrySelect
+                    id="cp-whatsapp-country"
+                    value={form.whatsappCountry}
+                    onChange={(v) => set("whatsappCountry", v)}
+                    className={inputCls}
+                  />
+                  <input
+                    id="cp-whatsapp"
+                    inputMode="tel"
+                    value={form.whatsappNumber}
+                    onChange={(e) => set("whatsappNumber", e.target.value)}
+                    className={inputCls}
+                    placeholder="98765 43210"
+                  />
+                </div>
+                <div className="mt-2">
+                  <Toggle
+                    checked={form.showWhatsapp}
+                    onChange={(v) => set("showWhatsapp", v)}
+                    label="Show publicly"
+                  />
+                  {form.whatsappNumber.trim() &&
+                    (form.showWhatsapp ? publicHint : privateHint)}
+                  {!form.whatsappNumber.trim() && (
+                    <p className="mt-1.5 text-xs text-stone-500">
+                      Pick the country, then enter your normal national number.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="cp-email" className={labelCls}>
+                  Public email
+                </label>
+                <p className="mt-0.5 text-xs text-stone-500">
+                  A business email address.
+                </p>
+                <input
+                  id="cp-email"
+                  type="email"
+                  value={form.publicEmail}
+                  onChange={(e) => set("publicEmail", e.target.value)}
+                  className={`mt-1.5 ${inputCls}`}
+                  placeholder="hello@example.com"
+                />
+                <div className="mt-2">
+                  <Toggle
+                    checked={form.showPublicEmail}
+                    onChange={(v) => set("showPublicEmail", v)}
+                    label="Show publicly"
+                  />
+                  {form.publicEmail.trim() &&
+                    (form.showPublicEmail ? publicHint : privateHint)}
+                </div>
+              </div>
+            </div>
+
+            {/* Social links */}
+            <div>
+              <p className={labelCls}>Social &amp; web links</p>
+              <p className="mt-0.5 text-xs text-stone-500">
+                Add links to your online presence.
+              </p>
+              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                {(
+                  [
+                    ["websiteUrl", "Website", "https://…"],
+                    [
+                      "linkedinUrl",
+                      "LinkedIn",
+                      "https://linkedin.com/company/…",
+                    ],
+                    ["facebookUrl", "Facebook", "https://facebook.com/…"],
+                    ["instagramUrl", "Instagram", "https://instagram.com/…"],
+                    ["xUrl", "X", "https://x.com/…"],
+                    ["youtubeUrl", "YouTube", "https://youtube.com/…"],
+                    ["tiktokUrl", "TikTok", "https://tiktok.com/…"],
+                  ] as const
+                ).map(([key, label, placeholder]) => (
+                  <div key={key}>
+                    <label htmlFor={`cp-${key}`} className={labelCls}>
+                      {label}
+                    </label>
+                    <input
+                      id={`cp-${key}`}
+                      type="url"
+                      value={form[key]}
+                      onChange={(e) => set(key, e.target.value)}
+                      className={`mt-1.5 ${inputCls}`}
+                      placeholder={placeholder}
+                      autoComplete="off"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* ── Hiring & company profile links ────────────────────── */}
+        {/* ── Hiring ──────────────────────────────────────────── */}
         <div className={groupCls}>
-          <p className={groupTitleCls}>Hiring</p>
+          <div>
+            <p className={groupTitleCls}>Hiring</p>
+            <p className={groupDescCls}>
+              Share open roles and company information.
+            </p>
+          </div>
           <Toggle
             checked={form.hiringOpen}
             onChange={(v) => set("hiringOpen", v)}
-            label="Hiring / Open Roles enabled"
+            label="Hiring / Open roles enabled"
+            description="Show a hiring badge and link on your company profile."
           />
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label htmlFor="cp-orsum" className={labelCls}>
                 Summary
               </label>
+              <p className="mt-0.5 text-xs text-stone-500">
+                A short message about current opportunities.
+              </p>
               <input
                 id="cp-orsum"
                 value={form.openRolesSummary}
@@ -589,8 +552,11 @@ export function CompanyProfileSettings({
             </div>
             <div>
               <label htmlFor="cp-orurl" className={labelCls}>
-                Open Roles URL
+                Open roles URL
               </label>
+              <p className="mt-0.5 text-xs text-stone-500">
+                Where candidates can view and apply.
+              </p>
               <input
                 id="cp-orurl"
                 type="url"
@@ -602,8 +568,11 @@ export function CompanyProfileSettings({
             </div>
             <div>
               <label htmlFor="cp-cpsum" className={labelCls}>
-                Company Profile Summary
+                Company profile summary
               </label>
+              <p className="mt-0.5 text-xs text-stone-500">
+                A short description of your company profile page.
+              </p>
               <input
                 id="cp-cpsum"
                 value={form.companyProfileSummary}
@@ -614,8 +583,11 @@ export function CompanyProfileSettings({
             </div>
             <div>
               <label htmlFor="cp-cpurl" className={labelCls}>
-                Company Profile URL
+                Company profile URL
               </label>
+              <p className="mt-0.5 text-xs text-stone-500">
+                A link to your company profile or careers page.
+              </p>
               <input
                 id="cp-cpurl"
                 type="url"
@@ -630,7 +602,12 @@ export function CompanyProfileSettings({
 
         {/* ── Visibility + save ─────────────────────────────────── */}
         <div className={groupCls}>
-          <p className={groupTitleCls}>Visibility</p>
+          <div>
+            <p className={groupTitleCls}>Visibility</p>
+            <p className={groupDescCls}>
+              Control when your company profile appears.
+            </p>
+          </div>
           <Toggle
             checked={form.isVisible}
             onChange={(v) => set("isVisible", v)}
