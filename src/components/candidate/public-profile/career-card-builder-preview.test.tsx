@@ -128,12 +128,14 @@ describe("CareerCardBuilderPreview", () => {
     const classicHtml = renderToStaticMarkup(
       createElement(CareerCardBuilderPreview, {
         ...BASE_PROPS,
+        coverUrl: "/u/test/cover",
         state: { ...DEFAULT_STATE, themeId: "role-race-classic" },
       }),
     );
     const darkHtml = renderToStaticMarkup(
       createElement(CareerCardBuilderPreview, {
         ...BASE_PROPS,
+        coverUrl: "/u/test/cover",
         state: { ...DEFAULT_STATE, themeId: "executive-dark" },
       }),
     );

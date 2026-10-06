@@ -14,10 +14,8 @@ import { notFound } from "next/navigation";
 
 import { cardStyleTokens } from "@/lib/career-card-theme-styles";
 import { PremiumCareerCard } from "@/components/public-profile/premium-career-card";
-import {
-  CareerCardCoverPhoto,
-  CareerCardProfilePhoto,
-} from "@/components/candidate/public-profile/career-card-photo";
+import { CareerCardCoverPhoto } from "@/components/candidate/public-profile/career-card-photo";
+import { CareerCardIdentity } from "@/components/candidate/public-profile/career-card-identity";
 import { ResumeMiniPreview } from "@/components/resume/resume-mini-preview";
 import { prisma } from "@/server/db";
 import { getCandidateSession } from "@/server/session";
@@ -183,31 +181,19 @@ export default async function PublicProfilePage({
           )}
           <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-              <div className={dto.coverPhotoUrl ? t.coverAvatarPull : ""}>
-                {dto.profilePhotoUrl ? (
-                  <CareerCardProfilePhoto
-                    src={dto.profilePhotoUrl}
-                    alt={`${dto.name} profile photo`}
-                    position={dto.profilePhotoPosition}
-                    frameClassName={t.avatarImg}
-                  />
-                ) : (
-                  <div aria-hidden className={`relative ${t.avatar}`}>
-                    {dto.initials}
-                  </div>
-                )}
-              </div>
-              {dto.openToOpportunities && (
-                <span className={`mt-4 ${t.openBadge}`}>
-                  <span
-                    aria-hidden
-                    className="size-1.5 rounded-full bg-emerald-500"
-                  />
-                  Open to opportunities
-                </span>
-              )}
-              <h1 className={t.h1}>{dto.name}</h1>
-              {dto.headline && <p className={t.headline}>{dto.headline}</p>}
+              <CareerCardIdentity
+                name={dto.name}
+                headline={dto.headline}
+                photoUrl={dto.profilePhotoUrl}
+                coverUrl={dto.coverPhotoUrl}
+                photoPosition={dto.profilePhotoPosition}
+                coverPosition={dto.coverPhotoPosition}
+                initials={dto.initials}
+                openToOpportunities={dto.openToOpportunities}
+                tokens={t}
+                showCover={false}
+                contentClassName="flex flex-col items-center gap-3 text-center lg:items-start lg:text-left"
+              />
               {dto.bio && (
                 <p
                   className={`mt-4 max-w-xl text-left text-[15px] leading-relaxed ${t.body}`}
