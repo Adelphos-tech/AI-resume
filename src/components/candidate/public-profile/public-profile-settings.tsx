@@ -6,7 +6,6 @@ import { useRef, useState, useTransition } from "react";
 
 import { type CareerCardThemeId } from "@/lib/career-card-themes";
 import { type CareerCardAccentColorId } from "@/lib/career-card-accent-colors";
-import { WhatsappCountrySelect } from "@/components/candidate/public-profile/whatsapp-fields";
 import { type CareerCardStyleId } from "@/lib/career-card-styles";
 import { cardStyleTokens } from "@/lib/career-card-theme-styles";
 
@@ -36,6 +35,7 @@ import type { BuilderStep } from "@/components/candidate/public-profile/career-c
 import { CareerCardIdentitySettings } from "@/components/candidate/public-profile/career-card-identity-settings";
 import { CareerCardPhotoSettings } from "@/components/candidate/public-profile/career-card-photo-settings";
 import { CareerCardDesignSettings } from "@/components/candidate/public-profile/career-card-design-settings";
+import { CareerCardLinksSettings } from "@/components/candidate/public-profile/career-card-links-settings";
 
 type VariantOption = {
   id: string;
@@ -676,96 +676,13 @@ export function PublicProfileSettings({
         className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "basics" ? "block" : "hidden"}`}
       >
         <h2 id="pp-links" className="text-base font-semibold text-stone-900">
-          Links
+          Links &amp; Contact
         </h2>
-        <div className="mt-4 space-y-4">
-          {(
-            [
-              ["linkedinUrl", "LinkedIn", "https://linkedin.com/in/…"],
-              ["githubUrl", "GitHub", "https://github.com/…"],
-              ["websiteUrl", "Website", "https://…"],
-            ] as const
-          ).map(([key, label, placeholder]) => (
-            <div key={key}>
-              <label htmlFor={`pp-${key}`} className={labelCls}>
-                {label}
-              </label>
-              <input
-                id={`pp-${key}`}
-                type="url"
-                value={form[key]}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, [key]: e.target.value }))
-                }
-                className={`mt-1.5 ${inputCls}`}
-                placeholder={placeholder}
-                autoComplete="off"
-              />
-            </div>
-          ))}
-          <div>
-            <label htmlFor="pp-whatsapp" className={labelCls}>
-              WhatsApp
-            </label>
-            <div className="mt-1.5 grid gap-2 sm:grid-cols-[190px_minmax(0,1fr)]">
-              <WhatsappCountrySelect
-                id="pp-whatsapp-country"
-                value={form.whatsappCountry}
-                onChange={(v) => setForm((f) => ({ ...f, whatsappCountry: v }))}
-                className={inputCls}
-              />
-              <input
-                id="pp-whatsapp"
-                inputMode="tel"
-                value={form.whatsappNumber}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, whatsappNumber: e.target.value }))
-                }
-                className={inputCls}
-                placeholder="98765 43210"
-                autoComplete="off"
-              />
-            </div>
-            <div className="mt-2 flex items-center gap-2.5">
-              <button
-                id="pp-show-whatsapp"
-                type="button"
-                role="switch"
-                aria-checked={form.showWhatsapp}
-                aria-label="Show WhatsApp on Career Card"
-                onClick={() =>
-                  setForm((f) => ({ ...f, showWhatsapp: !f.showWhatsapp }))
-                }
-                className={`relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
-                  form.showWhatsapp ? "bg-emerald-600" : "bg-stone-300"
-                }`}
-              >
-                <span
-                  aria-hidden
-                  className={`absolute top-0.5 size-5 rounded-full bg-white shadow transition-all ${
-                    form.showWhatsapp ? "left-[22px]" : "left-0.5"
-                  }`}
-                />
-              </button>
-              <label
-                htmlFor="pp-show-whatsapp"
-                className="text-sm font-medium text-stone-800"
-              >
-                Show WhatsApp publicly
-              </label>
-            </div>
-            {form.whatsappNumber.trim() ? (
-              <p className="mt-1.5 text-xs text-stone-500">
-                {form.showWhatsapp
-                  ? "Shown publicly."
-                  : "Saved privately — not shown publicly."}
-              </p>
-            ) : (
-              <p className="mt-1.5 text-xs text-stone-500">
-                Pick the country, then enter your normal national number.
-              </p>
-            )}
-          </div>
+        <p className="mt-1 text-sm leading-relaxed text-stone-500">
+          Help people connect with you.
+        </p>
+        <div className="mt-5">
+          <CareerCardLinksSettings form={form} setForm={setForm} />
         </div>
       </section>
 

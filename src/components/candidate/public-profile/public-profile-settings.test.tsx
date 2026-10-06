@@ -183,4 +183,79 @@ describe("PublicProfileSettings — step visibility", () => {
     expect(html).toContain('id="pp-workAuthorization"');
     expect(html).toContain('id="pp-openToOpportunities"');
   });
+
+  it("renders Links &amp; Contact section in Basics step", () => {
+    const html = renderToStaticMarkup(
+      createElement(PublicProfileSettings, {
+        ...BASE_PROPS,
+        activeStep: "basics",
+      }),
+    );
+    expect(html).toContain('id="pp-links"');
+    expect(html).toContain("Links &amp; Contact");
+    expect(html).toContain("Help people connect with you.");
+    expect(html).toContain("LinkedIn");
+    expect(html).toContain("GitHub");
+    expect(html).toContain("Website");
+    expect(html).toContain("WhatsApp");
+    const linksMatch = html.match(
+      /<section[^>]*aria-labelledby="pp-links"[^>]*>/,
+    );
+    expect(linksMatch).toBeTruthy();
+    expect(linksMatch![0]).not.toContain("hidden");
+  });
+
+  it("hides Links &amp; Contact section in Design step", () => {
+    const html = renderToStaticMarkup(
+      createElement(PublicProfileSettings, {
+        ...BASE_PROPS,
+        activeStep: "design",
+      }),
+    );
+    const linksMatch = html.match(
+      /<section[^>]*aria-labelledby="pp-links"[^>]*>/,
+    );
+    expect(linksMatch).toBeTruthy();
+    expect(linksMatch![0]).toContain("hidden");
+  });
+
+  it("renders link field descriptions in Basics", () => {
+    const html = renderToStaticMarkup(
+      createElement(PublicProfileSettings, {
+        ...BASE_PROPS,
+        activeStep: "basics",
+      }),
+    );
+    expect(html).toContain("Your professional profile link.");
+    expect(html).toContain("Your public development work.");
+    expect(html).toContain("Your personal or professional site.");
+    expect(html).toContain("Let recruiters reach you directly on WhatsApp.");
+  });
+
+  it("renders link inputs wired to shared form state", () => {
+    const html = renderToStaticMarkup(
+      createElement(PublicProfileSettings, {
+        ...BASE_PROPS,
+        activeStep: "basics",
+      }),
+    );
+    expect(html).toContain('id="pp-linkedinUrl"');
+    expect(html).toContain('id="pp-githubUrl"');
+    expect(html).toContain('id="pp-websiteUrl"');
+    expect(html).toContain('id="pp-whatsapp"');
+    expect(html).toContain('id="pp-show-whatsapp"');
+  });
+
+  it("does not introduce unsupported social fields", () => {
+    const html = renderToStaticMarkup(
+      createElement(PublicProfileSettings, {
+        ...BASE_PROPS,
+        activeStep: "basics",
+      }),
+    );
+    expect(html).not.toContain("Instagram");
+    expect(html).not.toContain("Twitter");
+    expect(html).not.toContain("Behance");
+    expect(html).not.toContain("Dribbble");
+  });
 });
