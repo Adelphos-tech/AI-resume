@@ -10,6 +10,7 @@ import { NfcCompactCard } from "@/components/career-card/compositions/nfc-compac
 import { CrimsonNightCard } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-card";
 import { ProfessionalConnectCard } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-card";
 import { CreativeSpotlightCard } from "@/components/career-card/compositions/nfc-compact/creative-spotlight/creative-spotlight-card";
+import { SignatureSpotlightCard } from "@/components/career-card/compositions/nfc-compact/signature-spotlight/signature-spotlight-card";
 import { nfcCompactAccentStyle } from "@/components/career-card/compositions/nfc-compact/nfc-compact-accents";
 import { completedYearsOfExperience } from "@/components/career-card/adapters/public-profile-to-career-card";
 import type { CompanyProfileDTO } from "@/server/public-profile/company-profile";
@@ -83,6 +84,17 @@ export function NfcCompactLibraryCard({
           cta={cta}
           accentStyle={nfcCompactAccentStyle(dto.accentColorId)}
           shareUrl={dto.shareUrl}
+        />
+      </main>
+    );
+  }
+  // Signature Spotlight — premium standalone Candidate spotlight.
+  if (dto.nfcCompactSkinId === "signature-spotlight") {
+    return (
+      <main className="min-h-dvh bg-stone-50 px-3 py-6 sm:py-10">
+        <SignatureSpotlightCard
+          candidate={candidate}
+          accentStyle={nfcCompactAccentStyle(dto.accentColorId)}
         />
       </main>
     );

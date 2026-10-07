@@ -1071,6 +1071,553 @@ describe("NfcCompactLibraryCard", () => {
     expect(html).toContain("NFC Career Card");
   });
 
+  /* ── Signature Spotlight skin ── */
+
+  it("Signature Spotlight skin renders publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Public Tester");
+    expect(html).not.toContain("NFC Career Card");
+    expect(html).not.toContain("NFC Profile");
+    expect(html).not.toContain("Creative Spotlight");
+    expect(html).not.toContain('role="tablist"');
+  });
+
+  it("Signature Spotlight renders dynamic candidate name publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Public Tester");
+  });
+
+  it("Signature Spotlight renders dynamic headline publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Senior Engineer");
+  });
+
+  it("Signature Spotlight renders dynamic bio as professional summary", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Building scalable systems.");
+  });
+
+  it("Signature Spotlight renders dynamic skills publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...RICH_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("React");
+    expect(html).toContain("TypeScript");
+    expect(html).toContain("Skills");
+  });
+
+  it("Signature Spotlight renders dynamic education publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...RICH_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("MIT");
+    expect(html).toContain("Education");
+  });
+
+  it("Signature Spotlight renders dynamic experience publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...RICH_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Staff Engineer");
+    expect(html).toContain("Experience");
+  });
+
+  it("Signature Spotlight renders dynamic certifications publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...RICH_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("AWS SA");
+    expect(html).toContain("Credentials");
+  });
+
+  it("Signature Spotlight renders dynamic professionalCategories", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          professionalCategories: ["Actor", "Voice Artist"],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Actor");
+    expect(html).toContain("Voice Artist");
+    expect(html).toContain("Professional Categories");
+  });
+
+  it("Signature Spotlight collapses professionalCategories when absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          professionalCategories: [],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Professional Categories");
+  });
+
+  it("Signature Spotlight renders dynamic genres", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          genres: ["Drama", "Comedy"],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Drama");
+    expect(html).toContain("Comedy");
+    expect(html).toContain("Genres");
+  });
+
+  it("Signature Spotlight collapses genres when absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          genres: [],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Genres");
+  });
+
+  it("Signature Spotlight renders dynamic languages", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          languages: [
+            { language: "English", fluency: "Native" },
+            { language: "Hindi", fluency: "Fluent" },
+          ],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("English");
+    expect(html).toContain("Hindi");
+    expect(html).toContain("Languages");
+  });
+
+  it("Signature Spotlight portfolio action uses canonical portfolioUrl", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          portfolioUrl: "https://portfolio.example.com",
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Portfolio");
+    expect(html).toContain("https://portfolio.example.com");
+  });
+
+  it("Signature Spotlight portfolio action hidden when URL missing", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          portfolioUrl: null,
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Portfolio");
+  });
+
+  it("Signature Spotlight showreel action uses canonical showreelUrl", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          showreelUrl: "https://vimeo.com/12345",
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Showreel");
+    expect(html).toContain("https://vimeo.com/12345");
+  });
+
+  it("Signature Spotlight showreel action hidden when URL missing", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          showreelUrl: null,
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Showreel");
+  });
+
+  it("Signature Spotlight availability uses real data", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          openToOpportunities: true,
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Open to opportunities");
+    expect(html).toContain("Availability");
+  });
+
+  it("Signature Spotlight does not show company switch", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          company: {
+            companyName: "SwitchCo",
+            tagline: null,
+            logoUrl: null,
+            contactPersonName: null,
+            contactPersonRole: null,
+            publicPhone: null,
+            publicEmail: null,
+            whatsappUrl: null,
+            links: {
+              website: null,
+              linkedin: null,
+              facebook: null,
+              instagram: null,
+              x: null,
+              youtube: null,
+              tiktok: null,
+            },
+            about: null,
+            industry: null,
+            locations: [],
+            services: [],
+            hiringOpen: false,
+            openRolesSummary: null,
+            openRolesUrl: null,
+            companyProfileSummary: null,
+            companyProfileUrl: null,
+          },
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain('role="tablist"');
+    expect(html).not.toContain("Candidate");
+    expect(html).not.toContain("Company");
+  });
+
+  it("Signature Spotlight does not expose candidate private email", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("@tester.com");
+    expect(html).not.toContain("mailto:");
+  });
+
+  it("Signature Spotlight does not expose candidate private phone", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("+65");
+    expect(html).not.toContain("tel:");
+  });
+
+  it("Signature Spotlight does not contain verified badge", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("verified");
+    expect(html).not.toContain("Verified");
+  });
+
+  it("Signature Spotlight does not contain Project Match", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Project Match");
+    expect(html).not.toContain("92%");
+  });
+
+  it("Signature Spotlight does not contain audience metrics", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("followers");
+    expect(html).not.toContain("audience");
+    expect(html).not.toContain("reach");
+  });
+
+  it("Signature Spotlight does not contain Invite to Project", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Invite to Project");
+  });
+
+  it("Signature Spotlight does not contain Collaboration Proposal", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Collaboration Proposal");
+  });
+
+  it("Signature Spotlight does not contain Casting Needs", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Casting Needs");
+  });
+
+  it("Signature Spotlight CTA has real destination", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          links: { linkedin: null, github: null, website: null },
+          featuredResume: null,
+          whatsappUrl: null,
+          portfolioUrl: null,
+          showreelUrl: null,
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Get in Touch");
+    expect(html).not.toContain("Contact Us");
+  });
+
+  it("Signature Spotlight primary CTA prefers showreelUrl", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          showreelUrl: "https://vimeo.com/showreel",
+          portfolioUrl: "https://portfolio.example.com",
+          links: {
+            linkedin: "https://linkedin.com/in/test",
+            github: null,
+            website: null,
+          },
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("View Showreel");
+    expect(html).toContain("https://vimeo.com/showreel");
+  });
+
+  it("Signature Spotlight does not contain hardcoded reference candidate names", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Ava Reyes");
+    expect(html).not.toContain("Shahul");
+    expect(html).not.toContain("Hameed");
+  });
+
+  it("Signature Spotlight does not contain hardcoded reference company names", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Skyline AI");
+    expect(html).not.toContain("Proinfocus");
+  });
+
+  it("Signature Spotlight headline is not derived from professionalCategories", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          headline: "",
+          professionalCategories: ["Actor", "Model"],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Professional Categories");
+    expect(html).toContain("Actor");
+    expect(html).toContain("Model");
+    expect(html).not.toContain("Actor · Model");
+  });
+
+  it("Signature Spotlight headline is not derived from genres", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          headline: "",
+          genres: ["Drama", "Comedy"],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Genres");
+    expect(html).toContain("Drama");
+    expect(html).toContain("Comedy");
+    expect(html).not.toContain("Drama · Comedy");
+  });
+
+  it("Signature Spotlight headline is not derived from skills", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          headline: "",
+          skills: [{ name: "Frontend", keywords: ["React", "TypeScript"] }],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Skills");
+    expect(html).toContain("React");
+    expect(html).toContain("TypeScript");
+    expect(html).not.toContain("React · TypeScript");
+  });
+
+  it("Signature Spotlight headline is not derived from bio", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "signature-spotlight",
+          headline: "",
+          bio: "Building scalable systems.",
+        },
+        slug: "tester",
+      }),
+    );
+    // Bio stays in bio section; when headline is empty,
+    // the headline slot remains empty and bio does not leak into it.
+    const matches = html.match(/Building scalable systems\./g);
+    expect(matches ? matches.length : 0).toBe(1);
+  });
+
+  it("Career Passport skin unchanged after Signature Spotlight", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "career-passport" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("NFC Career Card");
+  });
+
+  it("Crimson Night skin unchanged after Signature Spotlight", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "crimson-night" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("bg-[var(--cn-base)]");
+  });
+
+  it("Professional Connect skin unchanged after Signature Spotlight", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "professional-connect" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("NFC Profile");
+  });
+
+  it("Creative Spotlight skin unchanged after Signature Spotlight", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Creative Spotlight");
+  });
+
   it("Creative Spotlight public render causes no writes", () => {
     const html = renderToStaticMarkup(
       createElement(NfcCompactLibraryCard, {
@@ -1080,6 +1627,19 @@ describe("NfcCompactLibraryCard", () => {
     );
     // Static render produces no form elements, no hidden inputs,
     // no buttons that could mutate state.
+    expect(html).not.toContain('method="post"');
+    expect(html).not.toContain('method="PUT"');
+    expect(html).not.toContain('method="PATCH"');
+    expect(html).not.toContain('method="DELETE"');
+  });
+
+  it("Signature Spotlight public render causes no writes", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "signature-spotlight" },
+        slug: "tester",
+      }),
+    );
     expect(html).not.toContain('method="post"');
     expect(html).not.toContain('method="PUT"');
     expect(html).not.toContain('method="PATCH"');
