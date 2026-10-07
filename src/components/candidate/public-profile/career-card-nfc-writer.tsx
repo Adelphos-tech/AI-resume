@@ -646,7 +646,7 @@ export function CareerCardNfcWriter({
           }}
         >
           <DialogContent
-            className="overflow-y-auto bg-emerald-950 text-white"
+            className="fixed inset-0 max-w-none rounded-none border-0 bg-emerald-950 p-0 text-white"
             style={{
               paddingTop: "env(safe-area-inset-top)",
               paddingBottom: "env(safe-area-inset-bottom)",

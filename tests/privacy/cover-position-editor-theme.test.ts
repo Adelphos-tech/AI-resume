@@ -3,12 +3,10 @@ import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { cardStyleTokens } from "@/lib/career-card-theme-styles";
-import {
-  CareerCardCoverPhoto,
-  CoverPositionEditor,
-} from "@/components/candidate/public-profile/career-card-photo";
+import { CareerCardCoverPhoto } from "@/components/candidate/public-profile/career-card-photo";
+import { ImageAdjustDialog } from "@/components/candidate/public-profile/image-adjust-dialog";
 
-describe("CoverPositionEditor — theme-accurate preview dimensions", () => {
+describe("Theme token cover dimensions", () => {
   it("classic standard uses h-40 sm:h-48 cover wrap", () => {
     const t = cardStyleTokens("role-race-classic", "emerald", "standard");
     expect(t.base.coverWrap).toContain("h-40");
@@ -115,35 +113,38 @@ describe("CareerCardCoverPhoto — focal/zoom rendering parity", () => {
   });
 });
 
-describe("CoverPositionEditor — prop wiring", () => {
-  it("component accepts frameClassName without type errors", () => {
-    // The Radix Dialog used inside CoverPositionEditor does not SSR-render,
-    // so we verify the prop contract statically by constructing the element.
-    const el = createElement(CoverPositionEditor, {
-      src: "/cover.webp",
-      name: "Test",
-      initial: { focalX: 0.5, focalY: 0.5, zoom: 1 },
+describe("ImageAdjustDialog — prop wiring", () => {
+  it("component accepts cover-mode props without type errors", () => {
+    const el = createElement(ImageAdjustDialog, {
+      open: true,
+      onOpenChange: () => {},
+      imageUrl: "/cover.webp",
+      mode: "cover",
+      initialFocalX: 0.5,
+      initialFocalY: 0.5,
+      initialZoom: 1,
       busy: false,
       message: null,
-      onClose: () => {},
       onSave: () => {},
-      frameClassName: "relative h-20 w-full",
     });
-    expect(el.props.frameClassName).toBe("relative h-20 w-full");
+    expect(el.props.mode).toBe("cover");
+    expect(el.props.imageUrl).toBe("/cover.webp");
   });
 
-  it("defaults frameClassName prop to legacy aspect-2/1 when omitted", () => {
-    const el = createElement(CoverPositionEditor, {
-      src: "/cover.webp",
-      name: "Test",
-      initial: { focalX: 0.5, focalY: 0.5, zoom: 1 },
-      busy: false,
-      message: null,
-      onClose: () => {},
+  it("component accepts profile-mode props without type errors", () => {
+    const el = createElement(ImageAdjustDialog, {
+      open: false,
+      onOpenChange: () => {},
+      imageUrl: "/photo.webp",
+      mode: "profile",
+      initialFocalX: 0.25,
+      initialFocalY: 0.75,
+      initialZoom: 1.5,
+      busy: true,
+      message: "Saving…",
       onSave: () => {},
     });
-    // Default is supplied by the function signature; the element still
-    // carries the default value at runtime.
-    expect(el.props.frameClassName).toBeUndefined();
+    expect(el.props.mode).toBe("profile");
+    expect(el.props.initialZoom).toBe(1.5);
   });
 });

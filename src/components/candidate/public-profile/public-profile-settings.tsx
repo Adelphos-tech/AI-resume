@@ -21,11 +21,10 @@ import {
   updateSlugAction,
 } from "@/app/candidate/(workspace)/public-profile/actions";
 import {
-  CoverPositionEditor,
   DEFAULT_PHOTO_POSITION,
-  PhotoPositionEditor,
   type PhotoPosition,
 } from "@/components/candidate/public-profile/career-card-photo";
+import { ImageAdjustDialog } from "@/components/candidate/public-profile/image-adjust-dialog";
 import type { ThemeRecommendation } from "@/lib/career-card-themes";
 import { type NfcCompactSkinId } from "@/lib/nfc-compact-skins";
 import { CareerCardNfcWriter } from "@/components/candidate/public-profile/career-card-nfc-writer";
@@ -791,83 +790,86 @@ export function PublicProfileSettings({
       )}
 
       {/* photo position editor — metadata only, image bytes unchanged */}
-      {coverEditorOpen && cover && coverKey && (
-        <CoverPositionEditor
-          src={`${cover}?v=${coverV}`}
-          name={displayName}
-          initial={coverPos}
-          busy={coverBusy}
-          message={coverMsg}
-          frameClassName={coverWrapClass}
-          onClose={() => {
-            setCoverEditorOpen(false);
-            // Conditional mount means Radix focus-restore has no trigger —
-            // return keyboard focus to the opening button explicitly.
+      <ImageAdjustDialog
+        open={coverEditorOpen}
+        onOpenChange={(open) => {
+          setCoverEditorOpen(open);
+          if (!open) {
             requestAnimationFrame(() => adjustCoverBtnRef.current?.focus());
-          }}
-          onSave={async (next) => {
-            setCoverMsg(null);
-            setCoverBusy(true);
-            try {
-              const r = await updateCoverPositionAction({
-                focalX: next.focalX,
-                focalY: next.focalY,
-                zoom: next.zoom,
-                expectedCoverPhotoKey: coverKey,
-              });
-              if (!r.success) setCoverMsg(r.message);
-              else {
-                setCoverPos(next);
-                setCoverEditorOpen(false);
-                setCoverMsg("Cover position updated");
-                onCoverPositionChange?.(next);
-              }
-            } catch {
-              setCoverMsg("Couldn't save position. Try again.");
-            } finally {
-              setCoverBusy(false);
+          }
+        }}
+        imageUrl={cover ? `${cover}?v=${coverV}` : ""}
+        mode="cover"
+        initialFocalX={coverPos.focalX}
+        initialFocalY={coverPos.focalY}
+        initialZoom={coverPos.zoom}
+        busy={coverBusy}
+        message={coverMsg}
+        onSave={async (focalX, focalY, zoom) => {
+          const next: PhotoPosition = { focalX, focalY, zoom };
+          setCoverMsg(null);
+          setCoverBusy(true);
+          try {
+            const r = await updateCoverPositionAction({
+              focalX: next.focalX,
+              focalY: next.focalY,
+              zoom: next.zoom,
+              expectedCoverPhotoKey: coverKey,
+            });
+            if (!r.success) setCoverMsg(r.message);
+            else {
+              setCoverPos(next);
+              setCoverEditorOpen(false);
+              setCoverMsg("Cover position updated");
+              onCoverPositionChange?.(next);
             }
-          }}
-        />
-      )}
-      {editorOpen && photo && photoKey && (
-        <PhotoPositionEditor
-          src={`${photo}?v=${photoV}`}
-          name={displayName}
-          initial={pos}
-          busy={photoBusy}
-          message={posMsg}
-          onClose={() => {
-            setEditorOpen(false);
-            // Conditional mount means Radix focus-restore has no trigger —
-            // return keyboard focus to the opening button explicitly.
+          } catch {
+            setCoverMsg("Couldn't save position. Try again.");
+          } finally {
+            setCoverBusy(false);
+          }
+        }}
+      />
+      <ImageAdjustDialog
+        open={editorOpen}
+        onOpenChange={(open) => {
+          setEditorOpen(open);
+          if (!open) {
             requestAnimationFrame(() => adjustBtnRef.current?.focus());
-          }}
-          onSave={async (next) => {
-            setPosMsg(null);
-            setPhotoBusy(true);
-            try {
-              const r = await updatePhotoPositionAction({
-                focalX: next.focalX,
-                focalY: next.focalY,
-                zoom: next.zoom,
-                expectedPhotoKey: photoKey,
-              });
-              if (!r.success) setPosMsg(r.message);
-              else {
-                setPos(next);
-                setEditorOpen(false);
-                setPhotoMsg("Photo position updated");
-                onPhotoPositionChange?.(next);
-              }
-            } catch {
-              setPosMsg("Couldn't save position. Try again.");
-            } finally {
-              setPhotoBusy(false);
+          }
+        }}
+        imageUrl={photo ? `${photo}?v=${photoV}` : ""}
+        mode="profile"
+        initialFocalX={pos.focalX}
+        initialFocalY={pos.focalY}
+        initialZoom={pos.zoom}
+        busy={photoBusy}
+        message={posMsg}
+        onSave={async (focalX, focalY, zoom) => {
+          const next: PhotoPosition = { focalX, focalY, zoom };
+          setPosMsg(null);
+          setPhotoBusy(true);
+          try {
+            const r = await updatePhotoPositionAction({
+              focalX: next.focalX,
+              focalY: next.focalY,
+              zoom: next.zoom,
+              expectedPhotoKey: photoKey,
+            });
+            if (!r.success) setPosMsg(r.message);
+            else {
+              setPos(next);
+              setEditorOpen(false);
+              setPosMsg("Photo position updated");
+              onPhotoPositionChange?.(next);
             }
-          }}
-        />
-      )}
+          } catch {
+            setPosMsg("Couldn't save position. Try again.");
+          } finally {
+            setPhotoBusy(false);
+          }
+        }}
+      />
     </div>
   );
 }
