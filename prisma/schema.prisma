@@ -273,6 +273,7 @@ model CareerSitePage {
 enum CareerSiteBlockType {
   HERO
   CUSTOM_TEXT
+  EXPERIENCE
 }
 
 /**

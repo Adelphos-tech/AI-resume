@@ -18,7 +18,7 @@ const createPageSchema = z.strictObject({
 });
 
 const createBlockSchema = z.strictObject({
-  type: z.enum(["HERO", "CUSTOM_TEXT"]),
+  type: z.enum(["HERO", "CUSTOM_TEXT", "EXPERIENCE"]),
 });
 
 const blockIdSchema = z.cuid();
@@ -27,7 +27,7 @@ const pageIdSchema = z.cuid();
 export type CareerSiteBlock = {
   id: string;
   careerSitePageId: string;
-  type: "HERO" | "CUSTOM_TEXT";
+  type: "HERO" | "CUSTOM_TEXT" | "EXPERIENCE";
   position: number;
   /** Structured per-type content; null until explicitly initialized. */
   content: unknown;
@@ -554,4 +554,82 @@ export async function getMyHeroBlockData(
 ): Promise<HeroBlockResult> {
   const { candidate } = await requireCandidateSession();
   return getCandidateHeroBlockData(candidate.id, pageId, blockId);
+}
+
+/**
+ * EXPERIENCE block read DTO — canonical work history only, no persistent
+ * content. Reads from MasterCareerProfile.work at render time; never
+ * duplicates into CareerSiteBlock.content.
+ */
+export type ExperienceEntryData = {
+  company: string;
+  position: string;
+  location: string | null;
+  employmentType: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  isCurrent: boolean;
+  summary: string | null;
+  highlights: string[];
+};
+
+export type ExperienceBlockData = {
+  entries: ExperienceEntryData[];
+};
+
+export type ExperienceBlockResult =
+  | { success: true; data: ExperienceBlockData }
+  | { success: false; message: string };
+
+/**
+ * Resolves EXPERIENCE data for an owned EXPERIENCE block from canonical
+ * work history. Requires EXPERIENCE type exactly; other blocks are rejected.
+ * No content is written — this is read-only.
+ */
+export async function getCandidateExperienceBlockData(
+  candidateId: string,
+  pageId: string,
+  blockId: string,
+): Promise<ExperienceBlockResult> {
+  const candidate = candidateIdSchema.safeParse(candidateId);
+  const page = pageIdSchema.safeParse(pageId);
+  const block = blockIdSchema.safeParse(blockId);
+  if (!candidate.success || !page.success || !block.success) {
+    return { success: false, message: "Block not found." };
+  }
+
+  const owned = await ownedBlock(candidate.data, page.data, block.data);
+  if (!owned) return { success: false, message: "Block not found." };
+
+  if (owned.type !== "EXPERIENCE") {
+    return { success: false, message: "Block not found." };
+  }
+
+  const profile: GetMasterCareerProfileResult =
+    await getMasterCareerProfileCore(candidate.data);
+  if (!profile.success || !profile.profile) {
+    return { success: false, message: "Block not found." };
+  }
+
+  const entries: ExperienceEntryData[] = profile.profile.work.map((w) => ({
+    company: w.company,
+    position: w.position,
+    location: w.location,
+    employmentType: w.employmentType,
+    startDate: w.startDate,
+    endDate: w.endDate,
+    isCurrent: w.isCurrent,
+    summary: w.summary,
+    highlights: w.highlights,
+  }));
+
+  return { success: true, data: { entries } };
+}
+
+export async function getMyExperienceBlockData(
+  pageId: string,
+  blockId: string,
+): Promise<ExperienceBlockResult> {
+  const { candidate } = await requireCandidateSession();
+  return getCandidateExperienceBlockData(candidate.id, pageId, blockId);
 }

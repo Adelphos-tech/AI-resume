@@ -100,6 +100,19 @@ describe("CareerSiteBlock — creation", () => {
     });
   });
 
+  it("creates an EXPERIENCE block on an owned page", async () => {
+    pageFindUnique.mockResolvedValue(pageRow(CANDIDATE_A));
+    blockAggregate.mockResolvedValue({ _max: { position: null } });
+    blockCreate.mockResolvedValue({ ...BLOCK, type: "EXPERIENCE" });
+    const result = await createCandidateCareerSiteBlock(CANDIDATE_A, PAGE_A, {
+      type: "EXPERIENCE",
+    });
+    expect(result.success).toBe(true);
+    expect(blockCreate).toHaveBeenCalledWith({
+      data: { careerSitePageId: PAGE_A, type: "EXPERIENCE", position: 0 },
+    });
+  });
+
   it("rejects an unknown block type without touching the database", async () => {
     const result = await createCandidateCareerSiteBlock(CANDIDATE_A, PAGE_A, {
       type: "INSTAGRAM_FEED",

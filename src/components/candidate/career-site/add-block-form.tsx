@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { LayoutPanelTop, Plus, Type } from "lucide-react";
+import { Briefcase, LayoutPanelTop, Plus, Type } from "lucide-react";
 
 import { createCareerSiteBlockAction } from "@/app/candidate/(workspace)/career-site/actions";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,12 @@ const CHOICES = [
     description: "Flexible text section",
     icon: Type,
   },
+  {
+    type: "EXPERIENCE" as const,
+    label: "Experience",
+    description: "Work history from your profile",
+    icon: Briefcase,
+  },
 ];
 
 export function AddBlockForm({ pageId }: { pageId: string }) {
@@ -28,7 +34,7 @@ export function AddBlockForm({ pageId }: { pageId: string }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function create(type: "HERO" | "CUSTOM_TEXT") {
+  function create(type: "HERO" | "CUSTOM_TEXT" | "EXPERIENCE") {
     setError(null);
     startTransition(async () => {
       const result = await createCareerSiteBlockAction(pageId, { type });
