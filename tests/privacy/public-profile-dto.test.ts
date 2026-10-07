@@ -106,3 +106,128 @@ describe("buildPublicProfileDTO — publication gate", () => {
     expect(dto!.name).toBe("Candidate Alpha");
   });
 });
+
+function fullMcpProfileData(basicsOverrides: Record<string, unknown> = {}) {
+  return {
+    basics: {
+      fullName: "Candidate Alpha",
+      headline: null,
+      summary: null,
+      email: null,
+      phone: null,
+      location: null,
+      links: [],
+      ...basicsOverrides,
+    },
+    work: [],
+    education: [],
+    skills: [],
+    projects: [],
+    certifications: [],
+    languages: [],
+  };
+}
+
+describe("buildPublicProfileDTO — canonical MCP celebrity fields", () => {
+  it("exposes professionalCategories from MCP basics", () => {
+    const dto = buildPublicProfileDTO(
+      baseProfile({
+        candidate: {
+          firstName: "Candidate",
+          lastName: "Alpha",
+          careerProfile: {
+            profileData: fullMcpProfileData({
+              professionalCategories: ["Actor", "Voice Artist"],
+            }),
+          },
+        },
+      }),
+    );
+    expect(dto!.professionalCategories).toEqual(["Actor", "Voice Artist"]);
+  });
+
+  it("exposes genres from MCP basics", () => {
+    const dto = buildPublicProfileDTO(
+      baseProfile({
+        candidate: {
+          firstName: "Candidate",
+          lastName: "Alpha",
+          careerProfile: {
+            profileData: fullMcpProfileData({
+              genres: ["Drama", "Comedy"],
+            }),
+          },
+        },
+      }),
+    );
+    expect(dto!.genres).toEqual(["Drama", "Comedy"]);
+  });
+
+  it("exposes portfolioUrl from MCP basics", () => {
+    const dto = buildPublicProfileDTO(
+      baseProfile({
+        candidate: {
+          firstName: "Candidate",
+          lastName: "Alpha",
+          careerProfile: {
+            profileData: fullMcpProfileData({
+              portfolioUrl: "https://portfolio.example.com",
+            }),
+          },
+        },
+      }),
+    );
+    expect(dto!.portfolioUrl).toBe("https://portfolio.example.com");
+  });
+
+  it("exposes showreelUrl from MCP basics", () => {
+    const dto = buildPublicProfileDTO(
+      baseProfile({
+        candidate: {
+          firstName: "Candidate",
+          lastName: "Alpha",
+          careerProfile: {
+            profileData: fullMcpProfileData({
+              showreelUrl: "https://vimeo.com/12345",
+            }),
+          },
+        },
+      }),
+    );
+    expect(dto!.showreelUrl).toBe("https://vimeo.com/12345");
+  });
+
+  it("defaults to empty arrays when MCP fields are absent", () => {
+    const dto = buildPublicProfileDTO(baseProfile());
+    expect(dto!.professionalCategories).toEqual([]);
+    expect(dto!.genres).toEqual([]);
+  });
+
+  it("defaults to null URLs when MCP fields are absent", () => {
+    const dto = buildPublicProfileDTO(baseProfile());
+    expect(dto!.portfolioUrl).toBeNull();
+    expect(dto!.showreelUrl).toBeNull();
+  });
+
+  it("does not derive values from arbitrary MCP.links labels", () => {
+    const dto = buildPublicProfileDTO(
+      baseProfile({
+        candidate: {
+          firstName: "Candidate",
+          lastName: "Alpha",
+          careerProfile: {
+            profileData: fullMcpProfileData({
+              links: [
+                { label: "Portfolio", url: "https://portfolio.example.com" },
+                { label: "Showreel", url: "https://vimeo.com/12345" },
+              ],
+            }),
+          },
+        },
+      }),
+    );
+    expect(dto!.portfolioUrl).toBeNull();
+    expect(dto!.showreelUrl).toBeNull();
+    expect(dto!.links.linkedin).toBeNull();
+  });
+});

@@ -379,6 +379,11 @@ export type PublicCareerProfileDTO = {
   openToOpportunities: boolean;
   /** https://wa.me/<digits> — only when the number is flagged public. */
   whatsappUrl: string | null;
+  /** Creative/entertainment professional identity — sourced from canonical MCP basics. */
+  professionalCategories: string[];
+  genres: string[];
+  portfolioUrl: string | null;
+  showreelUrl: string | null;
   /** Resolved NFC Compact skin — only honored by the nfc-compact theme. */
   nfcCompactSkinId: NfcCompactSkinId;
   links: {
@@ -553,6 +558,10 @@ export function buildPublicProfileDTO(
       profile.showWhatsapp && profile.whatsappNumber
         ? whatsappPublicUrl(profile.whatsappNumber)
         : null,
+    professionalCategories: basics?.professionalCategories ?? [],
+    genres: basics?.genres ?? [],
+    portfolioUrl: basics?.portfolioUrl ?? null,
+    showreelUrl: basics?.showreelUrl ?? null,
     links: {
       linkedin: profile.linkedinUrl,
       github: profile.githubUrl,

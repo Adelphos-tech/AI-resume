@@ -88,6 +88,8 @@ const MAX_LANGUAGES = 20;
 const MAX_HIGHLIGHTS = 30;
 const MAX_KEYWORDS = 50;
 const MAX_LINKS = 20;
+const MAX_PROFESSIONAL_CATEGORIES = 20;
+const MAX_GENRES = 20;
 
 // --- Sections ----------------------------------------------------------------
 
@@ -113,6 +115,16 @@ export const masterCareerProfileBasicsSchema = z.strictObject({
         seen.has(l.url) ? false : (seen.add(l.url), true),
       );
     }),
+  // Creative/entertainment professional identity — canonical career metadata
+  // reusable by Resume, Career Card, and Career Site.
+  // Optional for backward compatibility with stored profiles created before
+  // these fields existed.
+  professionalCategories: stringList(100)
+    .pipe(z.array(z.string()).max(MAX_PROFESSIONAL_CATEGORIES))
+    .optional(),
+  genres: stringList(100).pipe(z.array(z.string()).max(MAX_GENRES)).optional(),
+  portfolioUrl: optUrl.optional(),
+  showreelUrl: optUrl.optional(),
 });
 
 /**
@@ -253,6 +265,10 @@ export function createEmptyMasterCareerProfile(): MasterCareerProfileData {
       phone: null,
       location: null,
       links: [],
+      professionalCategories: [],
+      genres: [],
+      portfolioUrl: null,
+      showreelUrl: null,
     },
     work: [],
     education: [],
