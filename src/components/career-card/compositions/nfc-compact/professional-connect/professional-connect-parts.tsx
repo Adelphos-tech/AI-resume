@@ -23,7 +23,7 @@ export function ProfessionalConnectSwitch({
           role="tab"
           aria-selected={value === id}
           onClick={() => onChange(id)}
-          className={`rounded-full py-1.5 text-sm font-semibold transition ${
+          className={`rounded-full py-1.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)] ${
             value === id
               ? "bg-[var(--nfc-cta)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
               : "text-slate-500 hover:text-slate-700"
