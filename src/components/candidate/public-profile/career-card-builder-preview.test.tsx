@@ -176,4 +176,138 @@ describe("CareerCardBuilderPreview", () => {
     );
     expect(html).toContain("QT");
   });
+
+  // ── Theme-specific preview branches ────────────────────────────────
+
+  it("Classic selection renders standard CareerCardIdentity", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: { ...DEFAULT_STATE, themeId: "role-race-classic" },
+      }),
+    );
+    // Standard card uses text-stone-900 from classic tokens
+    expect(html).toContain("text-stone-900");
+    // Should NOT render NFC Compact
+    expect(html).not.toContain("NFC Career Card");
+  });
+
+  it("Corporate selection renders standard CareerCardIdentity", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: { ...DEFAULT_STATE, themeId: "corporate-clean" },
+      }),
+    );
+    // Corporate uses rounded-md avatar
+    expect(html).toContain("rounded-md");
+    expect(html).not.toContain("NFC Career Card");
+  });
+
+  it("Executive Dark selection renders standard CareerCardIdentity", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: { ...DEFAULT_STATE, themeId: "executive-dark" },
+      }),
+    );
+    // Executive dark uses text-white for name
+    expect(html).toContain("text-white");
+    expect(html).not.toContain("NFC Career Card");
+  });
+
+  it("Tech Minimal selection renders standard CareerCardIdentity", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: { ...DEFAULT_STATE, themeId: "tech-minimal" },
+      }),
+    );
+    // Tech uses font-mono
+    expect(html).toContain("font-mono");
+    expect(html).not.toContain("NFC Career Card");
+  });
+
+  it("NFC Compact selection renders NFC preview", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: { ...DEFAULT_STATE, themeId: "nfc-compact" },
+      }),
+    );
+    expect(html).toContain("NFC Career Card");
+    // Should NOT render generic CareerCardIdentity classes
+    expect(html).not.toContain("text-stone-900");
+  });
+
+  it("NFC Compact Career Passport skin renders correct preview", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "career-passport",
+        },
+      }),
+    );
+    // Career Passport uses light bg
+    expect(html).toContain("bg-[#fafaf9]");
+    expect(html).toContain("NFC Career Card");
+  });
+
+  it("NFC Compact Crimson Night skin renders dark preview", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "crimson-night",
+        },
+      }),
+    );
+    // Crimson Night uses dark base variable
+    expect(html).toContain("bg-[var(--cn-base)]");
+    expect(html).toContain("NFC Career Card");
+    // Should differ from Career Passport light bg
+    expect(html).not.toContain("bg-[#fafaf9]");
+  });
+
+  it("NFC Compact preview shows Not published badge when unpublished", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: { ...DEFAULT_STATE, themeId: "nfc-compact" },
+        isPublished: false,
+      }),
+    );
+    expect(html).toContain("Not published");
+  });
+
+  it("NFC Compact preview omits Not published badge when published", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: { ...DEFAULT_STATE, themeId: "nfc-compact" },
+        isPublished: true,
+      }),
+    );
+    expect(html).not.toContain("Not published");
+  });
+
+  it("NFC Compact preview uses accent color from state", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          accentColorId: "red",
+        },
+      }),
+    );
+    // nfcCompactAccentStyle with red accent sets --nfc-cta
+    expect(html).toContain("--nfc-cta");
+  });
 });
