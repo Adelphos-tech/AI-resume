@@ -9,6 +9,7 @@ import { NfcCompactCard } from "@/components/career-card/compositions/nfc-compac
 import { CrimsonNightCard } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-card";
 import { ProfessionalConnectCard } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-card";
 import { CreativeSpotlightCard } from "@/components/career-card/compositions/nfc-compact/creative-spotlight/creative-spotlight-card";
+import { SignatureSpotlightCard } from "@/components/career-card/compositions/nfc-compact/signature-spotlight/signature-spotlight-card";
 import { nfcCompactAccentStyle } from "@/components/career-card/compositions/nfc-compact/nfc-compact-accents";
 import type { PublicProfileSettingsState } from "./public-profile-settings";
 import type { CompanyProfileState } from "./company-profile-settings";
@@ -167,7 +168,9 @@ function NfcCompactPreview({
         ? ProfessionalConnectCard
         : state.nfcCompactSkinId === "creative-spotlight"
           ? CreativeSpotlightCard
-          : NfcCompactCard;
+          : state.nfcCompactSkinId === "signature-spotlight"
+            ? SignatureSpotlightCard
+            : NfcCompactCard;
 
   return (
     <div className="relative">

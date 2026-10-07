@@ -11,7 +11,8 @@ export type NfcCompactSkinId =
   | "career-passport"
   | "crimson-night"
   | "professional-connect"
-  | "creative-spotlight";
+  | "creative-spotlight"
+  | "signature-spotlight";
 
 export const DEFAULT_NFC_COMPACT_SKIN_ID: NfcCompactSkinId = "career-passport";
 
@@ -40,6 +41,12 @@ export const NFC_COMPACT_SKINS: {
     label: "Creative Spotlight",
     description: "Celebrity and production company dual-profile showcase.",
   },
+  {
+    id: "signature-spotlight",
+    label: "Signature Spotlight",
+    description:
+      "Premium standalone candidate spotlight with elegant identity focus.",
+  },
 ];
 
 export function isNfcCompactSkinId(v: unknown): v is NfcCompactSkinId {
@@ -47,7 +54,8 @@ export function isNfcCompactSkinId(v: unknown): v is NfcCompactSkinId {
     v === "career-passport" ||
     v === "crimson-night" ||
     v === "professional-connect" ||
-    v === "creative-spotlight"
+    v === "creative-spotlight" ||
+    v === "signature-spotlight"
   );
 }
 

@@ -6,6 +6,7 @@ import { CareerCardBuilderPreview } from "./career-card-builder-preview";
 import type { PublicProfileSettingsState } from "./public-profile-settings";
 import type { CompanyProfileState } from "./company-profile-settings";
 import { ProfessionalConnectCard } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-card";
+import { SignatureSpotlightCard } from "@/components/career-card/compositions/nfc-compact/signature-spotlight/signature-spotlight-card";
 
 const DEFAULT_STATE: PublicProfileSettingsState = {
   publicHeadline: "",
@@ -971,5 +972,572 @@ describe("CareerCardBuilderPreview", () => {
     );
     expect(html).not.toContain("+65");
     expect(html).not.toContain("@qa.tester");
+  });
+
+  // ── Signature Spotlight skin ─────────────────────────────────────
+
+  it("NFC Compact Signature Spotlight skin renders premium light preview", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+      }),
+    );
+    // Signature Spotlight uses white bg and rounded-b-3xl cover treatment
+    expect(html).toContain("bg-white");
+    expect(html).toContain("rounded-b-3xl");
+    expect(html).not.toContain("bg-[#fafaf9]");
+    expect(html).not.toContain("bg-[var(--cn-base)]");
+  });
+
+  it("NFC Compact Signature Spotlight renders candidate name and headline", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+          publicHeadline: "Actor · Voice Artist",
+        },
+      }),
+    );
+    expect(html).toContain("QA Tester");
+    expect(html).toContain("Actor · Voice Artist");
+  });
+
+  it("NFC Compact Signature Spotlight renders biography from bio", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+          publicBio: "Versatile performer across film and theatre.",
+        },
+      }),
+    );
+    expect(html).toContain("Versatile performer across film and theatre.");
+  });
+
+  it("NFC Compact Signature Spotlight shows availability when published and open", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+          openToOpportunities: true,
+        },
+        isPublished: true,
+      }),
+    );
+    expect(html).toContain("Open to opportunities");
+  });
+
+  it("NFC Compact Signature Spotlight omits availability when unpublished", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+          openToOpportunities: true,
+        },
+        isPublished: false,
+      }),
+    );
+    expect(html).not.toContain("Open to opportunities");
+  });
+
+  it("NFC Compact Signature Spotlight does NOT render Company switch", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+        companyInitial: DEMO_COMPANY,
+      }),
+    );
+    // Signature Spotlight is standalone — no switch even with company present
+    expect(html).not.toContain('role="tablist"');
+    expect(html).not.toContain("Candidate");
+    expect(html).not.toContain("Company");
+  });
+
+  it("NFC Compact Signature Spotlight does not contain Project Match", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain("Project Match");
+    expect(html).not.toContain("92%");
+  });
+
+  it("NFC Compact Signature Spotlight does not contain verified badge", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain("verified");
+    expect(html).not.toContain("Verified");
+  });
+
+  it("NFC Compact Signature Spotlight does not contain LinkMeU branding", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain("LinkMeU");
+  });
+
+  it("NFC Compact Signature Spotlight does not contain Invite to Project", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain("Invite to Project");
+    expect(html).not.toContain("Collaboration Proposal");
+  });
+
+  it("NFC Compact Signature Spotlight does not expose private phone/email", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain("+65");
+    expect(html).not.toContain("@qa.tester");
+  });
+
+  it("NFC Compact Signature Spotlight uses cover when provided", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+        coverUrl: "/u/test/cover",
+      }),
+    );
+    expect(html).toContain("/u/test/cover");
+  });
+
+  it("NFC Compact Signature Spotlight uses photo when provided", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+        photoUrl: "/u/test/photo",
+      }),
+    );
+    expect(html).toContain("/u/test/photo");
+  });
+
+  it("NFC Compact Signature Spotlight renders initials when photo is null", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+        photoUrl: null,
+      }),
+    );
+    expect(html).toContain("QT");
+  });
+
+  it("NFC Compact Signature Spotlight no dead CTA in preview", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+      }),
+    );
+    // cta={null} in preview → no primary CTA rendered
+    expect(html).not.toContain("Get in Touch");
+    expect(html).not.toContain("View Showreel");
+    expect(html).not.toContain("View Portfolio");
+  });
+
+  it("NFC Compact Signature Spotlight contains no hardcoded reference names", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "signature-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain("Ava Reyes");
+    expect(html).not.toContain("Maya Krishnan");
+    expect(html).not.toContain("Priya Sharma");
+  });
+
+  // ── Direct SignatureSpotlightCard component tests ────────────────
+
+  it("Signature Spotlight renders headline when present", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "Headline Tester",
+          headline: "Real Headline Value",
+          initials: "HT",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+        },
+      }),
+    );
+    expect(html).toContain("Real Headline Value");
+  });
+
+  it("Signature Spotlight does NOT fabricate headline from professionalCategories", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "NoHeadline",
+          headline: "",
+          initials: "NH",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          professionalCategories: ["Actor", "Director"],
+        },
+      }),
+    );
+    // Categories must render in their own section, NOT as headline substitute
+    expect(html).toContain("Actor");
+    expect(html).toContain("Director");
+    // "Actor · Director" must NOT appear in the identity headline slot
+    expect(html).not.toContain("Actor · Director");
+  });
+
+  it("Signature Spotlight does NOT fabricate headline from genres", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "NoHeadline",
+          headline: "",
+          initials: "NH",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          genres: ["Drama", "Thriller"],
+        },
+      }),
+    );
+    expect(html).toContain("Drama");
+    expect(html).toContain("Thriller");
+    // Genres must NOT become headline
+    expect(html).not.toContain("Drama · Thriller");
+  });
+
+  it("Signature Spotlight layout remains valid when headline absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "Sparse",
+          headline: "",
+          initials: "SP",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+        },
+      }),
+    );
+    expect(html).toContain("Sparse");
+    // No fabricated headline
+    expect(html).not.toContain("Actor");
+    expect(html).not.toContain("Director");
+  });
+
+  it("Signature Spotlight renders professionalCategories dynamically", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "Cat Tester",
+          headline: "Actor",
+          initials: "CT",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          professionalCategories: ["Actor", "Director"],
+        },
+      }),
+    );
+    expect(html).toContain("Actor");
+    expect(html).toContain("Director");
+  });
+
+  it("Signature Spotlight collapses professionalCategories when absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "NoCat",
+          headline: "Tester",
+          initials: "NC",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+        },
+      }),
+    );
+    expect(html).not.toContain("Actor");
+    expect(html).not.toContain("Director");
+  });
+
+  it("Signature Spotlight renders genres dynamically", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "Genre Tester",
+          headline: "Filmmaker",
+          initials: "GT",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          genres: ["Drama", "Thriller"],
+        },
+      }),
+    );
+    expect(html).toContain("Drama");
+    expect(html).toContain("Thriller");
+  });
+
+  it("Signature Spotlight collapses genres when absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "NoGenre",
+          headline: "Tester",
+          initials: "NG",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+        },
+      }),
+    );
+    expect(html).not.toContain("Drama");
+    expect(html).not.toContain("Thriller");
+  });
+
+  it("Signature Spotlight renders languages dynamically", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "Lang Tester",
+          headline: "Polyglot",
+          initials: "LT",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          languages: [
+            { language: "English", fluency: "Native" },
+            { language: "Tamil", fluency: "Fluent" },
+          ],
+        },
+      }),
+    );
+    expect(html).toContain("English");
+    expect(html).toContain("Tamil");
+  });
+
+  it("Signature Spotlight renders portfolioUrl as real href", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "Port Tester",
+          headline: "Creator",
+          initials: "PT",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          portfolioUrl: "https://portfolio.example.com",
+        },
+      }),
+    );
+    expect(html).toContain("https://portfolio.example.com");
+    expect(html).toContain("Portfolio");
+  });
+
+  it("Signature Spotlight hides portfolio action when portfolioUrl absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "NoPort",
+          headline: "Tester",
+          initials: "NP",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+        },
+      }),
+    );
+    expect(html).not.toContain("Portfolio");
+  });
+
+  it("Signature Spotlight renders showreelUrl as real href", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "Reel Tester",
+          headline: "Filmmaker",
+          initials: "RT",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          showreelUrl: "https://vimeo.com/showreel",
+        },
+      }),
+    );
+    expect(html).toContain("https://vimeo.com/showreel");
+    expect(html).toContain("Showreel");
+  });
+
+  it("Signature Spotlight hides showreel action when showreelUrl absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "NoReel",
+          headline: "Tester",
+          initials: "NR",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+        },
+      }),
+    );
+    expect(html).not.toContain("Showreel");
+  });
+
+  it("Signature Spotlight CTA uses real showreelUrl when present", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "Cta Tester",
+          headline: "Lead",
+          initials: "CT",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          showreelUrl: "https://vimeo.com/reel",
+        },
+      }),
+    );
+    expect(html).toContain("https://vimeo.com/reel");
+    expect(html).toContain("View Showreel");
+  });
+
+  it("Signature Spotlight CTA falls back to portfolioUrl when showreel absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "Cta2 Tester",
+          headline: "Lead",
+          initials: "C2",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          portfolioUrl: "https://portfolio.example.com",
+        },
+      }),
+    );
+    expect(html).toContain("https://portfolio.example.com");
+    expect(html).toContain("View Portfolio");
+  });
+
+  it("Signature Spotlight collapses optional sections when data absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(SignatureSpotlightCard, {
+        candidate: {
+          name: "Sparse Tester",
+          headline: "Minimal",
+          initials: "SP",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          availability: null,
+        },
+      }),
+    );
+    expect(html).not.toContain("Genres");
+    expect(html).not.toContain("Languages");
+    expect(html).not.toContain("Availability");
+    expect(html).not.toContain("Portfolio");
+    expect(html).not.toContain("Showreel");
+    expect(html).not.toContain("Education");
+    expect(html).not.toContain("Experience");
+    expect(html).not.toContain("Credentials");
+    expect(html).not.toContain("Skills");
   });
 });
