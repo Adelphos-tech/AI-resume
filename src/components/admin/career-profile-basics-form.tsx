@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { masterCareerProfileBasicsSchema } from "@/lib/master-career-profile-schema";
 
 type LinkValue = { label: string; url: string };
+type TagValue = { value: string };
 
 type BasicsFormValues = {
   fullName: string;
@@ -21,6 +22,10 @@ type BasicsFormValues = {
   phone: string;
   location: string;
   links: LinkValue[];
+  professionalCategories: TagValue[];
+  genres: TagValue[];
+  portfolioUrl: string;
+  showreelUrl: string;
 };
 
 function toFormValues(basics: {
@@ -31,6 +36,10 @@ function toFormValues(basics: {
   phone: string | null;
   location: string | null;
   links: LinkValue[];
+  professionalCategories?: string[];
+  genres?: string[];
+  portfolioUrl?: string | null;
+  showreelUrl?: string | null;
 }): BasicsFormValues {
   return {
     fullName: basics.fullName ?? "",
@@ -40,6 +49,11 @@ function toFormValues(basics: {
     phone: basics.phone ?? "",
     location: basics.location ?? "",
     links: basics.links.map((l) => ({ label: l.label, url: l.url })),
+    professionalCategories:
+      basics.professionalCategories?.map((v) => ({ value: v })) ?? [],
+    genres: basics.genres?.map((v) => ({ value: v })) ?? [],
+    portfolioUrl: basics.portfolioUrl ?? "",
+    showreelUrl: basics.showreelUrl ?? "",
   };
 }
 
@@ -75,9 +89,33 @@ export function CareerProfileBasicsForm({
     defaultValues: toFormValues(initialBasics),
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: linkFields,
+    append: appendLink,
+    remove: removeLink,
+  } = useFieldArray({
     control,
     name: "links",
+  });
+
+  const {
+    fields: categoryFields,
+    append: appendCategory,
+    remove: removeCategory,
+  } = useFieldArray({
+    control,
+    name: "professionalCategories",
+    keyName: "_key",
+  });
+
+  const {
+    fields: genreFields,
+    append: appendGenre,
+    remove: removeGenre,
+  } = useFieldArray({
+    control,
+    name: "genres",
+    keyName: "_key",
   });
 
   const submitting = isSubmitting || isPending;
@@ -85,12 +123,26 @@ export function CareerProfileBasicsForm({
   function onSubmit(values: BasicsFormValues) {
     setFeedback(null);
 
-    const parsed = masterCareerProfileBasicsSchema.safeParse(values);
+    const payload = {
+      ...values,
+      professionalCategories: values.professionalCategories.map((t) => t.value),
+      genres: values.genres.map((t) => t.value),
+    };
+
+    const parsed = masterCareerProfileBasicsSchema.safeParse(payload);
     if (!parsed.success) {
       for (const issue of parsed.error.issues) {
         const [first, second] = issue.path;
         if (first === "links" && typeof second === "number") {
           setError(`links.${second}.${String(issue.path[2])}` as never, {
+            type: "server",
+            message: issue.message,
+          });
+        } else if (
+          (first === "professionalCategories" || first === "genres") &&
+          typeof second === "number"
+        ) {
+          setError(`${first}.${second}.value` as never, {
             type: "server",
             message: issue.message,
           });
@@ -110,7 +162,7 @@ export function CareerProfileBasicsForm({
 
     startTransition(async () => {
       try {
-        const result = await updateBasicsAction(candidateId, values);
+        const result = await updateBasicsAction(candidateId, payload);
         if (result.success) {
           setFeedback({ kind: "success", message: "Changes saved." });
         } else {
@@ -212,7 +264,7 @@ export function CareerProfileBasicsForm({
 
       <fieldset className="space-y-3">
         <legend className="text-sm font-medium">Links</legend>
-        {fields.map((field, index) => (
+        {linkFields.map((field, index) => (
           <div
             key={field.id}
             className="grid gap-3 sm:grid-cols-[12rem_1fr_auto] sm:items-end"
@@ -249,7 +301,7 @@ export function CareerProfileBasicsForm({
               variant="ghost"
               size="sm"
               aria-label={`Remove link ${index + 1}`}
-              onClick={() => remove(index)}
+              onClick={() => removeLink(index)}
             >
               <Trash2 aria-hidden="true" />
               Remove
@@ -260,12 +312,131 @@ export function CareerProfileBasicsForm({
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => append({ label: "", url: "" })}
+          onClick={() => appendLink({ label: "", url: "" })}
         >
           <Plus aria-hidden="true" />
           Add link
         </Button>
       </fieldset>
+
+      <div className="space-y-6">
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-medium">
+            Professional Categories
+          </legend>
+          <ul className="flex flex-wrap gap-2">
+            {categoryFields.map((field, index) => (
+              <li
+                key={field._key}
+                className="flex items-center gap-1 rounded-md border px-2 py-1"
+              >
+                <Label htmlFor={`cp-cat-${index}`} className="sr-only">
+                  Category {index + 1}
+                </Label>
+                <Input
+                  id={`cp-cat-${index}`}
+                  className="h-7 w-36 border-0 px-1 shadow-none focus-visible:ring-0"
+                  aria-invalid={!!errors.professionalCategories?.[index]}
+                  {...register(`professionalCategories.${index}.value`)}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  aria-label={`Remove category ${index + 1}`}
+                  onClick={() => removeCategory(index)}
+                >
+                  <X aria-hidden="true" />
+                </Button>
+              </li>
+            ))}
+          </ul>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => appendCategory({ value: "" })}
+          >
+            <Plus aria-hidden="true" />
+            Add category
+          </Button>
+        </fieldset>
+
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-medium">Genres</legend>
+          <ul className="flex flex-wrap gap-2">
+            {genreFields.map((field, index) => (
+              <li
+                key={field._key}
+                className="flex items-center gap-1 rounded-md border px-2 py-1"
+              >
+                <Label htmlFor={`cp-genre-${index}`} className="sr-only">
+                  Genre {index + 1}
+                </Label>
+                <Input
+                  id={`cp-genre-${index}`}
+                  className="h-7 w-36 border-0 px-1 shadow-none focus-visible:ring-0"
+                  aria-invalid={!!errors.genres?.[index]}
+                  {...register(`genres.${index}.value`)}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  aria-label={`Remove genre ${index + 1}`}
+                  onClick={() => removeGenre(index)}
+                >
+                  <X aria-hidden="true" />
+                </Button>
+              </li>
+            ))}
+          </ul>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => appendGenre({ value: "" })}
+          >
+            <Plus aria-hidden="true" />
+            Add genre
+          </Button>
+        </fieldset>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="cp-portfolioUrl">Portfolio URL</Label>
+            <Input
+              id="cp-portfolioUrl"
+              type="url"
+              placeholder="https://"
+              aria-invalid={!!errors.portfolioUrl}
+              aria-describedby="cp-portfolioUrl-error"
+              {...register("portfolioUrl")}
+            />
+            <FieldError
+              id="cp-portfolioUrl-error"
+              message={errors.portfolioUrl?.message}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="cp-showreelUrl">Showreel URL</Label>
+            <Input
+              id="cp-showreelUrl"
+              type="url"
+              placeholder="https://"
+              aria-invalid={!!errors.showreelUrl}
+              aria-describedby="cp-showreelUrl-error"
+              {...register("showreelUrl")}
+            />
+            <FieldError
+              id="cp-showreelUrl-error"
+              message={errors.showreelUrl?.message}
+            />
+          </div>
+        </div>
+      </div>
 
       <div className="flex items-center gap-3">
         <Button type="submit" disabled={submitting}>
