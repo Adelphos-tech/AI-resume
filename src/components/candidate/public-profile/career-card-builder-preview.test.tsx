@@ -1289,8 +1289,11 @@ describe("CareerCardBuilderPreview", () => {
     );
     expect(html).toContain("Drama");
     expect(html).toContain("Thriller");
-    // Genres must NOT become headline
-    expect(html).not.toContain("Drama · Thriller");
+    // Genres must NOT become headline (headline slot should be empty)
+    const headlineMatch = html.match(
+      /<p class="text-sm font-medium[^>]*>([^<]*)<\/p>/,
+    );
+    expect(headlineMatch?.[1] ?? "").toBe("");
   });
 
   it("Signature Spotlight layout remains valid when headline absent", () => {
@@ -1738,15 +1741,17 @@ describe("CareerCardBuilderPreview", () => {
             certifications: [],
             portfolioAvailable: false,
             resumeAvailable: false,
+            portfolioUrl: "https://example.com/portfolio",
+            showreelUrl: "https://example.com/showreel",
           },
         }),
       ),
     );
     expect(html).toContain("grid-cols-1");
-    expect(html).not.toContain("grid-cols-3");
+    expect(html).not.toContain("grid-cols-2");
   });
 
-  it("Signature Spotlight desktop preview uses three column grid", () => {
+  it("Signature Spotlight desktop preview uses two column grid", () => {
     const html = renderToStaticMarkup(
       createElement(
         PreviewModeProvider,
@@ -1760,11 +1765,13 @@ describe("CareerCardBuilderPreview", () => {
             certifications: [],
             portfolioAvailable: false,
             resumeAvailable: false,
+            portfolioUrl: "https://example.com/portfolio",
+            showreelUrl: "https://example.com/showreel",
           },
         }),
       ),
     );
-    expect(html).toContain("grid-cols-3");
+    expect(html).toContain("grid-cols-2");
     expect(html).not.toContain("grid-cols-1");
   });
 

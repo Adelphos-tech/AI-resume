@@ -6,11 +6,9 @@ import {
   Clapperboard,
   Film,
   Globe,
-  GraduationCap,
   Languages,
   MonitorPlay,
   Play,
-  Sparkles,
 } from "lucide-react";
 import type {
   CompactCandidate,
@@ -25,28 +23,6 @@ import { useResponsiveClasses } from "@/components/candidate/public-profile/prev
 
 /* ── Signature Spotlight — premium standalone Candidate skin.
    Light, elegant identity-forward layout. No Company switch.          ── */
-
-function Section({
-  icon,
-  label,
-  children,
-}: {
-  icon: ReactNode;
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl border border-stone-200/80 bg-white p-4 shadow-sm">
-      <div className="mb-2 flex items-center gap-2">
-        <span className="text-stone-400">{icon}</span>
-        <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">
-          {label}
-        </span>
-      </div>
-      <div className="text-sm text-stone-700">{children}</div>
-    </div>
-  );
-}
 
 function Chip({ label }: { label: string }) {
   return (
@@ -137,27 +113,22 @@ export function SignatureSpotlightCard({
     "-mx-6 -mt-6",
     "-mx-4 -mt-4 sm:-mx-5 sm:-mt-5 lg:-mx-6 lg:-mt-6",
   );
-  const coverH = useResponsiveClasses("h-52", "h-72", "h-52 sm:h-60 lg:h-72");
+  const coverH = useResponsiveClasses("h-32", "h-40", "h-32 sm:h-36 lg:h-40");
   const coverFallbackH = useResponsiveClasses(
-    "h-40",
-    "h-56",
-    "h-40 sm:h-48 lg:h-56",
+    "h-24",
+    "h-32",
+    "h-24 sm:h-28 lg:h-32",
   );
   const portraitSize = useResponsiveClasses(
-    "size-28",
-    "size-36",
-    "size-28 sm:size-32 lg:size-36",
+    "size-32",
+    "size-44",
+    "size-32 sm:size-36 lg:size-44",
   );
-  const spacerH = useResponsiveClasses("h-14", "h-20", "h-14 sm:h-16 lg:h-20");
+  const spacerH = useResponsiveClasses("h-16", "h-24", "h-16 sm:h-20 lg:h-24");
   const nameSize = useResponsiveClasses(
     "text-2xl",
     "text-3xl",
     "text-2xl sm:text-3xl",
-  );
-  const infoGrid = useResponsiveClasses(
-    "grid-cols-1",
-    "grid-cols-3",
-    "grid-cols-1 sm:grid-cols-3",
   );
   const actionGrid = useResponsiveClasses(
     "grid-cols-1",
@@ -198,50 +169,50 @@ export function SignatureSpotlightCard({
       <div
         className={`relative rounded-3xl bg-white/70 ring-1 ring-stone-100 backdrop-blur-sm ${innerPad}`}
       >
-        {/* ── Hero cover ── */}
-        <div className={`relative overflow-hidden rounded-b-3xl ${heroNeg}`}>
-          {c.cover ? (
-            <div className={`relative w-full ${coverH}`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={c.cover}
-                alt=""
-                className="absolute inset-0 size-full object-cover"
-                style={{
-                  objectPosition: `${(c.coverFocalX ?? 0.5) * 100}% ${(c.coverFocalY ?? 0.5) * 100}%`,
-                  transform: `scale(${c.coverZoom ?? 1})`,
-                }}
-              />
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"
-              />
-            </div>
-          ) : (
-            <div
-              className={`w-full bg-gradient-to-br from-stone-100 to-stone-200 ${coverFallbackH}`}
-            />
-          )}
-
-          {/* Portrait overlapping cover bottom */}
-          <div className="absolute right-0 bottom-0 left-0 flex justify-center translate-y-1/2">
-            <div className="relative">
-              <div
-                className={`overflow-hidden rounded-full border-4 border-white shadow-xl ring-2 ring-[var(--nfc-cta)]/20 ${portraitSize}`}
-              >
-                {c.portrait ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={c.portrait}
-                    alt={c.name}
-                    className="size-full object-cover"
-                  />
-                ) : (
-                  <span className="grid size-full place-items-center bg-gradient-to-br from-[var(--nfc-cta)] to-[var(--nfc-cta-hover)] text-2xl font-black text-white">
-                    {c.initials}
-                  </span>
-                )}
+        {/* ── Hero: compact cover + prominent portrait ── */}
+        <div className={`relative rounded-b-3xl ${heroNeg}`}>
+          <div className="overflow-hidden rounded-b-3xl">
+            {c.cover ? (
+              <div className={`relative w-full ${coverH}`}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={c.cover}
+                  alt=""
+                  className="absolute inset-0 size-full object-cover"
+                  style={{
+                    objectPosition: `${(c.coverFocalX ?? 0.5) * 100}% ${(c.coverFocalY ?? 0.5) * 100}%`,
+                    transform: `scale(${c.coverZoom ?? 1})`,
+                  }}
+                />
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"
+                />
               </div>
+            ) : (
+              <div
+                className={`w-full bg-gradient-to-br from-stone-100 to-stone-200 ${coverFallbackH}`}
+              />
+            )}
+          </div>
+
+          {/* Portrait overlapping cover bottom — outside overflow container */}
+          <div className="absolute right-0 bottom-0 left-0 flex justify-center translate-y-1/2">
+            <div
+              className={`overflow-hidden rounded-full border-4 border-white shadow-xl ring-2 ring-[var(--nfc-cta)]/20 ${portraitSize}`}
+            >
+              {c.portrait ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={c.portrait}
+                  alt={c.name}
+                  className="size-full object-cover"
+                />
+              ) : (
+                <span className="grid size-full place-items-center bg-gradient-to-br from-[var(--nfc-cta)] to-[var(--nfc-cta-hover)] text-2xl font-black text-white">
+                  {c.initials}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -255,33 +226,22 @@ export function SignatureSpotlightCard({
             {c.name}
           </h1>
 
-          {c.headline && (
-            <p className="mt-1.5 text-sm font-medium text-[var(--nfc-strong)]">
-              {c.headline}
-            </p>
-          )}
-
-          {(c.currentRole || c.currentCompany) && (
-            <p className="mt-1 text-xs text-stone-500">
-              {[c.currentRole, c.currentCompany].filter(Boolean).join(" · ")}
-            </p>
-          )}
-
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-stone-500">
-            {/* Location is not part of CompactCandidate — omitted from Builder preview. */}
+          {/* Headline + categories inline */}
+          <div className="mt-1.5">
+            {c.headline && (
+              <p className="text-sm font-medium text-[var(--nfc-strong)]">
+                {c.headline}
+              </p>
+            )}
+            {hasCategories && (
+              <div className="mt-1.5 flex flex-wrap justify-center gap-1">
+                {c.professionalCategories!.map((cat) => (
+                  <Chip key={cat} label={cat} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
-
-        {/* ── Social links ── */}
-        {activeSocials.length > 0 && (
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
-            {activeSocials.map((s) => (
-              <SocialTile key={s.label} href={s.href} label={s.label}>
-                {s.icon}
-              </SocialTile>
-            ))}
-          </div>
-        )}
 
         {/* ── Bio ── */}
         {c.professionalSummary && (
@@ -292,57 +252,41 @@ export function SignatureSpotlightCard({
           </div>
         )}
 
-        {/* ── Professional Categories ── */}
-        {hasCategories && (
-          <div className="mt-4">
-            <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-wider text-stone-400">
-              Professional Categories
-            </p>
-            <div className="flex flex-wrap justify-center gap-1.5">
-              {c.professionalCategories!.map((cat) => (
-                <Chip key={cat} label={cat} />
-              ))}
+        {/* ── Genres | Languages | Availability (compact row) ── */}
+        {(hasGenres || hasLanguages || c.availability) && (
+          <div className="mt-4 rounded-2xl border border-stone-200/80 bg-white p-4 shadow-sm">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
+              {hasGenres && (
+                <div className="flex items-center gap-1.5">
+                  <Clapperboard className="size-3.5 text-stone-400" />
+                  <span className="text-stone-600">
+                    {c.genres!.slice(0, 3).join(" · ")}
+                  </span>
+                </div>
+              )}
+              {hasLanguages && (
+                <div className="flex items-center gap-1.5">
+                  <Languages className="size-3.5 text-stone-400" />
+                  <span className="text-stone-600">
+                    {c
+                      .languages!.slice(0, 3)
+                      .map((l) => l.language)
+                      .join(" · ")}
+                  </span>
+                </div>
+              )}
+              {c.availability && (
+                <div className="flex items-center gap-1.5">
+                  <Briefcase className="size-3.5 text-stone-400" />
+                  <span className="inline-flex items-center gap-1.5 font-medium text-emerald-700">
+                    <span className="size-2 rounded-full bg-emerald-500" />
+                    {c.availability}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
-
-        {/* ── Info cards row ── */}
-        <div className={`mt-4 grid gap-3 ${infoGrid}`}>
-          {hasGenres && (
-            <Section icon={<Clapperboard className="size-4" />} label="Genres">
-              <div className="flex flex-wrap gap-1">
-                {c.genres!.map((g) => (
-                  <Chip key={g} label={g} />
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {hasLanguages && (
-            <Section icon={<Languages className="size-4" />} label="Languages">
-              <div className="flex flex-wrap gap-1">
-                {c.languages!.map((l) => (
-                  <Chip
-                    key={l.language}
-                    label={`${l.language}${l.fluency ? ` · ${l.fluency}` : ""}`}
-                  />
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {c.availability && (
-            <Section
-              icon={<Briefcase className="size-4" />}
-              label="Availability"
-            >
-              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700">
-                <span className="size-2 rounded-full bg-emerald-500" />
-                {c.availability}
-              </span>
-            </Section>
-          )}
-        </div>
 
         {/* ── Portfolio + Showreel actions ── */}
         {(c.portfolioUrl || c.showreelUrl) && (
@@ -366,65 +310,14 @@ export function SignatureSpotlightCard({
           </div>
         )}
 
-        {/* ── Experience / Education / Certifications (concise) ── */}
-        <div className={`mt-4 grid gap-3 ${infoGrid}`}>
-          {c.education && (
-            <Section
-              icon={<GraduationCap className="size-4" />}
-              label="Education"
-            >
-              <p className="font-medium text-stone-800">{c.education.degree}</p>
-              {c.education.institution && (
-                <p className="text-xs text-stone-500">
-                  {c.education.institution}
-                </p>
-              )}
-            </Section>
-          )}
-
-          {(c.yearsExperience || c.experienceSummary) && (
-            <Section icon={<Briefcase className="size-4" />} label="Experience">
-              {c.yearsExperience && (
-                <p className="font-medium text-stone-800">
-                  {c.yearsExperience}+ Years
-                </p>
-              )}
-              {c.experienceSummary && (
-                <p className="text-xs text-stone-500">{c.experienceSummary}</p>
-              )}
-            </Section>
-          )}
-
-          {c.certifications.length > 0 && (
-            <Section icon={<Sparkles className="size-4" />} label="Credentials">
-              <p className="font-medium text-stone-800">
-                {c.certifications[0].name}
-              </p>
-              {c.certifications[0].issuer && (
-                <p className="text-xs text-stone-500">
-                  {c.certifications[0].issuer}
-                </p>
-              )}
-              {c.certifications.length > 1 && (
-                <p className="mt-1 text-xs text-stone-400">
-                  +{c.certifications.length - 1} more
-                </p>
-              )}
-            </Section>
-          )}
-        </div>
-
-        {/* ── Skills chips ── */}
-        {c.skills.length > 0 && (
-          <div className="mt-4">
-            <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-wider text-stone-400">
-              Skills
-            </p>
-            <div className="flex flex-wrap justify-center gap-1.5">
-              {c.skills.map((s) => (
-                <Chip key={s} label={s} />
-              ))}
-            </div>
+        {/* ── Social links ── */}
+        {activeSocials.length > 0 && (
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            {activeSocials.map((s) => (
+              <SocialTile key={s.label} href={s.href} label={s.label}>
+                {s.icon}
+              </SocialTile>
+            ))}
           </div>
         )}
 

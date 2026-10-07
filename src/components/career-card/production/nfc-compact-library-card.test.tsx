@@ -1117,52 +1117,51 @@ describe("NfcCompactLibraryCard", () => {
     expect(html).toContain("Building scalable systems.");
   });
 
-  it("Signature Spotlight renders dynamic skills publicly", () => {
+  it("Signature Spotlight does not render resume skills", () => {
     const html = renderToStaticMarkup(
       createElement(NfcCompactLibraryCard, {
         dto: { ...RICH_DTO, nfcCompactSkinId: "signature-spotlight" },
         slug: "tester",
       }),
     );
-    expect(html).toContain("React");
-    expect(html).toContain("TypeScript");
-    expect(html).toContain("Skills");
+    expect(html).not.toContain("React");
+    expect(html).not.toContain("Skills");
   });
 
-  it("Signature Spotlight renders dynamic education publicly", () => {
+  it("Signature Spotlight does not render resume education", () => {
     const html = renderToStaticMarkup(
       createElement(NfcCompactLibraryCard, {
         dto: { ...RICH_DTO, nfcCompactSkinId: "signature-spotlight" },
         slug: "tester",
       }),
     );
-    expect(html).toContain("MIT");
-    expect(html).toContain("Education");
+    expect(html).not.toContain("MIT");
+    expect(html).not.toContain("Education");
   });
 
-  it("Signature Spotlight renders dynamic experience publicly", () => {
+  it("Signature Spotlight does not render resume experience", () => {
     const html = renderToStaticMarkup(
       createElement(NfcCompactLibraryCard, {
         dto: { ...RICH_DTO, nfcCompactSkinId: "signature-spotlight" },
         slug: "tester",
       }),
     );
-    expect(html).toContain("Staff Engineer");
-    expect(html).toContain("Experience");
+    expect(html).not.toContain("Staff Engineer");
+    expect(html).not.toContain("Experience");
   });
 
-  it("Signature Spotlight renders dynamic certifications publicly", () => {
+  it("Signature Spotlight does not render resume certifications", () => {
     const html = renderToStaticMarkup(
       createElement(NfcCompactLibraryCard, {
         dto: { ...RICH_DTO, nfcCompactSkinId: "signature-spotlight" },
         slug: "tester",
       }),
     );
-    expect(html).toContain("AWS SA");
-    expect(html).toContain("Credentials");
+    expect(html).not.toContain("AWS SA");
+    expect(html).not.toContain("Credentials");
   });
 
-  it("Signature Spotlight renders dynamic professionalCategories", () => {
+  it("Signature Spotlight renders dynamic professionalCategories as chips", () => {
     const html = renderToStaticMarkup(
       createElement(NfcCompactLibraryCard, {
         dto: {
@@ -1175,7 +1174,6 @@ describe("NfcCompactLibraryCard", () => {
     );
     expect(html).toContain("Actor");
     expect(html).toContain("Voice Artist");
-    expect(html).toContain("Professional Categories");
   });
 
   it("Signature Spotlight collapses professionalCategories when absent", () => {
@@ -1189,10 +1187,11 @@ describe("NfcCompactLibraryCard", () => {
         slug: "tester",
       }),
     );
-    expect(html).not.toContain("Professional Categories");
+    expect(html).not.toContain("Actor");
+    expect(html).not.toContain("Voice Artist");
   });
 
-  it("Signature Spotlight renders dynamic genres", () => {
+  it("Signature Spotlight renders dynamic genres in compact row", () => {
     const html = renderToStaticMarkup(
       createElement(NfcCompactLibraryCard, {
         dto: {
@@ -1205,7 +1204,6 @@ describe("NfcCompactLibraryCard", () => {
     );
     expect(html).toContain("Drama");
     expect(html).toContain("Comedy");
-    expect(html).toContain("Genres");
   });
 
   it("Signature Spotlight collapses genres when absent", () => {
@@ -1219,10 +1217,11 @@ describe("NfcCompactLibraryCard", () => {
         slug: "tester",
       }),
     );
-    expect(html).not.toContain("Genres");
+    expect(html).not.toContain("Drama");
+    expect(html).not.toContain("Comedy");
   });
 
-  it("Signature Spotlight renders dynamic languages", () => {
+  it("Signature Spotlight renders dynamic languages in compact row", () => {
     const html = renderToStaticMarkup(
       createElement(NfcCompactLibraryCard, {
         dto: {
@@ -1238,7 +1237,6 @@ describe("NfcCompactLibraryCard", () => {
     );
     expect(html).toContain("English");
     expect(html).toContain("Hindi");
-    expect(html).toContain("Languages");
   });
 
   it("Signature Spotlight portfolio action uses canonical portfolioUrl", () => {
@@ -1311,7 +1309,6 @@ describe("NfcCompactLibraryCard", () => {
       }),
     );
     expect(html).toContain("Open to opportunities");
-    expect(html).toContain("Availability");
   });
 
   it("Signature Spotlight does not show company switch", () => {
@@ -1518,7 +1515,6 @@ describe("NfcCompactLibraryCard", () => {
         slug: "tester",
       }),
     );
-    expect(html).toContain("Professional Categories");
     expect(html).toContain("Actor");
     expect(html).toContain("Model");
     expect(html).not.toContain("Actor · Model");
@@ -1536,10 +1532,14 @@ describe("NfcCompactLibraryCard", () => {
         slug: "tester",
       }),
     );
-    expect(html).toContain("Genres");
+    // Genres shown in info row with separator, not as headline
     expect(html).toContain("Drama");
     expect(html).toContain("Comedy");
-    expect(html).not.toContain("Drama · Comedy");
+    // Headline slot must remain empty when headline is blank
+    const headlineMatch = html.match(
+      /<p class="text-sm font-medium[^>]*">([^<]*)<\/p>/,
+    );
+    expect(headlineMatch?.[1] ?? "").toBe("");
   });
 
   it("Signature Spotlight headline is not derived from skills", () => {
@@ -1554,10 +1554,11 @@ describe("NfcCompactLibraryCard", () => {
         slug: "tester",
       }),
     );
-    expect(html).toContain("Skills");
-    expect(html).toContain("React");
-    expect(html).toContain("TypeScript");
-    expect(html).not.toContain("React · TypeScript");
+    // Skills section removed from Signature Spotlight; headline must stay empty
+    const headlineMatch = html.match(
+      /<p class="text-sm font-medium[^>]*">([^<]*)<\/p>/,
+    );
+    expect(headlineMatch?.[1] ?? "").toBe("");
   });
 
   it("Signature Spotlight headline is not derived from bio", () => {
