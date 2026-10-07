@@ -549,6 +549,16 @@ function SkinMiniPreview({ skinId }: { skinId: NfcCompactSkinId }) {
       </div>
     );
   }
+  if (skinId === "creative-spotlight") {
+    return (
+      <div className="relative h-16 overflow-hidden rounded-lg bg-gradient-to-b from-amber-50/60 to-white ring-1 ring-amber-200/60">
+        <span className="absolute top-0 right-0 left-0 h-0.5 bg-amber-700/40" />
+        <span className="absolute top-2 left-4 h-2 w-8 rounded-full bg-stone-800" />
+        <span className="absolute top-5 left-4 h-1.5 w-14 rounded-full bg-amber-700/60" />
+        <span className="absolute right-2 bottom-2 h-5 w-14 rounded-md bg-amber-700" />
+      </div>
+    );
+  }
   return (
     <div className="relative h-16 overflow-hidden rounded-lg bg-[#fafaf9] ring-1 ring-stone-200">
       <span className="absolute inset-y-0 left-0 w-1 bg-emerald-700" />

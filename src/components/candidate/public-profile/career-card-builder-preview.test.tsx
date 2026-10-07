@@ -815,4 +815,161 @@ describe("CareerCardBuilderPreview", () => {
     expect(html).not.toContain("verified");
     expect(html).not.toContain("Verified");
   });
+
+  // ── Creative Spotlight skin ──────────────────────────────────────
+
+  it("NFC Compact Creative Spotlight skin renders warm preview", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "creative-spotlight",
+        },
+      }),
+    );
+    expect(html).toContain("Creative Spotlight");
+    expect(html).toContain("from-amber-50");
+    expect(html).not.toContain("bg-[#fafaf9]");
+    expect(html).not.toContain("bg-[var(--cn-base)]");
+  });
+
+  it("NFC Compact Creative Spotlight renders candidate name and headline", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "creative-spotlight",
+          publicHeadline: "Actor · Voice Artist",
+        },
+      }),
+    );
+    expect(html).toContain("QA Tester");
+    expect(html).toContain("Actor · Voice Artist");
+  });
+
+  it("NFC Compact Creative Spotlight renders biography from bio", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "creative-spotlight",
+          publicBio: "Versatile performer across film and theatre.",
+        },
+      }),
+    );
+    expect(html).toContain("Versatile performer across film and theatre.");
+    expect(html).toContain("Biography");
+  });
+
+  it("NFC Compact Creative Spotlight shows Celebrity/Production switch with company", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "creative-spotlight",
+        },
+        companyInitial: DEMO_COMPANY,
+      }),
+    );
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("Celebrity");
+    expect(html).toContain("Production Company");
+  });
+
+  it("NFC Compact Creative Spotlight hides switch when company absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "creative-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain('role="tablist"');
+  });
+
+  it("NFC Compact Creative Spotlight does not contain Project Match", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "creative-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain("Project Match");
+    expect(html).not.toContain("92%");
+  });
+
+  it("NFC Compact Creative Spotlight does not contain verified badge", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "creative-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain("verified");
+    expect(html).not.toContain("Verified");
+  });
+
+  it("NFC Compact Creative Spotlight does not contain LinkMeU branding", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "creative-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain("LinkMeU");
+  });
+
+  it("NFC Compact Creative Spotlight no dead CTA in preview", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "creative-spotlight",
+        },
+        companyInitial: DEMO_COMPANY,
+      }),
+    );
+    expect(html).not.toContain("Get in Touch");
+    expect(html).not.toContain("Contact Us");
+  });
+
+  it("NFC Compact Creative Spotlight does not expose private phone/email", () => {
+    const html = renderToStaticMarkup(
+      createElement(CareerCardBuilderPreview, {
+        ...BASE_PROPS,
+        state: {
+          ...DEFAULT_STATE,
+          themeId: "nfc-compact",
+          nfcCompactSkinId: "creative-spotlight",
+        },
+      }),
+    );
+    expect(html).not.toContain("+65");
+    expect(html).not.toContain("@qa.tester");
+  });
 });

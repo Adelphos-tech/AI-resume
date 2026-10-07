@@ -43,6 +43,12 @@ export type CompactCandidate = {
   /** Public href for the Portfolio/CV action card (production: /u/<slug>/resume). */
   portfolioHref?: string | null;
   availability?: string | null;
+  /** Canonical MCP career identity metadata (IT7B). */
+  professionalCategories?: string[];
+  genres?: string[];
+  portfolioUrl?: string | null;
+  showreelUrl?: string | null;
+  languages?: { language: string; fluency?: string | null }[];
 };
 
 export type CompactCompany = {
