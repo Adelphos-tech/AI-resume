@@ -1,4 +1,5 @@
 import { Send } from "lucide-react";
+import type { ReactNode } from "react";
 import type {
   CompactCandidate,
   CompactCompany,
@@ -10,29 +11,15 @@ import {
   CrimsonSwitch,
 } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-parts";
 import { CrimsonNightQr } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-qr";
+import {
+  DualProfileTemplateShell,
+  type DualProfileActive,
+  type DualProfileSkin,
+} from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
 
-/**
- * Crimson Night — dark premium skin for the NFC Compact composition.
- * Dev-lab only for now: same structure, same data types, same
- * interactions as Career Passport Light — only the visual system differs.
- * ~75% dark neutral, ~25% crimson at focal points (rail, identity,
- * toggle, icons, CTA, QR accents).
- */
-export function CrimsonNightCard({
-  candidate,
-  company,
-  active,
-  onSwitch,
-  cta,
-  shareUrl,
-}: {
-  candidate: CompactCandidate;
-  company?: CompactCompany | null;
-  active: "candidate" | "company";
-  onSwitch: (v: "candidate" | "company") => void;
-  cta?: { href: string; label: string } | null;
-  shareUrl?: string | null;
-}) {
+/* ── Crimson Night skin pieces ── */
+
+function CrimsonNightFrame({ children }: { children: ReactNode }) {
   return (
     <div
       style={CRIMSON_NIGHT_VARS}
@@ -82,58 +69,117 @@ export function CrimsonNightCard({
       </div>
 
       <div className="relative m-3 ml-4 rounded-3xl bg-[var(--cn-surface)] p-4 ring-1 ring-white/10 sm:p-5 lg:m-4 lg:ml-5 lg:p-6">
-        {/* top brand bar */}
-        <header className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="grid size-9 place-items-center rounded-xl bg-[var(--cn-cta)] text-sm font-black text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_4px_16px_-4px_rgba(185,28,28,0.6)]">
-              R
-            </span>
-            <div>
-              <p className="text-sm font-extrabold leading-tight text-[var(--cn-text)]">
-                RoleRace
-              </p>
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--cn-hi)]/70">
-                NFC Career Card
-              </p>
-            </div>
-          </div>
-          {shareUrl && <CrimsonNightQr url={shareUrl} />}
-        </header>
-
-        {/* segmented switch */}
-        {company && (
-          <div className="mt-4">
-            <CrimsonSwitch value={active} onChange={onSwitch} />
-          </div>
-        )}
-
-        <div className="mt-5">
-          {active === "company" && company ? (
-            <CrimsonNightCompany c={company} />
-          ) : (
-            <CrimsonNightCandidate c={candidate} />
-          )}
-        </div>
-
-        {/* primary CTA — strongest crimson element */}
-        {cta === undefined ? (
-          <button
-            type="button"
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--cn-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_10px_24px_-10px_rgba(185,28,28,0.55)] transition hover:bg-[var(--cn-cta-hover)] active:translate-y-px"
-          >
-            <Send className="size-4 -rotate-12" aria-hidden />
-            {active === "candidate" ? "Get in Touch" : "Contact Us"}
-          </button>
-        ) : cta ? (
-          <a
-            href={cta.href}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--cn-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_10px_24px_-10px_rgba(185,28,28,0.55)] transition hover:bg-[var(--cn-cta-hover)] active:translate-y-px"
-          >
-            <Send className="size-4 -rotate-12" aria-hidden />
-            {cta.label}
-          </a>
-        ) : null}
+        {children}
       </div>
     </div>
+  );
+}
+
+function CrimsonNightBrandBar({ shareUrl }: { shareUrl?: string | null }) {
+  return (
+    <header className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <span className="grid size-9 place-items-center rounded-xl bg-[var(--cn-cta)] text-sm font-black text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_4px_16px_-4px_rgba(185,28,28,0.6)]">
+          R
+        </span>
+        <div>
+          <p className="text-sm font-extrabold leading-tight text-[var(--cn-text)]">
+            RoleRace
+          </p>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--cn-hi)]/70">
+            NFC Career Card
+          </p>
+        </div>
+      </div>
+      {shareUrl && <CrimsonNightQr url={shareUrl} />}
+    </header>
+  );
+}
+
+function CrimsonNightCandidateAdapter({
+  candidate,
+}: {
+  candidate: CompactCandidate;
+}) {
+  return <CrimsonNightCandidate c={candidate} />;
+}
+
+function CrimsonNightCompanyAdapter({ company }: { company: CompactCompany }) {
+  return <CrimsonNightCompany c={company} />;
+}
+
+function CrimsonNightCta({
+  active,
+  cta,
+}: {
+  active: DualProfileActive;
+  cta: { href: string; label: string } | null | undefined;
+}) {
+  const label = active === "candidate" ? "Get in Touch" : "Contact Us";
+  const cls =
+    "mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--cn-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_10px_24px_-10px_rgba(185,28,28,0.55)] transition hover:bg-[var(--cn-cta-hover)] active:translate-y-px";
+
+  if (cta === undefined) {
+    return (
+      <button type="button" className={cls}>
+        <Send className="size-4 -rotate-12" aria-hidden />
+        {label}
+      </button>
+    );
+  }
+  if (cta) {
+    return (
+      <a href={cta.href} className={cls}>
+        <Send className="size-4 -rotate-12" aria-hidden />
+        {cta.label}
+      </a>
+    );
+  }
+  return null;
+}
+
+/* ── exported card ── */
+
+/**
+ * Crimson Night — dark premium skin for the NFC Compact composition.
+ * Dev-lab only for now: same structure, same data types, same
+ * interactions as Career Passport Light — only the visual system differs.
+ * ~75% dark neutral, ~25% crimson at focal points (rail, identity,
+ * toggle, icons, CTA, QR accents).
+ */
+export function CrimsonNightCard({
+  candidate,
+  company,
+  active,
+  onSwitch,
+  cta,
+  shareUrl,
+}: {
+  candidate: CompactCandidate;
+  company?: CompactCompany | null;
+  active: DualProfileActive;
+  onSwitch: (v: DualProfileActive) => void;
+  cta?: { href: string; label: string } | null;
+  shareUrl?: string | null;
+}) {
+  const skin: DualProfileSkin = {
+    Frame: CrimsonNightFrame,
+    BrandBar: CrimsonNightBrandBar,
+    ProfileSwitch: CrimsonSwitch,
+    CandidateContent: CrimsonNightCandidateAdapter,
+    CompanyContent: CrimsonNightCompanyAdapter,
+    Cta: CrimsonNightCta,
+  };
+
+  return (
+    <DualProfileTemplateShell
+      candidate={candidate}
+      company={company}
+      active={active}
+      onSwitch={onSwitch}
+      cta={cta}
+      shareUrl={shareUrl}
+      skin={skin}
+    />
   );
 }
