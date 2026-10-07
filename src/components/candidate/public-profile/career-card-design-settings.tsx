@@ -539,6 +539,16 @@ function SkinMiniPreview({ skinId }: { skinId: NfcCompactSkinId }) {
       </div>
     );
   }
+  if (skinId === "professional-connect") {
+    return (
+      <div className="relative h-16 overflow-hidden rounded-lg bg-gradient-to-b from-slate-50 to-white ring-1 ring-slate-200">
+        <span className="absolute top-0 right-0 left-0 h-0.5 bg-blue-800/40" />
+        <span className="absolute top-2 left-4 h-2 w-8 rounded-full bg-slate-800" />
+        <span className="absolute top-5 left-4 h-1.5 w-14 rounded-full bg-blue-800/60" />
+        <span className="absolute right-2 bottom-2 h-5 w-14 rounded-md bg-blue-800" />
+      </div>
+    );
+  }
   return (
     <div className="relative h-16 overflow-hidden rounded-lg bg-[#fafaf9] ring-1 ring-stone-200">
       <span className="absolute inset-y-0 left-0 w-1 bg-emerald-700" />

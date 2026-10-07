@@ -7,9 +7,14 @@ import { cardStyleTokens } from "@/lib/career-card-theme-styles";
 import { CareerCardIdentity } from "@/components/candidate/public-profile/career-card-identity";
 import { NfcCompactCard } from "@/components/career-card/compositions/nfc-compact/nfc-compact-card";
 import { CrimsonNightCard } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-card";
+import { ProfessionalConnectCard } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-card";
 import { nfcCompactAccentStyle } from "@/components/career-card/compositions/nfc-compact/nfc-compact-accents";
 import type { PublicProfileSettingsState } from "./public-profile-settings";
-import type { CompactCandidate } from "@/components/career-card/dev/nfc-compact-data";
+import type { CompanyProfileState } from "./company-profile-settings";
+import type {
+  CompactCandidate,
+  CompactCompany,
+} from "@/components/career-card/dev/nfc-compact-data";
 
 export function CareerCardBuilderPreview({
   state,
@@ -19,6 +24,8 @@ export function CareerCardBuilderPreview({
   photoPosition,
   coverPosition,
   isPublished,
+  companyInitial,
+  logoUrl,
 }: {
   state: PublicProfileSettingsState | null;
   displayName: string;
@@ -27,6 +34,8 @@ export function CareerCardBuilderPreview({
   photoPosition: { focalX: number; focalY: number; zoom: number };
   coverPosition: { focalX: number; focalY: number; zoom: number };
   isPublished: boolean;
+  companyInitial?: CompanyProfileState | null;
+  logoUrl?: string | null;
 }) {
   if (!state) {
     return (
@@ -45,6 +54,8 @@ export function CareerCardBuilderPreview({
         coverUrl={coverUrl}
         coverPosition={coverPosition}
         isPublished={isPublished}
+        companyInitial={companyInitial}
+        logoUrl={logoUrl}
       />
     );
   }
@@ -98,6 +109,8 @@ function NfcCompactPreview({
   coverUrl,
   coverPosition,
   isPublished,
+  companyInitial,
+  logoUrl,
 }: {
   state: PublicProfileSettingsState;
   displayName: string;
@@ -105,6 +118,8 @@ function NfcCompactPreview({
   coverUrl: string | null;
   coverPosition: { focalX: number; focalY: number; zoom: number };
   isPublished: boolean;
+  companyInitial?: CompanyProfileState | null;
+  logoUrl?: string | null;
 }) {
   const [active, setActive] = useState<"candidate" | "company">("candidate");
 
@@ -119,7 +134,7 @@ function NfcCompactPreview({
 
   const candidate: CompactCandidate = {
     name: displayName,
-    headline: state.publicHeadline.trim() || "Career Professional",
+    headline: state.publicHeadline.trim(),
     currentRole: state.currentFocus.trim() || undefined,
     portrait: photoUrl ?? undefined,
     cover: coverUrl,
@@ -139,15 +154,23 @@ function NfcCompactPreview({
       isPublished && state.openToOpportunities ? "Open to opportunities" : null,
   };
 
+  const company: CompactCompany | null = buildCompactCompany(
+    companyInitial,
+    logoUrl,
+  );
+
   const CardComponent =
     state.nfcCompactSkinId === "crimson-night"
       ? CrimsonNightCard
-      : NfcCompactCard;
+      : state.nfcCompactSkinId === "professional-connect"
+        ? ProfessionalConnectCard
+        : NfcCompactCard;
 
   return (
     <div className="relative">
       <CardComponent
         candidate={candidate}
+        company={company}
         active={active}
         onSwitch={setActive}
         accentStyle={accentStyle}
@@ -163,4 +186,55 @@ function NfcCompactPreview({
       )}
     </div>
   );
+}
+
+/** Map existing persisted Company data to the CompactCompany type used by
+ *  NFC Compact skins. Returns null when no meaningful company data exists. */
+function buildCompactCompany(
+  initial: CompanyProfileState | null | undefined,
+  logoUrl: string | null | undefined,
+): CompactCompany | null {
+  if (!initial) return null;
+  const name = initial.companyName.trim();
+  if (!name) return null;
+
+  const whatsappUrl =
+    initial.showWhatsapp && initial.whatsappNumber.trim()
+      ? `https://wa.me/${initial.whatsappCountry.replace(/\D/g, "")}${initial.whatsappNumber.replace(/\D/g, "")}`
+      : null;
+
+  return {
+    companyName: name,
+    tagline: initial.tagline.trim() || undefined,
+    logo: logoUrl ?? undefined,
+    about: initial.about.trim() || undefined,
+    industry: initial.industry.trim() || undefined,
+    locations: initial.locations.filter((l) => l.trim()),
+    services: initial.services.filter((s) => s.trim()),
+    publicPhone: initial.showPublicPhone
+      ? initial.publicPhone.trim() || null
+      : null,
+    publicEmail: initial.showPublicEmail
+      ? initial.publicEmail.trim() || null
+      : null,
+    whatsappUrl,
+    website: initial.websiteUrl.trim() || null,
+    linkedin: initial.linkedinUrl.trim() || null,
+    facebook: initial.facebookUrl.trim() || null,
+    instagram: initial.instagramUrl.trim() || null,
+    x: initial.xUrl.trim() || null,
+    youtube: initial.youtubeUrl.trim() || null,
+    tiktok: initial.tiktokUrl.trim() || null,
+    contactPerson: initial.showContactPerson
+      ? initial.contactPersonName.trim() || undefined
+      : undefined,
+    contactPersonRole: initial.showContactPerson
+      ? initial.contactPersonRole.trim() || undefined
+      : undefined,
+    hiringOpen: initial.hiringOpen,
+    openRolesSummary: initial.openRolesSummary.trim() || undefined,
+    openRolesUrl: initial.openRolesUrl.trim() || null,
+    companyProfileSummary: initial.companyProfileSummary.trim() || undefined,
+    companyProfileUrl: initial.companyProfileUrl.trim() || null,
+  };
 }

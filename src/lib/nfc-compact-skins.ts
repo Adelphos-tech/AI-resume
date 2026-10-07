@@ -7,7 +7,8 @@
  * values always fall back to Career Passport (the pre-skin appearance).
  */
 
-export type NfcCompactSkinId = "career-passport" | "crimson-night";
+export type NfcCompactSkinId =
+  "career-passport" | "crimson-night" | "professional-connect";
 
 export const DEFAULT_NFC_COMPACT_SKIN_ID: NfcCompactSkinId = "career-passport";
 
@@ -26,10 +27,19 @@ export const NFC_COMPACT_SKINS: {
     label: "Crimson Night",
     description: "Dark, premium crimson credential.",
   },
+  {
+    id: "professional-connect",
+    label: "Professional Connect",
+    description: "Investor-style polished professional identity.",
+  },
 ];
 
 export function isNfcCompactSkinId(v: unknown): v is NfcCompactSkinId {
-  return v === "career-passport" || v === "crimson-night";
+  return (
+    v === "career-passport" ||
+    v === "crimson-night" ||
+    v === "professional-connect"
+  );
 }
 
 /** Defensive resolver — unknown/null → career-passport. */

@@ -116,6 +116,8 @@ export function CareerCardBuilderPageClient({
       photoPosition={photoPosition}
       coverPosition={coverPosition}
       isPublished={isPublished}
+      companyInitial={companyInitial}
+      logoUrl={logoUrl}
     />
   );
 
