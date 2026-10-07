@@ -17,6 +17,7 @@ import { PremiumCareerCard } from "@/components/public-profile/premium-career-ca
 import { CareerCardCoverPhoto } from "@/components/candidate/public-profile/career-card-photo";
 import { CareerCardIdentity } from "@/components/candidate/public-profile/career-card-identity";
 import { ResumeMiniPreview } from "@/components/resume/resume-mini-preview";
+import { NfcCompactLibraryCard } from "@/components/career-card/production/nfc-compact-library-card";
 import { prisma } from "@/server/db";
 import { getCandidateSession } from "@/server/session";
 import {
@@ -95,6 +96,12 @@ export default async function PublicProfilePage({
     profile &&
     buildPublicProfileDTO(profile, { allowUnpublished: isOwner === true });
   if (!dto) notFound();
+
+  // NFC Compact themes (Career Passport, Crimson Night, Professional
+  // Connect) render their own frozen composition regardless of card style.
+  if (dto.themeId === "nfc-compact") {
+    return <NfcCompactLibraryCard dto={dto} slug={slug} />;
+  }
 
   // Premium (7A4F1–7A4F3) renders its own compact one-page composition;
   // Standard below is the production-unchanged Career Card.

@@ -8,6 +8,7 @@ import type {
 } from "@/components/career-card/dev/nfc-compact-data";
 import { NfcCompactCard } from "@/components/career-card/compositions/nfc-compact/nfc-compact-card";
 import { CrimsonNightCard } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-card";
+import { ProfessionalConnectCard } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-card";
 import { nfcCompactAccentStyle } from "@/components/career-card/compositions/nfc-compact/nfc-compact-accents";
 import { completedYearsOfExperience } from "@/components/career-card/adapters/public-profile-to-career-card";
 import type { CompanyProfileDTO } from "@/server/public-profile/company-profile";
@@ -48,6 +49,22 @@ export function NfcCompactLibraryCard({
           active={active}
           onSwitch={setActive}
           cta={cta}
+          shareUrl={dto.shareUrl}
+        />
+      </main>
+    );
+  }
+  // Professional Connect — investor-style polished dual-profile skin.
+  if (dto.nfcCompactSkinId === "professional-connect") {
+    return (
+      <main className="min-h-dvh bg-slate-50 px-3 py-6 sm:py-10">
+        <ProfessionalConnectCard
+          candidate={candidate}
+          company={company}
+          active={active}
+          onSwitch={setActive}
+          cta={cta}
+          accentStyle={nfcCompactAccentStyle(dto.accentColorId)}
           shareUrl={dto.shareUrl}
         />
       </main>
