@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /**
  * Crimson Night — dark skin for the NFC Compact / Dual Profile
@@ -81,6 +82,11 @@ export function CrimsonMiniCard({
   label: string;
   lines: (string | null | undefined)[];
 }) {
+  const flexDir = useResponsiveClasses(
+    "flex items-center gap-3",
+    "flex-col items-start gap-2.5",
+    "flex items-center gap-3 sm:flex-col sm:items-start sm:gap-2.5",
+  );
   const items = lines.filter(Boolean) as string[];
   if (!items.length) return null;
   return (
@@ -95,7 +101,7 @@ export function CrimsonMiniCard({
         <span className="size-1 rounded-[1px] bg-white/20" />
         <span className="size-1 rounded-[1px] bg-[var(--cn-cta)]" />
       </span>
-      <div className="flex w-full min-w-0 items-center gap-3 sm:flex-col sm:items-start sm:gap-2.5">
+      <div className={`w-full min-w-0 ${flexDir}`}>
         <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--cn-cta)]/15 text-[var(--cn-hi)]">
           {icon}
         </span>

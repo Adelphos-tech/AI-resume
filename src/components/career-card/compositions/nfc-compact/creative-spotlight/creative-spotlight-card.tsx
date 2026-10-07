@@ -14,6 +14,7 @@ import {
   type DualProfileActive,
   type DualProfileSkin,
 } from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /* ── Creative Spotlight skin pieces ── */
 
@@ -24,10 +25,20 @@ function CreativeSpotlightFrame({
   children: ReactNode;
   accentStyle?: CSSProperties;
 }) {
+  const maxW = useResponsiveClasses(
+    "max-w-[390px]",
+    "max-w-[860px]",
+    "max-w-[430px] lg:max-w-[860px]",
+  );
+  const innerPad = useResponsiveClasses(
+    "m-3 p-4",
+    "m-4 p-6",
+    "m-3 p-4 sm:p-5 lg:m-4 lg:p-6",
+  );
   return (
     <div
       style={accentStyle}
-      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-[2rem] border border-stone-200/80 bg-gradient-to-b from-amber-50/40 via-white to-stone-50 shadow-[0_24px_60px_-28px_rgba(120,53,15,0.12)] lg:max-w-[860px]"
+      className={`relative mx-auto w-full overflow-hidden rounded-[2rem] border border-stone-200/80 bg-gradient-to-b from-amber-50/40 via-white to-stone-50 shadow-[0_24px_60px_-28px_rgba(120,53,15,0.12)] ${maxW}`}
     >
       {/* subtle top accent line */}
       <div
@@ -53,7 +64,9 @@ function CreativeSpotlightFrame({
         </svg>
       </div>
 
-      <div className="relative m-3 rounded-3xl bg-white/70 p-4 ring-1 ring-stone-100 backdrop-blur-sm sm:p-5 lg:m-4 lg:p-6">
+      <div
+        className={`relative rounded-3xl bg-white/70 ring-1 ring-stone-100 backdrop-blur-sm ${innerPad}`}
+      >
         {children}
       </div>
     </div>

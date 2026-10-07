@@ -27,6 +27,7 @@ import {
   CreativeSpotlightSection,
   CreativeSpotlightSocialTile,
 } from "./creative-spotlight-parts";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /** Company (Production Company) half of the Creative Spotlight skin. */
 export function CreativeSpotlightCompany({
@@ -34,11 +35,28 @@ export function CreativeSpotlightCompany({
 }: {
   company: CompactCompany;
 }) {
+  const logoSize = useResponsiveClasses(
+    "size-24",
+    "size-28",
+    "size-24 sm:size-28",
+  );
+  const nameSize = useResponsiveClasses(
+    "text-xl",
+    "text-2xl",
+    "text-xl sm:text-2xl",
+  );
+  const grid3 = useResponsiveClasses(
+    "grid-cols-1",
+    "grid-cols-3",
+    "grid-cols-1 sm:grid-cols-3",
+  );
   return (
     <div className="space-y-4">
       {/* company header — logo, name, tagline, contact */}
       <div className="flex flex-col items-center gap-3 text-center">
-        <div className="size-24 overflow-hidden rounded-2xl border-4 border-white shadow-lg ring-2 ring-[var(--nfc-cta)]/20 sm:size-28">
+        <div
+          className={`overflow-hidden rounded-2xl border-4 border-white shadow-lg ring-2 ring-[var(--nfc-cta)]/20 ${logoSize}`}
+        >
           {c.logo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -53,7 +71,9 @@ export function CreativeSpotlightCompany({
           )}
         </div>
         <div>
-          <h1 className="text-xl font-extrabold tracking-tight text-stone-900 sm:text-2xl">
+          <h1
+            className={`font-extrabold tracking-tight text-stone-900 ${nameSize}`}
+          >
             {c.companyName}
           </h1>
           {c.tagline && (
@@ -139,7 +159,7 @@ export function CreativeSpotlightCompany({
       )}
 
       {/* mini info cards */}
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className={`grid gap-2 ${grid3}`}>
         <CreativeSpotlightMiniCard
           icon={<Factory className="size-3.5" />}
           label="Industry"

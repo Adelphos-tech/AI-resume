@@ -26,15 +26,28 @@ import {
   ContactRow,
   SocialTile,
 } from "@/components/career-card/compositions/nfc-compact/nfc-compact-parts";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /** Company half of the NFC Compact / Dual Profile template. */
 export function NfcCompactCompany({ c }: { c: CompactCompany }) {
+  const logoSize = useResponsiveClasses(
+    "size-20",
+    "size-24",
+    "size-20 sm:size-24",
+  );
+  const grid3 = useResponsiveClasses(
+    "grid-cols-1",
+    "grid-cols-3",
+    "grid-cols-1 sm:grid-cols-3",
+  );
   return (
     <div className="space-y-3">
       {/* company header — logo left, identity + contact */}
       <div className="flex gap-3.5">
         <div className="shrink-0 self-start rounded-2xl border border-stone-200 bg-white p-1">
-          <div className="size-20 overflow-hidden rounded-xl ring-1 ring-[var(--nfc-cta)]/40 sm:size-24">
+          <div
+            className={`overflow-hidden rounded-xl ring-1 ring-[var(--nfc-cta)]/40 ${logoSize}`}
+          >
             {c.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -110,7 +123,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
       )}
 
       {/* three company mini cards */}
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className={`grid gap-2 ${grid3}`}>
         <CompactMiniCard
           icon={<Factory className="size-3.5" />}
           label="Industry"

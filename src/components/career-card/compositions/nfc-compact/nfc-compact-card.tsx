@@ -15,6 +15,7 @@ import {
   type DualProfileActive,
   type DualProfileSkin,
 } from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /* ── Career Passport skin pieces ── */
 
@@ -25,10 +26,20 @@ function NfcCompactFrame({
   children: ReactNode;
   accentStyle?: CSSProperties;
 }) {
+  const maxW = useResponsiveClasses(
+    "max-w-[390px]",
+    "max-w-[860px]",
+    "max-w-[430px] lg:max-w-[860px]",
+  );
+  const innerPad = useResponsiveClasses(
+    "m-3 p-4",
+    "m-4 p-6",
+    "m-3 p-4 sm:p-5 lg:m-4 lg:p-6",
+  );
   return (
     <div
       style={accentStyle}
-      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-[2rem] border border-stone-200/80 bg-[#fafaf9] shadow-[0_24px_60px_-28px_rgba(41,37,36,0.28)] lg:max-w-[860px]"
+      className={`relative mx-auto w-full overflow-hidden rounded-[2rem] border border-stone-200/80 bg-[#fafaf9] shadow-[0_24px_60px_-28px_rgba(41,37,36,0.28)] ${maxW}`}
     >
       {/* credential edge rail + subtle cool tint — pure CSS, non-interactive */}
       <div
@@ -67,7 +78,9 @@ function NfcCompactFrame({
         ))}
       </div>
 
-      <div className="relative m-3 rounded-3xl bg-white p-4 ring-1 ring-stone-100 sm:p-5 lg:m-4 lg:p-6">
+      <div
+        className={`relative rounded-3xl bg-white ring-1 ring-stone-100 ${innerPad}`}
+      >
         {children}
       </div>
     </div>

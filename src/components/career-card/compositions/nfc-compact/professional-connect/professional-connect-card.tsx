@@ -15,6 +15,7 @@ import {
   type DualProfileActive,
   type DualProfileSkin,
 } from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /* ── Professional Connect skin pieces ── */
 
@@ -25,10 +26,20 @@ function ProfessionalConnectFrame({
   children: ReactNode;
   accentStyle?: CSSProperties;
 }) {
+  const maxW = useResponsiveClasses(
+    "max-w-[390px]",
+    "max-w-[860px]",
+    "max-w-[430px] lg:max-w-[860px]",
+  );
+  const innerPad = useResponsiveClasses(
+    "m-3 p-4",
+    "m-4 p-6",
+    "m-3 p-4 sm:p-5 lg:m-4 lg:p-6",
+  );
   return (
     <div
       style={accentStyle}
-      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-[2rem] border border-slate-200/80 bg-gradient-to-b from-slate-50 to-white shadow-[0_24px_60px_-28px_rgba(30,58,138,0.18)] lg:max-w-[860px]"
+      className={`relative mx-auto w-full overflow-hidden rounded-[2rem] border border-slate-200/80 bg-gradient-to-b from-slate-50 to-white shadow-[0_24px_60px_-28px_rgba(30,58,138,0.18)] ${maxW}`}
     >
       {/* subtle top accent line */}
       <div
@@ -54,7 +65,9 @@ function ProfessionalConnectFrame({
         </svg>
       </div>
 
-      <div className="relative m-3 rounded-3xl bg-white p-4 ring-1 ring-slate-100 sm:p-5 lg:m-4 lg:p-6">
+      <div
+        className={`relative rounded-3xl bg-white ring-1 ring-slate-100 ${innerPad}`}
+      >
         {children}
       </div>
     </div>

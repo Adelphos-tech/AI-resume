@@ -16,14 +16,25 @@ import {
   type DualProfileActive,
   type DualProfileSkin,
 } from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /* ── Crimson Night skin pieces ── */
 
 function CrimsonNightFrame({ children }: { children: ReactNode }) {
+  const maxW = useResponsiveClasses(
+    "max-w-[390px]",
+    "max-w-[860px]",
+    "max-w-[430px] lg:max-w-[860px]",
+  );
+  const innerPad = useResponsiveClasses(
+    "m-3 ml-4 p-4",
+    "m-4 ml-5 p-6",
+    "m-3 ml-4 p-4 sm:p-5 lg:m-4 lg:ml-5 lg:p-6",
+  );
   return (
     <div
       style={CRIMSON_NIGHT_VARS}
-      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-[2rem] border border-white/10 bg-[var(--cn-base)] shadow-[0_32px_72px_-24px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.03)] lg:max-w-[860px]"
+      className={`relative mx-auto w-full overflow-hidden rounded-[2rem] border border-white/10 bg-[var(--cn-base)] shadow-[0_32px_72px_-24px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.03)] ${maxW}`}
     >
       {/* crimson edge rail */}
       <div
@@ -68,7 +79,9 @@ function CrimsonNightFrame({ children }: { children: ReactNode }) {
         ))}
       </div>
 
-      <div className="relative m-3 ml-4 rounded-3xl bg-[var(--cn-surface)] p-4 ring-1 ring-white/10 sm:p-5 lg:m-4 lg:ml-5 lg:p-6">
+      <div
+        className={`relative rounded-3xl bg-[var(--cn-surface)] ring-1 ring-white/10 ${innerPad}`}
+      >
         {children}
       </div>
     </div>

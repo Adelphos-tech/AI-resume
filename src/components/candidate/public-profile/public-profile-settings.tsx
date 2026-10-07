@@ -30,7 +30,6 @@ import type { ThemeRecommendation } from "@/lib/career-card-themes";
 import { type NfcCompactSkinId } from "@/lib/nfc-compact-skins";
 import { CareerCardNfcWriter } from "@/components/candidate/public-profile/career-card-nfc-writer";
 import { Button } from "@/components/ui/button";
-import { CareerCardBuilderSection } from "@/components/candidate/public-profile/career-card-builder-section";
 import type { BuilderStep } from "@/components/candidate/public-profile/career-card-builder";
 import { CareerCardIdentitySettings } from "@/components/candidate/public-profile/career-card-identity-settings";
 import { CareerCardPhotoSettings } from "@/components/candidate/public-profile/career-card-photo-settings";
@@ -789,20 +788,6 @@ export function PublicProfileSettings({
         <div className={activeStep === "basics" ? "block" : "hidden"}>
           <CareerCardNfcWriter careerCardUrl={shareUrl} />
         </div>
-      )}
-
-      {/* preview */}
-      {activeStep === "preview" && (
-        <CareerCardBuilderSection
-          title="Preview"
-          description="Review how your Career Card looks to others."
-        >
-          <p className="text-sm text-stone-500">
-            Your live preview is shown in the panel
-            <span className="hidden lg:inline"> to the right</span>
-            <span className="lg:hidden"> above</span>.
-          </p>
-        </CareerCardBuilderSection>
       )}
 
       {/* photo position editor — metadata only, image bytes unchanged */}

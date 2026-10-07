@@ -161,9 +161,6 @@ export function CareerCardBuilderPageClient({
         company: (
           <CompanyProfileSettings initial={companyInitial} logoUrl={logoUrl} />
         ),
-        preview: (
-          <PublicProfileSettings {...settingsProps} activeStep="preview" />
-        ),
       }}
       preview={preview}
     />

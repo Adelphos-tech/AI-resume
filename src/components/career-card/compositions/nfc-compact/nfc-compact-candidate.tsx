@@ -24,15 +24,33 @@ import {
   ContactRow,
   SocialTile,
 } from "@/components/career-card/compositions/nfc-compact/nfc-compact-parts";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /** Candidate half of the NFC Compact / Dual Profile template. */
 export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
+  const portraitSize = useResponsiveClasses(
+    "size-20",
+    "size-24",
+    "size-20 sm:size-24",
+  );
+  const grid3 = useResponsiveClasses(
+    "grid-cols-1",
+    "grid-cols-3",
+    "grid-cols-1 sm:grid-cols-3",
+  );
+  const grid2 = useResponsiveClasses(
+    "grid-cols-1",
+    "grid-cols-2",
+    "grid-cols-1 sm:grid-cols-2",
+  );
   return (
     <div className="space-y-3">
       {/* identity header — portrait left, compact contact rows */}
       <div className="flex gap-4">
         <div className="shrink-0 self-start rounded-full border border-stone-200 bg-white p-1">
-          <div className="size-20 overflow-hidden rounded-full ring-2 ring-[var(--nfc-cta)]/80 sm:size-24">
+          <div
+            className={`overflow-hidden rounded-full ring-2 ring-[var(--nfc-cta)]/80 ${portraitSize}`}
+          >
             {c.portrait ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -125,7 +143,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
       )}
 
       {/* three mini information cards */}
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className={`grid gap-2 ${grid3}`}>
         <CompactMiniCard
           icon={<GraduationCap className="size-3.5" />}
           label="Education"
@@ -159,7 +177,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
 
       {/* portfolio + availability pair */}
       {(c.portfolioAvailable || c.availability) && (
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className={`grid gap-2 ${grid2}`}>
           {c.portfolioAvailable && (
             <CompactActionCard
               icon={<FileText className="size-4" />}

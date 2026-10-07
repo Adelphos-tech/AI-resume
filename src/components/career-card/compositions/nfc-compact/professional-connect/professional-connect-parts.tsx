@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /** Shared presentation primitives for the Professional Connect skin. */
 
@@ -89,11 +90,16 @@ export function ProfessionalConnectMiniCard({
   label: string;
   lines: (string | null | undefined)[];
 }) {
+  const flexDir = useResponsiveClasses(
+    "flex items-center gap-3",
+    "flex-col items-start gap-2.5",
+    "flex items-center gap-3 sm:flex-col sm:items-start sm:gap-2.5",
+  );
   const items = lines.filter(Boolean) as string[];
   if (!items.length) return null;
   return (
     <div className="relative min-w-0 rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-sm">
-      <div className="flex w-full min-w-0 items-center gap-3 sm:flex-col sm:items-start sm:gap-2.5">
+      <div className={`w-full min-w-0 ${flexDir}`}>
         <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--nfc-cta)]/10 text-[var(--nfc-strong)]">
           {icon}
         </span>

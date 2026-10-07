@@ -7,6 +7,10 @@ import type { PublicProfileSettingsState } from "./public-profile-settings";
 import type { CompanyProfileState } from "./company-profile-settings";
 import { ProfessionalConnectCard } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-card";
 import { SignatureSpotlightCard } from "@/components/career-card/compositions/nfc-compact/signature-spotlight/signature-spotlight-card";
+import { CreativeSpotlightCard } from "@/components/career-card/compositions/nfc-compact/creative-spotlight/creative-spotlight-card";
+import { NfcCompactCard } from "@/components/career-card/compositions/nfc-compact/nfc-compact-card";
+import { CrimsonNightCard } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-card";
+import { PreviewModeProvider } from "./preview-mode-context";
 
 const DEFAULT_STATE: PublicProfileSettingsState = {
   publicHeadline: "",
@@ -1539,5 +1543,252 @@ describe("CareerCardBuilderPreview", () => {
     expect(html).not.toContain("Experience");
     expect(html).not.toContain("Credentials");
     expect(html).not.toContain("Skills");
+  });
+
+  // ── Responsive preview mode tests ────────────────────────────────
+
+  it("Creative Spotlight does not contain fake verification checkmark", () => {
+    const html = renderToStaticMarkup(
+      createElement(CreativeSpotlightCard, {
+        candidate: {
+          name: "Verify Tester",
+          headline: "Actor",
+          initials: "VT",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+          availability: "Available",
+        },
+        company: null,
+        active: "candidate",
+        onSwitch: () => {},
+      }),
+    );
+    expect(html).not.toContain("CheckCircle2");
+    expect(html).not.toContain("verified");
+    expect(html).not.toContain("Verified");
+  });
+
+  it("Career Passport mobile preview uses single column grid", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        PreviewModeProvider,
+        { mode: "mobile" },
+        createElement(NfcCompactCard, {
+          candidate: {
+            name: "Grid Tester",
+            headline: "Engineer",
+            initials: "GT",
+            skills: [],
+            certifications: [],
+            portfolioAvailable: false,
+            resumeAvailable: false,
+          },
+          company: null,
+          active: "candidate",
+          onSwitch: () => {},
+        }),
+      ),
+    );
+    // Mobile mode should use grid-cols-1, NOT grid-cols-3
+    expect(html).toContain("grid-cols-1");
+    expect(html).not.toContain("grid-cols-3");
+  });
+
+  it("Career Passport desktop preview uses three column grid", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        PreviewModeProvider,
+        { mode: "desktop" },
+        createElement(NfcCompactCard, {
+          candidate: {
+            name: "Grid Tester",
+            headline: "Engineer",
+            initials: "GT",
+            skills: [],
+            certifications: [],
+            portfolioAvailable: false,
+            resumeAvailable: false,
+          },
+          company: null,
+          active: "candidate",
+          onSwitch: () => {},
+        }),
+      ),
+    );
+    // Desktop mode should use grid-cols-3
+    expect(html).toContain("grid-cols-3");
+    expect(html).not.toContain("grid-cols-1");
+  });
+
+  it("Crimson Night mobile preview uses size-20 portrait", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        PreviewModeProvider,
+        { mode: "mobile" },
+        createElement(CrimsonNightCard, {
+          candidate: {
+            name: "Portrait Tester",
+            headline: "Dev",
+            initials: "PT",
+            skills: [],
+            certifications: [],
+            portfolioAvailable: false,
+            resumeAvailable: false,
+          },
+          company: null,
+          active: "candidate",
+          onSwitch: () => {},
+        }),
+      ),
+    );
+    // Mobile mode should use size-20
+    expect(html).toContain("size-20");
+    expect(html).not.toContain("size-24");
+  });
+
+  it("Crimson Night desktop preview uses size-24 portrait", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        PreviewModeProvider,
+        { mode: "desktop" },
+        createElement(CrimsonNightCard, {
+          candidate: {
+            name: "Portrait Tester",
+            headline: "Dev",
+            initials: "PT",
+            skills: [],
+            certifications: [],
+            portfolioAvailable: false,
+            resumeAvailable: false,
+          },
+          company: null,
+          active: "candidate",
+          onSwitch: () => {},
+        }),
+      ),
+    );
+    // Desktop mode should use size-24
+    expect(html).toContain("size-24");
+    expect(html).not.toContain("size-20");
+  });
+
+  it("Professional Connect mobile preview uses single column grid", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        PreviewModeProvider,
+        { mode: "mobile" },
+        createElement(ProfessionalConnectCard, {
+          candidate: {
+            name: "Grid Tester",
+            headline: "Engineer",
+            initials: "GT",
+            skills: [],
+            certifications: [],
+            portfolioAvailable: false,
+            resumeAvailable: false,
+          },
+          company: null,
+          active: "candidate",
+          onSwitch: () => {},
+        }),
+      ),
+    );
+    expect(html).toContain("grid-cols-1");
+    expect(html).not.toContain("grid-cols-3");
+  });
+
+  it("Professional Connect desktop preview uses three column grid", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        PreviewModeProvider,
+        { mode: "desktop" },
+        createElement(ProfessionalConnectCard, {
+          candidate: {
+            name: "Grid Tester",
+            headline: "Engineer",
+            initials: "GT",
+            skills: [],
+            certifications: [],
+            portfolioAvailable: false,
+            resumeAvailable: false,
+          },
+          company: null,
+          active: "candidate",
+          onSwitch: () => {},
+        }),
+      ),
+    );
+    expect(html).toContain("grid-cols-3");
+    expect(html).not.toContain("grid-cols-1");
+  });
+
+  it("Signature Spotlight mobile preview uses single column grid", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        PreviewModeProvider,
+        { mode: "mobile" },
+        createElement(SignatureSpotlightCard, {
+          candidate: {
+            name: "Grid Tester",
+            headline: "Engineer",
+            initials: "GT",
+            skills: [],
+            certifications: [],
+            portfolioAvailable: false,
+            resumeAvailable: false,
+          },
+        }),
+      ),
+    );
+    expect(html).toContain("grid-cols-1");
+    expect(html).not.toContain("grid-cols-3");
+  });
+
+  it("Signature Spotlight desktop preview uses three column grid", () => {
+    const html = renderToStaticMarkup(
+      createElement(
+        PreviewModeProvider,
+        { mode: "desktop" },
+        createElement(SignatureSpotlightCard, {
+          candidate: {
+            name: "Grid Tester",
+            headline: "Engineer",
+            initials: "GT",
+            skills: [],
+            certifications: [],
+            portfolioAvailable: false,
+            resumeAvailable: false,
+          },
+        }),
+      ),
+    );
+    expect(html).toContain("grid-cols-3");
+    expect(html).not.toContain("grid-cols-1");
+  });
+
+  it("public page fallback uses viewport-based responsive classes", () => {
+    // When rendered outside PreviewModeProvider, cards should use
+    // the publicFallback (viewport-based sm: breakpoint classes)
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactCard, {
+        candidate: {
+          name: "Fallback Tester",
+          headline: "Engineer",
+          initials: "FT",
+          skills: [],
+          certifications: [],
+          portfolioAvailable: false,
+          resumeAvailable: false,
+        },
+        company: null,
+        active: "candidate",
+        onSwitch: () => {},
+      }),
+    );
+    // Public fallback should contain the sm: breakpoint classes
+    expect(html).toContain("grid-cols-1");
+    expect(html).toContain("sm:grid-cols-3");
   });
 });

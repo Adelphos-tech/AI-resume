@@ -18,14 +18,12 @@ describe("CareerCardBuilder", () => {
         basics: "basics-content",
         design: "design-content",
         company: "company-content",
-        preview: "preview-content",
       },
       preview: null,
     });
     expect(el.props.stepContent.basics).toBe("basics-content");
     expect(el.props.stepContent.design).toBe("design-content");
     expect(el.props.stepContent.company).toBe("company-content");
-    expect(el.props.stepContent.preview).toBe("preview-content");
   });
 
   it("defaults to basics step", () => {
@@ -34,7 +32,6 @@ describe("CareerCardBuilder", () => {
         basics: "basics-content",
         design: "design-content",
         company: "company-content",
-        preview: "preview-content",
       },
       preview: null,
     });
@@ -43,19 +40,9 @@ describe("CareerCardBuilder", () => {
 });
 
 describe("CareerCardBuilderSteps", () => {
-  it("has exactly four steps in order", () => {
-    expect(STEPS.map((s) => s.id)).toEqual([
-      "basics",
-      "design",
-      "company",
-      "preview",
-    ]);
-    expect(STEPS.map((s) => s.label)).toEqual([
-      "Basics",
-      "Design",
-      "Company",
-      "Preview",
-    ]);
+  it("has exactly three steps in order", () => {
+    expect(STEPS.map((s) => s.id)).toEqual(["basics", "design", "company"]);
+    expect(STEPS.map((s) => s.label)).toEqual(["Basics", "Design", "Company"]);
   });
 
   it("marks the active step", () => {

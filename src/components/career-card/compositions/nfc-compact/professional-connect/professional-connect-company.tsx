@@ -25,6 +25,7 @@ import {
   ProfessionalConnectSection,
   ProfessionalConnectSocialTile,
 } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-parts";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /** Company half of the Professional Connect skin. */
 export function ProfessionalConnectCompany({
@@ -32,12 +33,27 @@ export function ProfessionalConnectCompany({
 }: {
   company: CompactCompany;
 }) {
+  const logoSize = useResponsiveClasses(
+    "size-20",
+    "size-24",
+    "size-20 sm:size-24",
+  );
+  const nameSize = useResponsiveClasses(
+    "text-xl",
+    "text-2xl",
+    "text-xl sm:text-2xl",
+  );
+  const grid3 = useResponsiveClasses(
+    "grid-cols-1",
+    "grid-cols-3",
+    "grid-cols-1 sm:grid-cols-3",
+  );
   return (
     <div className="space-y-4">
       {/* company header — logo left, identity right */}
       <div className="flex gap-3.5">
         <div className="shrink-0 self-start rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
-          <div className="size-20 overflow-hidden rounded-xl sm:size-24">
+          <div className={`overflow-hidden rounded-xl ${logoSize}`}>
             {c.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -53,7 +69,9 @@ export function ProfessionalConnectCompany({
           </div>
         </div>
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">
+          <h1
+            className={`font-extrabold tracking-tight text-slate-900 ${nameSize}`}
+          >
             {c.companyName}
           </h1>
           {c.tagline && (
@@ -135,7 +153,7 @@ export function ProfessionalConnectCompany({
       )}
 
       {/* three company mini cards */}
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className={`grid gap-2 ${grid3}`}>
         <ProfessionalConnectMiniCard
           icon={<Factory className="size-3.5" />}
           label="Industry"

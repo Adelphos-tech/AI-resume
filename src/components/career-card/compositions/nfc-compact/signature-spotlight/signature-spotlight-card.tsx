@@ -21,6 +21,7 @@ import {
   WhatsAppIcon,
 } from "@/components/career-card/primitives/brand-icons";
 import type { DualProfileActive } from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /* ── Signature Spotlight — premium standalone Candidate skin.
    Light, elegant identity-forward layout. No Company switch.          ── */
@@ -121,6 +122,49 @@ export function SignatureSpotlightCard({
   accentStyle?: CSSProperties;
   cta?: { href: string; label: string } | null;
 }) {
+  const maxW = useResponsiveClasses(
+    "max-w-[390px]",
+    "max-w-[860px]",
+    "max-w-[430px] lg:max-w-[860px]",
+  );
+  const innerPad = useResponsiveClasses(
+    "m-3 p-4",
+    "m-4 p-6",
+    "m-3 p-4 sm:p-5 lg:m-4 lg:p-6",
+  );
+  const heroNeg = useResponsiveClasses(
+    "-mx-4 -mt-4",
+    "-mx-6 -mt-6",
+    "-mx-4 -mt-4 sm:-mx-5 sm:-mt-5 lg:-mx-6 lg:-mt-6",
+  );
+  const coverH = useResponsiveClasses("h-52", "h-72", "h-52 sm:h-60 lg:h-72");
+  const coverFallbackH = useResponsiveClasses(
+    "h-40",
+    "h-56",
+    "h-40 sm:h-48 lg:h-56",
+  );
+  const portraitSize = useResponsiveClasses(
+    "size-28",
+    "size-36",
+    "size-28 sm:size-32 lg:size-36",
+  );
+  const spacerH = useResponsiveClasses("h-14", "h-20", "h-14 sm:h-16 lg:h-20");
+  const nameSize = useResponsiveClasses(
+    "text-2xl",
+    "text-3xl",
+    "text-2xl sm:text-3xl",
+  );
+  const infoGrid = useResponsiveClasses(
+    "grid-cols-1",
+    "grid-cols-3",
+    "grid-cols-1 sm:grid-cols-3",
+  );
+  const actionGrid = useResponsiveClasses(
+    "grid-cols-1",
+    "grid-cols-2",
+    "grid-cols-1 sm:grid-cols-2",
+  );
+
   const hasCategories =
     c.professionalCategories && c.professionalCategories.length > 0;
   const hasGenres = c.genres && c.genres.length > 0;
@@ -143,7 +187,7 @@ export function SignatureSpotlightCard({
   return (
     <div
       style={accentStyle}
-      className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-[2rem] border border-stone-200/80 bg-white shadow-[0_24px_60px_-28px_rgba(0,0,0,0.08)] lg:max-w-[860px]"
+      className={`relative mx-auto w-full overflow-hidden rounded-[2rem] border border-stone-200/80 bg-white shadow-[0_24px_60px_-28px_rgba(0,0,0,0.08)] ${maxW}`}
     >
       {/* subtle top accent line */}
       <div
@@ -151,11 +195,13 @@ export function SignatureSpotlightCard({
         className="pointer-events-none absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-[var(--nfc-cta)]/50 to-transparent"
       />
 
-      <div className="relative m-3 rounded-3xl bg-white/70 p-4 ring-1 ring-stone-100 backdrop-blur-sm sm:p-5 lg:m-4 lg:p-6">
+      <div
+        className={`relative rounded-3xl bg-white/70 ring-1 ring-stone-100 backdrop-blur-sm ${innerPad}`}
+      >
         {/* ── Hero cover ── */}
-        <div className="relative -mx-4 -mt-4 overflow-hidden rounded-b-3xl sm:-mx-5 sm:-mt-5 lg:-mx-6 lg:-mt-6">
+        <div className={`relative overflow-hidden rounded-b-3xl ${heroNeg}`}>
           {c.cover ? (
-            <div className="relative h-52 w-full sm:h-60 lg:h-72">
+            <div className={`relative w-full ${coverH}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={c.cover}
@@ -172,13 +218,17 @@ export function SignatureSpotlightCard({
               />
             </div>
           ) : (
-            <div className="h-40 w-full bg-gradient-to-br from-stone-100 to-stone-200 sm:h-48 lg:h-56" />
+            <div
+              className={`w-full bg-gradient-to-br from-stone-100 to-stone-200 ${coverFallbackH}`}
+            />
           )}
 
           {/* Portrait overlapping cover bottom */}
           <div className="absolute right-0 bottom-0 left-0 flex justify-center translate-y-1/2">
             <div className="relative">
-              <div className="size-28 overflow-hidden rounded-full border-4 border-white shadow-xl ring-2 ring-[var(--nfc-cta)]/20 sm:size-32 lg:size-36">
+              <div
+                className={`overflow-hidden rounded-full border-4 border-white shadow-xl ring-2 ring-[var(--nfc-cta)]/20 ${portraitSize}`}
+              >
                 {c.portrait ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -197,11 +247,11 @@ export function SignatureSpotlightCard({
         </div>
 
         {/* Spacer for portrait overlap */}
-        <div className="h-14 sm:h-16 lg:h-20" />
+        <div className={`${spacerH}`} />
 
         {/* ── Identity ── */}
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl">
+          <h1 className={`font-bold tracking-tight text-stone-900 ${nameSize}`}>
             {c.name}
           </h1>
 
@@ -257,7 +307,7 @@ export function SignatureSpotlightCard({
         )}
 
         {/* ── Info cards row ── */}
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className={`mt-4 grid gap-3 ${infoGrid}`}>
           {hasGenres && (
             <Section icon={<Clapperboard className="size-4" />} label="Genres">
               <div className="flex flex-wrap gap-1">
@@ -296,7 +346,7 @@ export function SignatureSpotlightCard({
 
         {/* ── Portfolio + Showreel actions ── */}
         {(c.portfolioUrl || c.showreelUrl) && (
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className={`mt-4 grid gap-3 ${actionGrid}`}>
             {c.portfolioUrl && (
               <ActionCard
                 icon={<MonitorPlay className="size-5" />}
@@ -317,7 +367,7 @@ export function SignatureSpotlightCard({
         )}
 
         {/* ── Experience / Education / Certifications (concise) ── */}
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className={`mt-4 grid gap-3 ${infoGrid}`}>
           {c.education && (
             <Section
               icon={<GraduationCap className="size-4" />}

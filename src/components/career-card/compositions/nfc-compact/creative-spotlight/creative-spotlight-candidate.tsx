@@ -3,7 +3,6 @@
 import {
   BookOpenText,
   Briefcase,
-  CheckCircle2,
   Film,
   GraduationCap,
   Languages,
@@ -22,6 +21,7 @@ import {
   CreativeSpotlightSection,
   CreativeSpotlightSocialTile,
 } from "./creative-spotlight-parts";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /** Candidate (Celebrity) half of the Creative Spotlight skin. */
 export function CreativeSpotlightCandidate({
@@ -29,12 +29,34 @@ export function CreativeSpotlightCandidate({
 }: {
   candidate: CompactCandidate;
 }) {
+  const portraitSize = useResponsiveClasses(
+    "size-28",
+    "size-32",
+    "size-28 sm:size-32",
+  );
+  const nameSize = useResponsiveClasses(
+    "text-xl",
+    "text-2xl",
+    "text-xl sm:text-2xl",
+  );
+  const grid3 = useResponsiveClasses(
+    "grid-cols-1",
+    "grid-cols-3",
+    "grid-cols-1 sm:grid-cols-3",
+  );
+  const grid2 = useResponsiveClasses(
+    "grid-cols-1",
+    "grid-cols-2",
+    "grid-cols-1 sm:grid-cols-2",
+  );
   return (
     <div className="space-y-4">
       {/* identity header — large portrait, name, headline, location */}
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="relative">
-          <div className="size-28 overflow-hidden rounded-full border-4 border-white shadow-lg ring-2 ring-[var(--nfc-cta)]/20 sm:size-32">
+          <div
+            className={`overflow-hidden rounded-full border-4 border-white shadow-lg ring-2 ring-[var(--nfc-cta)]/20 ${portraitSize}`}
+          >
             {c.portrait ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -48,14 +70,11 @@ export function CreativeSpotlightCandidate({
               </span>
             )}
           </div>
-          {c.availability && (
-            <span className="absolute -right-1 -bottom-1 grid size-7 place-items-center rounded-full bg-emerald-500 text-white shadow-sm">
-              <CheckCircle2 className="size-4" />
-            </span>
-          )}
         </div>
         <div>
-          <h1 className="text-xl font-extrabold tracking-tight text-stone-900 sm:text-2xl">
+          <h1
+            className={`font-extrabold tracking-tight text-stone-900 ${nameSize}`}
+          >
             {c.name}
           </h1>
           {c.headline && (
@@ -130,7 +149,7 @@ export function CreativeSpotlightCandidate({
       )}
 
       {/* mini info cards */}
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className={`grid gap-2 ${grid3}`}>
         <CreativeSpotlightMiniCard
           icon={<GraduationCap className="size-3.5" />}
           label="Education"
@@ -162,7 +181,7 @@ export function CreativeSpotlightCandidate({
       </div>
 
       {/* portfolio + showreel actions */}
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className={`grid gap-2 ${grid2}`}>
         {c.portfolioUrl && (
           <CreativeSpotlightActionCard
             icon={<MonitorPlay className="size-4" />}

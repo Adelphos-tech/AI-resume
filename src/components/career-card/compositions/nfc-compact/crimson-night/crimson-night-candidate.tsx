@@ -25,12 +25,28 @@ import {
   CrimsonSkillChip,
   CrimsonSocialTile,
 } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-parts";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /**
  * Crimson Night — candidate half. Identical information architecture to
  * Career Passport Light; only the visual system differs.
  */
 export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
+  const portraitSize = useResponsiveClasses(
+    "size-20",
+    "size-24",
+    "size-20 sm:size-24",
+  );
+  const grid3 = useResponsiveClasses(
+    "grid-cols-1 gap-3",
+    "grid-cols-3 gap-2",
+    "grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-2",
+  );
+  const grid2 = useResponsiveClasses(
+    "grid-cols-1 gap-3",
+    "grid-cols-2 gap-2",
+    "grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-2",
+  );
   return (
     <div className="space-y-4">
       {/* cover band — dark atmosphere over the real cover, crimson edge */}
@@ -59,7 +75,9 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
       {/* identity — portrait left, compact contact rows */}
       <div className="flex gap-4">
         <div className="shrink-0 self-start rounded-full border border-white/15 bg-white/95 p-1 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.7)]">
-          <div className="size-20 overflow-hidden rounded-full ring-2 ring-[var(--cn-cta)] sm:size-24">
+          <div
+            className={`overflow-hidden rounded-full ring-2 ring-[var(--cn-cta)] ${portraitSize}`}
+          >
             {c.portrait ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -143,7 +161,7 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
       )}
 
       {/* three mini information cards */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-2">
+      <div className={`grid ${grid3}`}>
         <CrimsonMiniCard
           icon={<GraduationCap className="size-3.5" />}
           label="Education"
@@ -177,7 +195,7 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
 
       {/* portfolio + availability pair */}
       {(c.portfolioAvailable || c.availability) && (
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-2">
+        <div className={`grid ${grid2}`}>
           {c.portfolioAvailable && (
             <CrimsonActionCard
               icon={<FileText className="size-4" />}

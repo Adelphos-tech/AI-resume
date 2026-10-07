@@ -26,9 +26,25 @@ import {
   CrimsonSection,
   CrimsonSocialTile,
 } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-parts";
+import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /** Crimson Night — company half. Same IA as Career Passport Light. */
 export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
+  const logoSize = useResponsiveClasses(
+    "size-20",
+    "size-24",
+    "size-20 sm:size-24",
+  );
+  const nameSize = useResponsiveClasses(
+    "text-xl",
+    "text-2xl",
+    "text-xl sm:text-2xl",
+  );
+  const grid3 = useResponsiveClasses(
+    "grid-cols-1",
+    "grid-cols-3",
+    "grid-cols-1 sm:grid-cols-3",
+  );
   return (
     <div className="space-y-4">
       {/* cover band — shared card cover treatment */}
@@ -57,7 +73,9 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
       {/* company header — logo left, identity + contact */}
       <div className="flex gap-3.5">
         <div className="shrink-0 self-start rounded-2xl border border-white/15 bg-white/95 p-1 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.7)]">
-          <div className="size-20 overflow-hidden rounded-xl ring-1 ring-[var(--cn-cta)]/50 sm:size-24">
+          <div
+            className={`overflow-hidden rounded-xl ring-1 ring-[var(--cn-cta)]/50 ${logoSize}`}
+          >
             {c.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -73,7 +91,9 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
           </div>
         </div>
         <div className="min-w-0">
-          <h1 className="text-2xl font-extrabold tracking-tight text-[var(--cn-text)]">
+          <h1
+            className={`font-extrabold tracking-tight text-[var(--cn-text)] ${nameSize}`}
+          >
             {c.companyName}
           </h1>
           {c.tagline && (
@@ -135,7 +155,7 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
       )}
 
       {/* three company mini cards */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-2">
+      <div className={`grid gap-2 ${grid3}`}>
         <CrimsonMiniCard
           icon={<Factory className="size-3.5" />}
           label="Industry"
