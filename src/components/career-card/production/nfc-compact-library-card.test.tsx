@@ -440,4 +440,649 @@ describe("NfcCompactLibraryCard", () => {
     expect(html).not.toContain("Skyline AI");
     expect(html).not.toContain("Proinfocus");
   });
+
+  /* ── Creative Spotlight skin ── */
+
+  it("Creative Spotlight skin renders publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Creative Spotlight");
+    expect(html).toContain("from-amber-50");
+  });
+
+  it("Creative Spotlight renders dynamic candidate name publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Public Tester");
+  });
+
+  it("Creative Spotlight renders dynamic headline publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Senior Engineer");
+  });
+
+  it("Creative Spotlight renders dynamic bio publicly", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Building scalable systems.");
+    expect(html).toContain("Biography");
+  });
+
+  it("Creative Spotlight renders dynamic professionalCategories", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          professionalCategories: ["Actor", "Voice Artist"],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Actor");
+    expect(html).toContain("Voice Artist");
+    expect(html).toContain("Professional Categories");
+  });
+
+  it("Creative Spotlight collapses professionalCategories when absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          professionalCategories: [],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Professional Categories");
+  });
+
+  it("Creative Spotlight renders dynamic genres", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          genres: ["Drama", "Comedy"],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Drama");
+    expect(html).toContain("Comedy");
+    expect(html).toContain("Genres");
+  });
+
+  it("Creative Spotlight collapses genres when absent", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          genres: [],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Genres");
+  });
+
+  it("Creative Spotlight renders dynamic languages", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          languages: [
+            { language: "English", fluency: "Native" },
+            { language: "Hindi", fluency: "Fluent" },
+          ],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("English");
+    expect(html).toContain("Hindi");
+    expect(html).toContain("Languages");
+  });
+
+  it("Creative Spotlight portfolio action uses canonical portfolioUrl", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          portfolioUrl: "https://portfolio.example.com",
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Portfolio");
+    expect(html).toContain("https://portfolio.example.com");
+  });
+
+  it("Creative Spotlight portfolio action hidden when URL missing", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          portfolioUrl: null,
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Portfolio");
+  });
+
+  it("Creative Spotlight showreel action uses canonical showreelUrl", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          showreelUrl: "https://vimeo.com/12345",
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Showreel");
+    expect(html).toContain("https://vimeo.com/12345");
+  });
+
+  it("Creative Spotlight showreel action hidden when URL missing", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          showreelUrl: null,
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Showreel");
+  });
+
+  it("Creative Spotlight availability uses real data", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          openToOpportunities: true,
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("Open to opportunities");
+  });
+
+  it("Creative Spotlight passes public Company data dynamically", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          company: {
+            companyName: "DynamicCo",
+            tagline: "IT Solutions",
+            logoUrl: null,
+            contactPersonName: null,
+            contactPersonRole: null,
+            publicPhone: null,
+            publicEmail: null,
+            whatsappUrl: null,
+            links: {
+              website: null,
+              linkedin: null,
+              facebook: null,
+              instagram: null,
+              x: null,
+              youtube: null,
+              tiktok: null,
+            },
+            about: null,
+            industry: "Technology",
+            locations: ["Singapore"],
+            services: ["Consulting"],
+            hiringOpen: false,
+            openRolesSummary: null,
+            openRolesUrl: null,
+            companyProfileSummary: null,
+            companyProfileUrl: null,
+          },
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("Production Company");
+    expect(html).toContain("Public Tester");
+  });
+
+  it("Creative Spotlight company industry is passed via DTO", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          company: {
+            companyName: "IndustryCo",
+            tagline: null,
+            logoUrl: null,
+            contactPersonName: null,
+            contactPersonRole: null,
+            publicPhone: null,
+            publicEmail: null,
+            whatsappUrl: null,
+            links: {
+              website: null,
+              linkedin: null,
+              facebook: null,
+              instagram: null,
+              x: null,
+              youtube: null,
+              tiktok: null,
+            },
+            about: null,
+            industry: "Film Production",
+            locations: [],
+            services: [],
+            hiringOpen: false,
+            openRolesSummary: null,
+            openRolesUrl: null,
+            companyProfileSummary: null,
+            companyProfileUrl: null,
+          },
+        },
+        slug: "tester",
+      }),
+    );
+    // Default active=candidate, so verify switch presence proves company data is wired
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("Production Company");
+  });
+
+  it("Creative Spotlight company locations are passed via DTO", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          company: {
+            companyName: "LocCo",
+            tagline: null,
+            logoUrl: null,
+            contactPersonName: null,
+            contactPersonRole: null,
+            publicPhone: null,
+            publicEmail: null,
+            whatsappUrl: null,
+            links: {
+              website: null,
+              linkedin: null,
+              facebook: null,
+              instagram: null,
+              x: null,
+              youtube: null,
+              tiktok: null,
+            },
+            about: null,
+            industry: null,
+            locations: ["London", "Berlin"],
+            services: [],
+            hiringOpen: false,
+            openRolesSummary: null,
+            openRolesUrl: null,
+            companyProfileSummary: null,
+            companyProfileUrl: null,
+          },
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("Production Company");
+  });
+
+  it("Creative Spotlight company services are passed via DTO", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          company: {
+            companyName: "SvcCo",
+            tagline: null,
+            logoUrl: null,
+            contactPersonName: null,
+            contactPersonRole: null,
+            publicPhone: null,
+            publicEmail: null,
+            whatsappUrl: null,
+            links: {
+              website: null,
+              linkedin: null,
+              facebook: null,
+              instagram: null,
+              x: null,
+              youtube: null,
+              tiktok: null,
+            },
+            about: null,
+            industry: null,
+            locations: [],
+            services: ["Post-Production", "VFX"],
+            hiringOpen: false,
+            openRolesSummary: null,
+            openRolesUrl: null,
+            companyProfileSummary: null,
+            companyProfileUrl: null,
+          },
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("Production Company");
+  });
+
+  it("Creative Spotlight Open Roles remains exact truthful label", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          company: {
+            companyName: "HiringCo",
+            tagline: null,
+            logoUrl: null,
+            contactPersonName: null,
+            contactPersonRole: null,
+            publicPhone: null,
+            publicEmail: null,
+            whatsappUrl: null,
+            links: {
+              website: null,
+              linkedin: null,
+              facebook: null,
+              instagram: null,
+              x: null,
+              youtube: null,
+              tiktok: null,
+            },
+            about: null,
+            industry: null,
+            locations: [],
+            services: [],
+            hiringOpen: true,
+            openRolesSummary: "We are hiring!",
+            openRolesUrl: "https://jobs.example.com",
+            companyProfileSummary: null,
+            companyProfileUrl: null,
+          },
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Casting Needs");
+    expect(html).toContain('role="tablist"');
+  });
+
+  it("Creative Spotlight switch shown with eligible Company", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          company: {
+            companyName: "SwitchCo",
+            tagline: null,
+            logoUrl: null,
+            contactPersonName: null,
+            contactPersonRole: null,
+            publicPhone: null,
+            publicEmail: null,
+            whatsappUrl: null,
+            links: {
+              website: null,
+              linkedin: null,
+              facebook: null,
+              instagram: null,
+              x: null,
+              youtube: null,
+              tiktok: null,
+            },
+            about: null,
+            industry: null,
+            locations: [],
+            services: [],
+            hiringOpen: false,
+            openRolesSummary: null,
+            openRolesUrl: null,
+            companyProfileSummary: null,
+            companyProfileUrl: null,
+          },
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain("Celebrity");
+    expect(html).toContain("Production Company");
+  });
+
+  it("Creative Spotlight switch hidden without Company", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain('role="tablist"');
+  });
+
+  it("Creative Spotlight does not expose candidate private email", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("@tester.com");
+    expect(html).not.toContain("mailto:");
+  });
+
+  it("Creative Spotlight does not expose candidate private phone", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("+65");
+    expect(html).not.toContain("tel:");
+  });
+
+  it("Creative Spotlight does not contain verified badge", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("verified");
+    expect(html).not.toContain("Verified");
+  });
+
+  it("Creative Spotlight does not contain Project Match", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Project Match");
+    expect(html).not.toContain("92%");
+  });
+
+  it("Creative Spotlight does not contain audience metrics", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("followers");
+    expect(html).not.toContain("audience");
+    expect(html).not.toContain("reach");
+  });
+
+  it("Creative Spotlight does not contain Invite to Project", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Invite to Project");
+  });
+
+  it("Creative Spotlight does not contain Collaboration Proposal", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Collaboration Proposal");
+  });
+
+  it("Creative Spotlight does not contain Casting Needs", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Casting Needs");
+  });
+
+  it("Creative Spotlight CTA has real destination", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId: "creative-spotlight",
+          links: { linkedin: null, github: null, website: null },
+          featuredResume: null,
+          whatsappUrl: null,
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Get in Touch");
+    expect(html).not.toContain("Contact Us");
+  });
+
+  it("Creative Spotlight does not contain hardcoded reference candidate names", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Ava Reyes");
+    expect(html).not.toContain("Shahul");
+    expect(html).not.toContain("Hameed");
+  });
+
+  it("Creative Spotlight does not contain hardcoded reference company names", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    expect(html).not.toContain("Skyline AI");
+    expect(html).not.toContain("Proinfocus");
+  });
+
+  it("Career Passport skin unchanged after Creative Spotlight", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "career-passport" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("NFC Career Card");
+  });
+
+  it("Crimson Night skin unchanged after Creative Spotlight", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "crimson-night" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("bg-[var(--cn-base)]");
+  });
+
+  it("Professional Connect skin unchanged after Creative Spotlight", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "professional-connect" },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("NFC Profile");
+  });
+
+  it("Unknown NFC skin falls back to Career Passport", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: {
+          ...BASE_DTO,
+          nfcCompactSkinId:
+            "unknown-skin" as unknown as PublicCareerProfileDTO["nfcCompactSkinId"],
+        },
+        slug: "tester",
+      }),
+    );
+    expect(html).toContain("NFC Career Card");
+  });
+
+  it("Creative Spotlight public render causes no writes", () => {
+    const html = renderToStaticMarkup(
+      createElement(NfcCompactLibraryCard, {
+        dto: { ...BASE_DTO, nfcCompactSkinId: "creative-spotlight" },
+        slug: "tester",
+      }),
+    );
+    // Static render produces no form elements, no hidden inputs,
+    // no buttons that could mutate state.
+    expect(html).not.toContain('method="post"');
+    expect(html).not.toContain('method="PUT"');
+    expect(html).not.toContain('method="PATCH"');
+    expect(html).not.toContain('method="DELETE"');
+  });
 });

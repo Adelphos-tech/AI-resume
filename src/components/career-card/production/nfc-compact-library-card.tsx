@@ -9,6 +9,7 @@ import type {
 import { NfcCompactCard } from "@/components/career-card/compositions/nfc-compact/nfc-compact-card";
 import { CrimsonNightCard } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-card";
 import { ProfessionalConnectCard } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-card";
+import { CreativeSpotlightCard } from "@/components/career-card/compositions/nfc-compact/creative-spotlight/creative-spotlight-card";
 import { nfcCompactAccentStyle } from "@/components/career-card/compositions/nfc-compact/nfc-compact-accents";
 import { completedYearsOfExperience } from "@/components/career-card/adapters/public-profile-to-career-card";
 import type { CompanyProfileDTO } from "@/server/public-profile/company-profile";
@@ -59,6 +60,22 @@ export function NfcCompactLibraryCard({
     return (
       <main className="min-h-dvh bg-slate-50 px-3 py-6 sm:py-10">
         <ProfessionalConnectCard
+          candidate={candidate}
+          company={company}
+          active={active}
+          onSwitch={setActive}
+          cta={cta}
+          accentStyle={nfcCompactAccentStyle(dto.accentColorId)}
+          shareUrl={dto.shareUrl}
+        />
+      </main>
+    );
+  }
+  // Creative Spotlight — Celebrity and Production Company dual-profile skin.
+  if (dto.nfcCompactSkinId === "creative-spotlight") {
+    return (
+      <main className="min-h-dvh bg-stone-50 px-3 py-6 sm:py-10">
+        <CreativeSpotlightCard
           candidate={candidate}
           company={company}
           active={active}
@@ -133,6 +150,14 @@ function toCompactCandidate(
     resumeAvailable: !!dto.featuredResume,
     portfolioHref: dto.featuredResume ? `/u/${slug}/resume` : null,
     availability: dto.openToOpportunities ? "Open to opportunities" : null,
+    professionalCategories: dto.professionalCategories,
+    genres: dto.genres,
+    portfolioUrl: dto.portfolioUrl,
+    showreelUrl: dto.showreelUrl,
+    languages: dto.languages.map((l) => ({
+      language: l.language,
+      fluency: l.fluency,
+    })),
   };
 }
 
