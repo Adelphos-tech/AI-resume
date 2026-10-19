@@ -84,7 +84,7 @@ function CreativeSpotlightBrandBar({
   return (
     <header className="flex items-center justify-between">
       <div>
-        <LinkMeuLogo className="h-6" />
+        <LinkMeuLogo className="h-6 sm:h-7" />
         <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--nfc-strong)]/60">
           Creative Spotlight
         </p>

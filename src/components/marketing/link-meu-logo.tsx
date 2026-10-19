@@ -6,13 +6,13 @@ import Image from "next/image";
  * transparent background). Height is controlled by the caller via
  * className; width scales automatically to preserve proportions.
  */
-export function LinkMeuLogo({ className = "h-7" }: { className?: string }) {
+export function LinkMeuLogo({ className = "h-8" }: { className?: string }) {
   return (
     <Image
       src="/brand/linkmeu-wordmark.png"
       alt="LinkMeU"
-      width={507}
-      height={121}
+      width={199}
+      height={45}
       className={`w-auto ${className}`}
     />
   );
