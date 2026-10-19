@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { AddBlockForm } from "@/components/candidate/career-site/add-block-form";
 import { CustomTextBlock } from "@/components/candidate/career-site/custom-text-block";
 import { DeleteBlockButton } from "@/components/candidate/career-site/delete-block-button";
+import { ExperienceBlock } from "@/components/candidate/career-site/experience-block";
 import { HeroBlock } from "@/components/candidate/career-site/hero-block";
 import { MoveBlockButtons } from "@/components/candidate/career-site/move-block-buttons";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/lib/career-site-blocks";
 import {
   getMyCareerSitePage,
+  getMyExperienceBlockData,
   getMyHeroBlockData,
   listMyCareerSiteBlocks,
 } from "@/server/career-site/career-site";
@@ -51,6 +53,44 @@ export default async function CareerSitePageDetail({
           result: {
             success: true;
             data: { displayName: string; headline: string | null };
+          };
+        } => r.result.success,
+      )
+      .map((r) => [r.blockId, r.result.data]),
+  );
+
+  const experienceBlocks = blocks.filter((b) => b.type === "EXPERIENCE");
+  const experienceDataResults =
+    experienceBlocks.length > 0
+      ? await Promise.all(
+          experienceBlocks.map(async (b) => ({
+            blockId: b.id,
+            result: await getMyExperienceBlockData(pageId, b.id),
+          })),
+        )
+      : [];
+
+  const experienceDataMap = new Map(
+    experienceDataResults
+      .filter(
+        (
+          r,
+        ): r is typeof r & {
+          result: {
+            success: true;
+            data: {
+              entries: Array<{
+                company: string;
+                position: string;
+                location: string | null;
+                employmentType: string | null;
+                startDate: string | null;
+                endDate: string | null;
+                isCurrent: boolean;
+                summary: string | null;
+                highlights: string[];
+              }>;
+            };
           };
         } => r.result.success,
       )
@@ -113,6 +153,15 @@ export default async function CareerSitePageDetail({
                       pageId={result.page.id}
                       blockId={block.id}
                       data={heroDataMap.get(block.id)}
+                      orderIds={orderIds}
+                      orderIndex={index}
+                      ordinal={`Block ${index + 1}`}
+                    />
+                  ) : block.type === "EXPERIENCE" ? (
+                    <ExperienceBlock
+                      pageId={result.page.id}
+                      blockId={block.id}
+                      data={experienceDataMap.get(block.id)}
                       orderIds={orderIds}
                       orderIndex={index}
                       ordinal={`Block ${index + 1}`}
