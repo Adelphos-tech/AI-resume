@@ -273,7 +273,7 @@ export function CareerCardDesignSettings({
         <div
           role="radiogroup"
           aria-label="Accent color"
-          className="grid gap-2 sm:grid-cols-3"
+          className="grid gap-2 sm:grid-cols-2"
         >
           {CAREER_CARD_ACCENT_COLORS.map((a) => {
             const selected = form.accentColorId === a.id;
@@ -284,33 +284,33 @@ export function CareerCardDesignSettings({
                 role="radio"
                 aria-checked={selected}
                 onClick={() => setForm((f) => ({ ...f, accentColorId: a.id }))}
-                className={`group flex items-center gap-3 rounded-xl border-2 p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
+                className={`group rounded-xl border-2 p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
                   selected
                     ? "border-emerald-600 bg-emerald-50/40"
                     : "border-stone-200 hover:border-stone-300"
                 }`}
               >
-                <span
-                  aria-hidden
-                  className={`size-6 shrink-0 rounded-full ${a.swatchClass}`}
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-semibold text-stone-900">
+                <span className="flex items-center gap-2.5">
+                  <span
+                    aria-hidden
+                    className={`size-6 shrink-0 rounded-full ${a.swatchClass}`}
+                  />
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-stone-900">
                     {a.label}
                   </span>
-                  <span className="block truncate text-xs text-stone-500">
-                    {a.description}
+                  <span
+                    className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                      selected
+                        ? "bg-emerald-700 text-white"
+                        : "bg-stone-100 text-stone-500 group-hover:bg-stone-200"
+                    }`}
+                  >
+                    {selected && <Check className="size-3" aria-hidden />}
+                    {selected ? "Selected" : "Use"}
                   </span>
                 </span>
-                <span
-                  className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                    selected
-                      ? "bg-emerald-700 text-white"
-                      : "bg-stone-100 text-stone-500 group-hover:bg-stone-200"
-                  }`}
-                >
-                  {selected && <Check className="size-3" aria-hidden />}
-                  {selected ? "Selected" : "Use"}
+                <span className="mt-1 block truncate text-xs text-stone-500">
+                  {a.description}
                 </span>
               </button>
             );
@@ -340,47 +340,47 @@ export function CareerCardDesignSettings({
                 role="radio"
                 aria-checked={selected}
                 onClick={() => setForm((f) => ({ ...f, cardStyleId: s.id }))}
-                className={`group flex items-center gap-3 rounded-xl border-2 p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
+                className={`group rounded-xl border-2 p-4 text-left transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 ${
                   selected
                     ? "border-emerald-600 bg-emerald-50/40"
                     : "border-stone-200 hover:border-stone-300"
                 }`}
               >
-                <span
-                  aria-hidden
-                  className={`grid size-10 shrink-0 place-items-center rounded-lg border ${
-                    selected
-                      ? "border-emerald-600/40 bg-emerald-50"
-                      : "border-stone-200 bg-stone-50"
-                  }`}
-                >
-                  {s.id === "premium" ? (
-                    <Sparkles
-                      className={`size-4 ${selected ? "text-emerald-700" : "text-stone-500"}`}
-                    />
-                  ) : (
-                    <LayoutPanelTop
-                      className={`size-4 ${selected ? "text-emerald-700" : "text-stone-500"}`}
-                    />
-                  )}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-semibold text-stone-900">
+                <span className="flex items-center gap-3">
+                  <span
+                    aria-hidden
+                    className={`grid size-10 shrink-0 place-items-center rounded-lg border ${
+                      selected
+                        ? "border-emerald-600/40 bg-emerald-50"
+                        : "border-stone-200 bg-stone-50"
+                    }`}
+                  >
+                    {s.id === "premium" ? (
+                      <Sparkles
+                        className={`size-4 ${selected ? "text-emerald-700" : "text-stone-500"}`}
+                      />
+                    ) : (
+                      <LayoutPanelTop
+                        className={`size-4 ${selected ? "text-emerald-700" : "text-stone-500"}`}
+                      />
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1 text-sm font-semibold text-stone-900">
                     {s.label}
                   </span>
-                  <span className="block text-xs leading-snug text-stone-500">
-                    {s.description}
+                  <span
+                    className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                      selected
+                        ? "bg-emerald-700 text-white"
+                        : "bg-stone-100 text-stone-500 group-hover:bg-stone-200"
+                    }`}
+                  >
+                    {selected && <Check className="size-3" aria-hidden />}
+                    {selected ? "Selected" : "Use"}
                   </span>
                 </span>
-                <span
-                  className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                    selected
-                      ? "bg-emerald-700 text-white"
-                      : "bg-stone-100 text-stone-500 group-hover:bg-stone-200"
-                  }`}
-                >
-                  {selected && <Check className="size-3" aria-hidden />}
-                  {selected ? "Selected" : "Use"}
+                <span className="mt-2 block text-xs leading-snug text-stone-500">
+                  {s.description}
                 </span>
               </button>
             );

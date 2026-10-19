@@ -17,6 +17,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { PreviewModeProvider } from "./preview-mode-context";
+import { CareerCardSaveBar, type SaveBarStatus } from "./career-card-save-bar";
 
 export type BuilderStep = "basics" | "design" | "company";
 
@@ -60,6 +61,7 @@ export function CareerCardBuilderSteps({
               type="button"
               role="tab"
               aria-selected={isActive}
+              aria-label={step.label}
               onClick={() => onChange(step.id)}
               className={`relative flex shrink-0 items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-emerald-600 sm:px-4 ${
                 isActive
@@ -68,8 +70,9 @@ export function CareerCardBuilderSteps({
               }`}
             >
               <Icon className="size-4" aria-hidden />
-              <span className="hidden sm:inline">{step.label}</span>
-              <span className="sr-only">{step.description}</span>
+              <span className="hidden sm:inline" aria-hidden="true">
+                {step.label}
+              </span>
             </button>
           );
         })}
@@ -89,8 +92,8 @@ export function CareerCardPreviewPanel({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="min-w-0">
           <h3 className="text-sm font-semibold text-stone-900">Live preview</h3>
           <p className="text-xs text-stone-500">
             See how your Career Card looks to others.
@@ -132,7 +135,7 @@ export function CareerCardPreviewPanel({
       {previewMode === "mobile" ? (
         /* phone device mockup */
         <div className="mx-auto flex justify-center py-4">
-          <div className="relative w-[410px] rounded-[3rem] border-[6px] border-stone-800 bg-stone-900 p-2 shadow-2xl">
+          <div className="relative w-full max-w-[410px] rounded-[3rem] border-[6px] border-stone-800 bg-stone-900 p-2 shadow-2xl">
             {/* speaker bar */}
             <div className="absolute top-3 left-1/2 z-10 h-1.5 w-16 -translate-x-1/2 rounded-full bg-stone-700" />
             {/* screen */}
@@ -159,11 +162,17 @@ export function CareerCardBuilder({
   header,
   stepContent,
   preview,
+  saveState,
 }: {
   initialStep?: BuilderStep;
   header?: React.ReactNode;
   stepContent: Record<BuilderStep, React.ReactNode>;
   preview: React.ReactNode;
+  saveState?: {
+    status: SaveBarStatus;
+    message?: string | null;
+    onSave: () => void;
+  };
 }) {
   const [activeStep, setActiveStep] = useState<BuilderStep>(initialStep);
   const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">(
@@ -172,7 +181,7 @@ export function CareerCardBuilder({
   const [previewOpen, setPreviewOpen] = useState(false);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className={`flex flex-col gap-6 ${saveState ? "pb-24 lg:pb-0" : ""}`}>
       {/* Page header */}
       {header ?? (
         <div className="flex flex-col gap-1">
@@ -210,16 +219,27 @@ export function CareerCardBuilder({
         </Sheet>
       </div>
 
+      {/* Global save action area — one Save Changes control for the whole
+          builder. Sticky top bar on lg+, fixed bottom bar below lg. */}
+      {saveState && (
+        <CareerCardSaveBar
+          status={saveState.status}
+          message={saveState.message}
+          onSave={saveState.onSave}
+          onPreview={() => setPreviewOpen(true)}
+        />
+      )}
+
       {/* Main workspace */}
-      <div className="flex flex-col gap-6 lg:flex-row">
+      <div className="flex flex-col gap-6 xl:flex-row">
         {/* Editor column */}
-        <div className="min-w-0 flex-1 lg:max-w-[45%]">
+        <div className="w-full min-w-0 max-w-3xl flex-1 xl:max-w-none">
           <div className="space-y-5">{stepContent[activeStep]}</div>
         </div>
 
         {/* Preview column — always visible on desktop */}
-        <div className="hidden lg:block lg:w-[55%] lg:max-w-[900px]">
-          <div className="lg:sticky lg:top-6">
+        <div className="hidden xl:block xl:w-[46%] xl:max-w-[560px] xl:shrink-0">
+          <div className="xl:sticky xl:top-6">
             <CareerCardPreviewPanel
               previewMode={previewMode}
               onPreviewModeChange={setPreviewMode}

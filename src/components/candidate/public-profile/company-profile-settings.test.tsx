@@ -56,8 +56,9 @@ describe("CompanyProfileSettings", () => {
     expect(html).toContain('id="cp-cpurl"');
     // Visibility
     expect(html).toContain("Show company profile publicly");
-    // Save
-    expect(html).toContain("Save company profile");
+    // Save is owned by the global save bar — no per-section save button.
+    expect(html).not.toContain("Save company profile");
+    expect(html).not.toContain("Save Changes");
   });
 
   it("does not introduce unsupported fields", () => {
@@ -85,17 +86,18 @@ describe("CompanyProfileSettings", () => {
     expect(html).toContain('value="Build"');
   });
 
-  it("shows dirty indicator when form differs from saved", () => {
+  it("renders a controlled form when form/onFormChange are provided", () => {
+    const form = { ...EMPTY_COMPANY, companyName: "Acme" };
     const html = renderToStaticMarkup(
       createElement(CompanyProfileSettings, {
-        initial: { ...EMPTY_COMPANY, companyName: "Acme" },
+        initial: null,
         logoUrl: null,
+        form,
+        onFormChange: () => {},
+        hasSavedRow: true,
       }),
     );
-    // Because initial === savedForm at mount (both derived from initial), not dirty
-    // But if we prefill with companyName and the user hasn't changed anything,
-    // dirty is false. We just assert the save button exists.
-    expect(html).toContain("Save company profile");
+    expect(html).toContain('value="Acme"');
   });
 
   it("renders visibility toggle with description", () => {
@@ -214,16 +216,15 @@ describe("CompanyProfileSettings", () => {
     expect(html).toContain("sm:grid-cols-[200px_minmax(0,1fr)]");
   });
 
-  it("disables save when company name is empty", () => {
+  it("renders no save controls — saving is owned by the global save bar", () => {
     const html = renderToStaticMarkup(
       createElement(CompanyProfileSettings, {
         initial: EMPTY_COMPANY,
         logoUrl: null,
       }),
     );
-    // Button disabled when companyName.trim() is empty
-    expect(html).toContain("Save company profile");
-    // The disabled attribute may not appear in static markup because it's
-    // computed at runtime; we just verify the button exists.
+    expect(html).not.toContain("Save company profile");
+    expect(html).not.toContain("Save Changes");
+    expect(html).not.toContain("Unsaved changes");
   });
 });

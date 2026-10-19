@@ -35,7 +35,12 @@ export function CreativeSpotlightCompany({
 }: {
   company: CompactCompany;
 }) {
-  const logoSize = useResponsiveClasses(
+  const logoBox = useResponsiveClasses(
+    "h-24 max-w-48",
+    "h-28 max-w-56",
+    "h-24 max-w-48 sm:h-28 sm:max-w-56",
+  );
+  const logoFallback = useResponsiveClasses(
     "size-24",
     "size-28",
     "size-24 sm:size-28",
@@ -54,22 +59,22 @@ export function CreativeSpotlightCompany({
     <div className="space-y-4">
       {/* company header — logo, name, tagline, contact */}
       <div className="flex flex-col items-center gap-3 text-center">
-        <div
-          className={`overflow-hidden rounded-2xl border-4 border-white shadow-lg ring-2 ring-[var(--nfc-cta)]/20 ${logoSize}`}
-        >
-          {c.logo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={c.logo}
-              alt={c.companyName}
-              className="size-full object-cover"
-            />
-          ) : (
+        {c.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={c.logo}
+            alt={c.companyName}
+            className={`block w-auto rounded-2xl border-4 border-white bg-white object-contain p-1 shadow-lg ring-2 ring-[var(--nfc-cta)]/20 ${logoBox}`}
+          />
+        ) : (
+          <div
+            className={`overflow-hidden rounded-2xl border-4 border-white shadow-lg ring-2 ring-[var(--nfc-cta)]/20 ${logoFallback}`}
+          >
             <span className="grid size-full place-items-center bg-gradient-to-br from-[var(--nfc-cta)] to-[var(--nfc-cta-hover)] text-2xl font-black text-white">
               {c.companyName[0]}
             </span>
-          )}
-        </div>
+          </div>
+        )}
         <div>
           <h1
             className={`font-extrabold tracking-tight text-stone-900 ${nameSize}`}

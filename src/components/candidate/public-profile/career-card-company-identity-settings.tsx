@@ -77,7 +77,7 @@ export function CareerCardCompanyIdentitySettings({
       <div>
         <p className={labelCls}>Company logo</p>
         <p className="mt-0.5 text-sm text-stone-500">
-          A square image works best.
+          Horizontal, square or tall — your logo keeps its proportions.
         </p>
         <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start">
           <div className="shrink-0">
@@ -86,7 +86,7 @@ export function CareerCardCompanyIdentitySettings({
               <img
                 src={`${logo}?v=${logoV}`}
                 alt="Company logo"
-                className="size-20 rounded-xl border border-stone-200 object-cover ring-4 ring-stone-50"
+                className="h-20 w-auto max-w-44 rounded-xl border border-stone-200 bg-white object-contain p-1 ring-4 ring-stone-50"
               />
             ) : (
               <div className="grid size-20 place-items-center rounded-xl border border-dashed border-stone-300 bg-stone-50 text-stone-400 ring-4 ring-stone-50">

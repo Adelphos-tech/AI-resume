@@ -15,7 +15,6 @@ import {
   removeCoverPhotoAction,
   removeProfilePhotoAction,
   updateCoverPositionAction,
-  savePublicProfileSettingsAction,
   unpublishPublicProfileAction,
   updatePhotoPositionAction,
   updateSlugAction,
@@ -182,7 +181,6 @@ export function PublicProfileSettings({
   const setForm = onFormChange ?? setInternalForm;
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [photo, setPhoto] = useState<string | null>(photoUrl);
   const [photoMsg, setPhotoMsg] = useState<string | null>(null);
@@ -216,16 +214,11 @@ export function PublicProfileSettings({
   const fileRef = useRef<HTMLInputElement>(null);
   const adjustBtnRef = useRef<HTMLButtonElement>(null);
 
-  function run(
-    fn: () => Promise<{ success: boolean; message?: string }>,
-    markSaved = false,
-  ) {
+  function run(fn: () => Promise<{ success: boolean; message?: string }>) {
     setError(null);
-    setSaved(false);
     startTransition(async () => {
       const r = await fn();
       if (!r.success) setError(r.message ?? "Something went wrong.");
-      else if (markSaved) setSaved(true);
     });
   }
 
@@ -683,60 +676,6 @@ export function PublicProfileSettings({
           <CareerCardLinksSettings form={form} setForm={setForm} />
         </div>
       </section>
-
-      {/* save */}
-      <div
-        className={`flex items-center gap-3 ${activeStep === "basics" ? "" : "hidden"}`}
-      >
-        <Button
-          type="button"
-          onClick={() =>
-            run(
-              () =>
-                savePublicProfileSettingsAction({
-                  publicHeadline: form.publicHeadline,
-                  publicBio: form.publicBio,
-                  publicLocation: form.publicLocation,
-                  currentFocus: form.currentFocus,
-                  workAuthorization: form.workAuthorization,
-                  openToOpportunities: form.openToOpportunities,
-                  linkedinUrl: form.linkedinUrl,
-                  githubUrl: form.githubUrl,
-                  websiteUrl: form.websiteUrl,
-                  whatsappNumber: form.whatsappNumber,
-                  whatsappCountry: form.whatsappCountry,
-                  showWhatsapp: form.showWhatsapp,
-                  showExperience: form.showExperience,
-                  showEducation: form.showEducation,
-                  showSkills: form.showSkills,
-                  showProjects: form.showProjects,
-                  showCertifications: form.showCertifications,
-                  showLanguages: form.showLanguages,
-                  featuredResumeVariantId: form.featuredResumeVariantId || null,
-                  themeId: form.themeId,
-                  accentColorId: form.accentColorId,
-                  cardStyleId: form.cardStyleId,
-                  nfcCompactSkinId: form.nfcCompactSkinId,
-                }),
-              true,
-            )
-          }
-          disabled={isPending}
-          className="bg-emerald-700 hover:bg-emerald-800"
-        >
-          {isPending ? "Saving…" : "Save Career Card settings"}
-        </Button>
-        {saved && (
-          <p role="status" className="text-sm font-medium text-emerald-700">
-            Saved
-          </p>
-        )}
-        {error && (
-          <p role="alert" className="text-sm text-red-600">
-            {error}
-          </p>
-        )}
-      </div>
 
       {/* permanent card link */}
       {shareUrl && (

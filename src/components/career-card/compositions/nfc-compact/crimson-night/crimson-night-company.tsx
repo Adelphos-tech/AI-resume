@@ -30,7 +30,12 @@ import { useResponsiveClasses } from "@/components/candidate/public-profile/prev
 
 /** Crimson Night — company half. Same IA as Career Passport Light. */
 export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
-  const logoSize = useResponsiveClasses(
+  const logoBox = useResponsiveClasses(
+    "h-20 max-w-36",
+    "h-24 max-w-40",
+    "h-20 max-w-36 sm:h-24 sm:max-w-40",
+  );
+  const logoFallback = useResponsiveClasses(
     "size-20",
     "size-24",
     "size-20 sm:size-24",
@@ -73,22 +78,22 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
       {/* company header — logo left, identity + contact */}
       <div className="flex gap-3.5">
         <div className="shrink-0 self-start rounded-2xl border border-white/15 bg-white/95 p-1 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.7)]">
-          <div
-            className={`overflow-hidden rounded-xl ring-1 ring-[var(--cn-cta)]/50 ${logoSize}`}
-          >
-            {c.logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={c.logo}
-                alt={c.companyName}
-                className="size-full object-cover"
-              />
-            ) : (
+          {c.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={c.logo}
+              alt={c.companyName}
+              className={`block w-auto rounded-xl bg-white object-contain p-1 ring-1 ring-[var(--cn-cta)]/50 ${logoBox}`}
+            />
+          ) : (
+            <div
+              className={`overflow-hidden rounded-xl ring-1 ring-[var(--cn-cta)]/50 ${logoFallback}`}
+            >
               <span className="grid size-full place-items-center rounded-[9px] bg-[var(--cn-cta)] text-xl font-black text-white">
                 {c.companyName[0]}
               </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         <div className="min-w-0">
           <h1

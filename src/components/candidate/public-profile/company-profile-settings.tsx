@@ -1,13 +1,9 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState } from "react";
 
-import {
-  removeCompanyLogoAction,
-  saveCompanyProfileAction,
-} from "@/app/candidate/(workspace)/public-profile/actions";
-import { Button } from "@/components/ui/button";
+import { removeCompanyLogoAction } from "@/app/candidate/(workspace)/public-profile/actions";
 import { WhatsappCountrySelect } from "@/components/candidate/public-profile/whatsapp-fields";
 import { CareerCardCompanyIdentitySettings } from "@/components/candidate/public-profile/career-card-company-identity-settings";
 
@@ -186,24 +182,31 @@ function ListEditor({
 export function CompanyProfileSettings({
   initial,
   logoUrl,
+  form: controlledForm,
+  onFormChange,
+  hasSavedRow: hasSavedRowProp,
+  onLogoUrlChange,
 }: {
   initial: CompanyProfileState | null;
   logoUrl: string | null;
+  /** Optional controlled form state — owned by the builder-level save bar. */
+  form?: CompanyProfileState;
+  onFormChange?: React.Dispatch<React.SetStateAction<CompanyProfileState>>;
+  /** Whether a company profile row has been persisted at least once. */
+  hasSavedRow?: boolean;
+  /** Called when a logo upload or removal changes the server-backed URL. */
+  onLogoUrlChange?: (url: string | null) => void;
 }) {
-  const [form, setForm] = useState<CompanyProfileState>(
+  const [internalForm, setInternalForm] = useState<CompanyProfileState>(
     initial ?? EMPTY_COMPANY,
   );
-  const [savedForm, setSavedForm] = useState<CompanyProfileState>(
-    initial ?? EMPTY_COMPANY,
-  );
+  const form = controlledForm ?? internalForm;
+  const setForm = onFormChange ?? setInternalForm;
   const [logo, setLogo] = useState<string | null>(logoUrl);
   const [logoMsg, setLogoMsg] = useState<string | null>(null);
   const [logoBusy, setLogoBusy] = useState(false);
   const [logoV, setLogoV] = useState(0);
   const logoRef = useRef<HTMLInputElement>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
   const set = <K extends keyof CompanyProfileState>(
     key: K,
@@ -230,6 +233,7 @@ export function CompanyProfileSettings({
         setLogo(r.logoUrl ?? null);
         setLogoV((v) => v + 1);
         setLogoMsg("Logo updated");
+        onLogoUrlChange?.(r.logoUrl ?? null);
       }
     } catch {
       setLogoMsg("Upload failed. Try again.");
@@ -247,27 +251,14 @@ export function CompanyProfileSettings({
       else {
         setLogo(null);
         setLogoMsg("Logo removed");
+        onLogoUrlChange?.(null);
       }
     } finally {
       setLogoBusy(false);
     }
   }
 
-  function save() {
-    setError(null);
-    setSaved(false);
-    startTransition(async () => {
-      const r = await saveCompanyProfileAction(form);
-      if (!r.success) setError(r.message ?? "Something went wrong.");
-      else {
-        setSaved(true);
-        setSavedForm(form);
-      }
-    });
-  }
-
-  const dirty = JSON.stringify(form) !== JSON.stringify(savedForm);
-  const hasSavedRow = initial !== null || saved;
+  const hasSavedRow = hasSavedRowProp ?? initial !== null;
   const hintCls = "mt-1.5 text-xs";
   const privateHint = (
     <p className={`${hintCls} text-stone-500`}>
@@ -600,7 +591,7 @@ export function CompanyProfileSettings({
           </div>
         </div>
 
-        {/* ── Visibility + save ─────────────────────────────────── */}
+        {/* ── Visibility ────────────────────────────────────────── */}
         <div className={groupCls}>
           <div>
             <p className={groupTitleCls}>Visibility</p>
@@ -625,27 +616,6 @@ export function CompanyProfileSettings({
                 public Career Card.
               </p>
             ))}
-          <div className="flex items-center gap-3 pt-2">
-            <Button
-              type="button"
-              onClick={save}
-              disabled={isPending || !form.companyName.trim()}
-              className="bg-emerald-700 hover:bg-emerald-800"
-            >
-              {isPending ? "Saving…" : "Save company profile"}
-            </Button>
-            {saved && !dirty && (
-              <p role="status" className="text-sm font-medium text-emerald-700">
-                Saved
-              </p>
-            )}
-            {dirty && <p className="text-sm text-amber-700">Unsaved changes</p>}
-            {error && (
-              <p role="alert" className="text-sm text-red-600">
-                {error}
-              </p>
-            )}
-          </div>
         </div>
       </div>
     </section>

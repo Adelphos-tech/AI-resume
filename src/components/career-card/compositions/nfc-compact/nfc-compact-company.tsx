@@ -30,7 +30,14 @@ import { useResponsiveClasses } from "@/components/candidate/public-profile/prev
 
 /** Company half of the NFC Compact / Dual Profile template. */
 export function NfcCompactCompany({ c }: { c: CompactCompany }) {
-  const logoSize = useResponsiveClasses(
+  // Logo frame keeps the image's natural aspect ratio — horizontal wordmarks
+  // get real horizontal space instead of letterboxing inside a small square.
+  const logoBox = useResponsiveClasses(
+    "h-20 max-w-36",
+    "h-24 max-w-40",
+    "h-20 max-w-36 sm:h-24 sm:max-w-40",
+  );
+  const logoFallback = useResponsiveClasses(
     "size-20",
     "size-24",
     "size-20 sm:size-24",
@@ -45,22 +52,22 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
       {/* company header — logo left, identity + contact */}
       <div className="flex gap-3.5">
         <div className="shrink-0 self-start rounded-2xl border border-stone-200 bg-white p-1">
-          <div
-            className={`overflow-hidden rounded-xl ring-1 ring-[var(--nfc-cta)]/40 ${logoSize}`}
-          >
-            {c.logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={c.logo}
-                alt={c.companyName}
-                className="size-full object-cover"
-              />
-            ) : (
+          {c.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={c.logo}
+              alt={c.companyName}
+              className={`block w-auto rounded-xl bg-white object-contain p-1 ring-1 ring-[var(--nfc-cta)]/40 ${logoBox}`}
+            />
+          ) : (
+            <div
+              className={`overflow-hidden rounded-xl ring-1 ring-[var(--nfc-cta)]/40 ${logoFallback}`}
+            >
               <span className="grid size-full place-items-center bg-[var(--nfc-cta)] text-xl font-black text-white">
                 {c.companyName[0]}
               </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         <div className="min-w-0">
           <h1 className="text-2xl font-extrabold tracking-tight text-blue-950">

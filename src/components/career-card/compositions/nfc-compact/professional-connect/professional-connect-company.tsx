@@ -33,7 +33,12 @@ export function ProfessionalConnectCompany({
 }: {
   company: CompactCompany;
 }) {
-  const logoSize = useResponsiveClasses(
+  const logoBox = useResponsiveClasses(
+    "h-20 max-w-36",
+    "h-24 max-w-40",
+    "h-20 max-w-36 sm:h-24 sm:max-w-40",
+  );
+  const logoFallback = useResponsiveClasses(
     "size-20",
     "size-24",
     "size-20 sm:size-24",
@@ -53,20 +58,20 @@ export function ProfessionalConnectCompany({
       {/* company header — logo left, identity right */}
       <div className="flex gap-3.5">
         <div className="shrink-0 self-start rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
-          <div className={`overflow-hidden rounded-xl ${logoSize}`}>
-            {c.logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={c.logo}
-                alt={c.companyName}
-                className="size-full object-cover"
-              />
-            ) : (
+          {c.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={c.logo}
+              alt={c.companyName}
+              className={`block w-auto rounded-xl bg-white object-contain p-1 ${logoBox}`}
+            />
+          ) : (
+            <div className={`overflow-hidden rounded-xl ${logoFallback}`}>
               <span className="grid size-full place-items-center bg-[var(--nfc-cta)] text-xl font-black text-white">
                 {c.companyName[0]}
               </span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <h1
