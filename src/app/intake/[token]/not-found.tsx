@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function IntakeNotFound() {
   return (
     <main className="mx-auto flex min-h-svh w-full max-w-xl flex-col justify-center px-6 py-16">
-      <LinkMeuLogo className="h-6" />
+      <LinkMeuLogo className="h-7" />
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">
         Intake link unavailable
       </h1>

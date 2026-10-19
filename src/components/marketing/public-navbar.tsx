@@ -37,7 +37,7 @@ export function PublicNavbar() {
         className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6"
       >
         <Link href="/" aria-label="LinkMeU home">
-          <LinkMeuLogo />
+          <LinkMeuLogo className="h-8" />
         </Link>
 
         <ul className="hidden items-center gap-8 md:flex">

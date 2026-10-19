@@ -325,7 +325,7 @@ export function LabPremiumTemplate() {
       {/* compact header */}
       <header className="mx-auto flex w-full max-w-[980px] items-center justify-between px-4 py-4 sm:px-6">
         <span className="flex items-center">
-          <LinkMeuLogo className="h-6" />
+          <LinkMeuLogo className="h-7" />
         </span>
         <span className="hidden text-xs text-stone-500 sm:inline">
           Built for meaningful careers

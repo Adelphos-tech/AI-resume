@@ -124,7 +124,7 @@ function SidebarContent({
     <div className="flex h-full flex-col">
       <div className="px-5 pt-6 pb-8">
         <Link href="/candidate" aria-label="LinkMeU dashboard">
-          <LinkMeuLogo />
+          <LinkMeuLogo className="h-9" />
         </Link>
       </div>
       <nav aria-label="Candidate workspace" className="flex-1 space-y-6 px-4">
@@ -153,7 +153,7 @@ export function CandidateShell({ candidate, children }: CandidateShellProps) {
       {/* mobile header */}
       <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-emerald-950/8 bg-white/90 px-4 backdrop-blur-md lg:hidden">
         <Link href="/candidate" aria-label="LinkMeU dashboard">
-          <LinkMeuLogo className="h-6" />
+          <LinkMeuLogo className="h-7" />
         </Link>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
@@ -169,7 +169,7 @@ export function CandidateShell({ candidate, children }: CandidateShellProps) {
             <SheetTitle className="sr-only">Navigation</SheetTitle>
             <div className="flex h-full flex-col">
               <div className="px-5 pt-6 pb-8">
-                <LinkMeuLogo />
+                <LinkMeuLogo className="h-9" />
               </div>
               <nav
                 aria-label="Candidate workspace"

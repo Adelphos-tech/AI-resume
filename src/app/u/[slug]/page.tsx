@@ -141,7 +141,7 @@ export default async function PublicProfilePage({
       {/* brand header */}
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
         <Link href="/" className="flex items-center" aria-label="LinkMeU home">
-          <LinkMeuLogo className="h-6" />
+          <LinkMeuLogo className="h-8" />
         </Link>
         <p className={`hidden text-xs font-medium sm:block ${t.faint}`}>
           Built for meaningful careers

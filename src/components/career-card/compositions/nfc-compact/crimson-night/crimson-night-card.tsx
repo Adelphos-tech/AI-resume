@@ -93,7 +93,7 @@ function CrimsonNightBrandBar({ shareUrl }: { shareUrl?: string | null }) {
   return (
     <header className="flex items-center justify-between">
       <div>
-        <LinkMeuLogo className="h-5" />
+        <LinkMeuLogo className="h-6" />
         <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--cn-hi)]/70">
           NFC Career Card
         </p>

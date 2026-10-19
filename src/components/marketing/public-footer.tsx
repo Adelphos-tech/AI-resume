@@ -18,7 +18,7 @@ export function PublicFooter() {
     <footer className="border-t border-emerald-950/8 bg-stone-50">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="space-y-3">
-          <LinkMeuLogo />
+          <LinkMeuLogo className="h-8" />
           <p className="max-w-xs text-sm text-stone-500">
             Better resumes. Bigger opportunities.
           </p>

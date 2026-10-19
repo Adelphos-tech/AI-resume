@@ -30,7 +30,7 @@ export default async function IntakePage({
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-12 sm:py-16">
       <header className="space-y-4">
-        <LinkMeuLogo className="h-6" />
+        <LinkMeuLogo className="h-7" />
         <h1 className="text-3xl font-semibold tracking-tight">Career Intake</h1>
         <div className="space-y-2 text-muted-foreground">
           <p>Hi {resolved.firstName},</p>

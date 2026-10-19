@@ -33,7 +33,7 @@ export default async function IntakeResumePage({
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-12 sm:py-16">
       <header className="space-y-4">
-        <LinkMeuLogo className="h-6" />
+        <LinkMeuLogo className="h-7" />
         <h1 className="text-3xl font-semibold tracking-tight">Resume</h1>
         <p className="text-muted-foreground">
           Hi {resolved.firstName}, upload your current resume.

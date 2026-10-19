@@ -36,7 +36,7 @@ export function ExecutiveLibraryCard({
             className="flex items-center"
             aria-label="LinkMeU home"
           >
-            <LinkMeuLogo className="h-6" />
+            <LinkMeuLogo className="h-7" />
           </Link>
         </header>
       </div>

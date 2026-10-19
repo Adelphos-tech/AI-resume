@@ -30,7 +30,7 @@ export default async function CandidateRegisterPage() {
     <main className="grid min-h-svh bg-white lg:grid-cols-2">
       <div className="flex flex-col px-6 py-8 sm:px-12 lg:px-16">
         <Link href="/" aria-label="LinkMeU home">
-          <LinkMeuLogo />
+          <LinkMeuLogo className="h-8" />
         </Link>
 
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">
