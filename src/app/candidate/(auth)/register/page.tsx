@@ -4,14 +4,14 @@ import { redirect } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 
 import { CandidateAuthVisual } from "@/components/marketing/candidate-auth-visual";
-import { RoleRaceLogo } from "@/components/marketing/role-race-logo";
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import { getCandidateSession } from "@/server/session";
 
 import { CandidateRegisterForm } from "./register-form";
 
 export const metadata: Metadata = {
-  title: "Create account — RoleRace",
-  description: "Create your RoleRace candidate account.",
+  title: "Create account — LinkMeU",
+  description: "Create your LinkMeU candidate account.",
 };
 
 const MARKERS = [
@@ -29,8 +29,8 @@ export default async function CandidateRegisterPage() {
   return (
     <main className="grid min-h-svh bg-white lg:grid-cols-2">
       <div className="flex flex-col px-6 py-8 sm:px-12 lg:px-16">
-        <Link href="/" aria-label="RoleRace home">
-          <RoleRaceLogo />
+        <Link href="/" aria-label="LinkMeU home">
+          <LinkMeuLogo />
         </Link>
 
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">
@@ -38,7 +38,7 @@ export default async function CandidateRegisterPage() {
             Create your account
           </span>
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Start your career journey with RoleRace
+            Start your career journey with LinkMeU
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-stone-600">
             Build a structured profile, create targeted resumes, and get

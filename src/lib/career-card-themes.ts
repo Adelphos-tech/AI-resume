@@ -26,8 +26,8 @@ export const DEFAULT_CAREER_CARD_THEME: CareerCardThemeId = "role-race-classic";
 export const CAREER_CARD_THEMES: readonly CareerCardTheme[] = [
   {
     id: "role-race-classic",
-    label: "RoleRace Classic",
-    description: "The current RoleRace style — warm green and white.",
+    label: "LinkMeU Classic",
+    description: "The LinkMeU style — warm green and white.",
     fits: ["General professional", "Any role"],
   },
   {

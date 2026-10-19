@@ -79,7 +79,7 @@ export function CareerProfileWorkspace({
             Career Profile
           </h1>
           <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
-            Build your career story once. RoleRace uses this profile when you
+            Build your career story once. LinkMeU uses this profile when you
             create resumes.
           </p>
         </div>

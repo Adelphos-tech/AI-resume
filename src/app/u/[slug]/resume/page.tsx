@@ -2,12 +2,13 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import { ResumeRenderer } from "@/components/resume/resume-renderer";
 import type { ResumeData } from "@/lib/resume-schema";
 import { prisma } from "@/server/db";
 import { getCandidateSession } from "@/server/session";
 
-export const metadata = { title: "Resume — RoleRace" };
+export const metadata = { title: "Resume — LinkMeU" };
 
 export const dynamic = "force-dynamic";
 
@@ -70,8 +71,8 @@ export default async function PublicResumePage({
             templateKey={variant.templateKey}
           />
         </div>
-        <p className="mt-6 text-center text-xs font-semibold tracking-widest text-stone-400 uppercase">
-          RoleRace
+        <p className="mt-6 text-center">
+          <LinkMeuLogo className="mx-auto h-4" />
         </p>
       </div>
     </main>

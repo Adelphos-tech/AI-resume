@@ -1,3 +1,4 @@
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import {
   Award,
   Briefcase,
@@ -90,7 +91,7 @@ const demo = {
   ],
   links: { linkedin: "#", github: "#", website: "#" },
   featuredResume: {
-    name: "RoleRace Demo Resume",
+    name: "LinkMeU Demo Resume",
     targetRole: "AI Product Manager",
   },
 };
@@ -323,14 +324,8 @@ export function LabPremiumTemplate() {
 
       {/* compact header */}
       <header className="mx-auto flex w-full max-w-[980px] items-center justify-between px-4 py-4 sm:px-6">
-        <span className="flex items-center gap-2 text-lg font-bold tracking-tight text-white">
-          <span
-            aria-hidden
-            className="grid size-8 place-items-center rounded-lg bg-violet-600 text-sm font-black text-white"
-          >
-            R
-          </span>
-          RoleRace
+        <span className="flex items-center">
+          <LinkMeuLogo className="h-6" />
         </span>
         <span className="hidden text-xs text-stone-500 sm:inline">
           Built for meaningful careers
@@ -447,13 +442,7 @@ export function LabPremiumTemplate() {
 
       <footer className="mx-auto flex w-full max-w-[980px] flex-wrap items-center justify-between gap-2 px-4 pt-2 pb-8 sm:px-6">
         <span className="inline-flex items-center gap-2 text-xs font-semibold text-stone-500">
-          <span
-            aria-hidden
-            className="grid size-5 place-items-center rounded bg-violet-600 text-[10px] font-black text-white"
-          >
-            R
-          </span>
-          RoleRace
+          <LinkMeuLogo className="h-4" />
         </span>
         <span className="text-xs text-stone-500">
           Built for meaningful careers

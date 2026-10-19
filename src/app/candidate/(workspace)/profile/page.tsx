@@ -9,7 +9,7 @@ import {
 import { prisma } from "@/server/db";
 import { getCandidateProfile } from "@/server/candidates/career-profile";
 
-export const metadata = { title: "Career Profile — RoleRace" };
+export const metadata = { title: "Career Profile — LinkMeU" };
 
 export default async function CandidateProfilePage() {
   const { candidate, result } = await getCandidateProfile();

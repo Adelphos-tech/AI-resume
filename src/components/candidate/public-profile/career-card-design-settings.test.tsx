@@ -45,7 +45,7 @@ describe("CareerCardDesignSettings", () => {
         setRecoErr: () => {},
       }),
     );
-    expect(html).toContain("RoleRace Classic");
+    expect(html).toContain("LinkMeU Classic");
     expect(html).toContain("Corporate Clean");
     expect(html).toContain("Executive Dark");
     expect(html).toContain("Tech Minimal");

@@ -1,4 +1,4 @@
-import { RoleRaceLogo } from "@/components/marketing/role-race-logo";
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 
 const PRODUCT_LINKS = [
   { href: "#how-it-works", label: "How it works" },
@@ -18,7 +18,7 @@ export function PublicFooter() {
     <footer className="border-t border-emerald-950/8 bg-stone-50">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="space-y-3">
-          <RoleRaceLogo />
+          <LinkMeuLogo />
           <p className="max-w-xs text-sm text-stone-500">
             Better resumes. Bigger opportunities.
           </p>
@@ -64,9 +64,9 @@ export function PublicFooter() {
       <div className="border-t border-emerald-950/8">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
           <p className="text-xs text-stone-400">
-            © {new Date().getFullYear()} RoleRace. All rights reserved.
+            © {new Date().getFullYear()} LinkMeU. All rights reserved.
           </p>
-          <p className="text-xs text-stone-400">RoleRace internal access</p>
+          <p className="text-xs text-stone-400">LinkMeU internal access</p>
         </div>
       </div>
     </footer>

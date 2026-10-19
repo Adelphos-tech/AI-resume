@@ -214,7 +214,7 @@ const JSON_SCHEMA = {
   additionalProperties: false,
 } as const;
 
-const SYSTEM_PROMPT = `You recommend a Career Card theme for a RoleRace candidate.
+const SYSTEM_PROMPT = `You recommend a Career Card theme for a LinkMeU candidate.
 
 You are given:
 1. careerSignals — a compact structured summary of the candidate's career

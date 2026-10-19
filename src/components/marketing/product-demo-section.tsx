@@ -48,7 +48,7 @@ export function ProductDemoSection() {
               </span>
               <span className="relative text-center">
                 <span className="block text-lg font-semibold text-white">
-                  See RoleRace in action
+                  See LinkMeU in action
                 </span>
                 <span className="mt-1 block text-sm text-emerald-100/80">
                   From career profile to polished resume.
@@ -107,7 +107,7 @@ export function ProductDemoSection() {
               Product demo video coming soon
             </p>
             <p className="mt-1.5 text-sm text-stone-500">
-              We&rsquo;re preparing a walkthrough of the full RoleRace workflow.
+              We&rsquo;re preparing a walkthrough of the full LinkMeU workflow.
             </p>
             <button
               type="button"

@@ -7,7 +7,7 @@ import { prisma } from "@/server/db";
 import { parseResumeText } from "@/server/resume-import/parse-resume";
 import { requireCandidateSession } from "@/server/session";
 
-export const metadata = { title: "Review import — RoleRace" };
+export const metadata = { title: "Review import — LinkMeU" };
 
 export default async function CandidateResumeImportReviewPage() {
   const { candidate } = await requireCandidateSession();
@@ -47,7 +47,7 @@ export default async function CandidateResumeImportReviewPage() {
           Review information from your resume
         </h1>
         <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
-          Check what RoleRace found before adding anything to your Career
+          Check what LinkMeU found before adding anything to your Career
           Profile.
         </p>
       </div>

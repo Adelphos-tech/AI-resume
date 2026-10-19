@@ -5,7 +5,7 @@ import { RESUME_TEMPLATES, type ResumeTemplateKey } from "@/lib/resume-schema";
 import { listCandidateResumeVariantsCore } from "@/server/resume-variants/resume-variants";
 import { requireCandidateSession } from "@/server/session";
 
-export const metadata = { title: "AI Review — RoleRace" };
+export const metadata = { title: "AI Review — LinkMeU" };
 
 export default async function CandidateAiReviewPage() {
   const { candidate } = await requireCandidateSession();

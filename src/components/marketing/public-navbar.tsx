@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { RoleRaceLogo } from "@/components/marketing/role-race-logo";
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 
 const NAV_LINKS = [
   { href: "#how-it-works", label: "How it works" },
@@ -36,8 +36,8 @@ export function PublicNavbar() {
         aria-label="Main"
         className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6"
       >
-        <Link href="/" aria-label="RoleRace home">
-          <RoleRaceLogo />
+        <Link href="/" aria-label="LinkMeU home">
+          <LinkMeuLogo />
         </Link>
 
         <ul className="hidden items-center gap-8 md:flex">

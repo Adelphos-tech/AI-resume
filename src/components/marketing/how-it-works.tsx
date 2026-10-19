@@ -12,7 +12,7 @@ const STEPS = [
     icon: UserPlus,
     num: "01",
     title: "Create Account",
-    text: "Start your RoleRace workspace in minutes.",
+    text: "Start your LinkMeU workspace in minutes.",
   },
   {
     icon: UserRound,

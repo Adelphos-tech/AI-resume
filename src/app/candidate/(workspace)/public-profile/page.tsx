@@ -10,7 +10,7 @@ import { resolveCareerCardAccent } from "@/lib/career-card-accent-colors";
 import { resolveCareerCardStyle } from "@/lib/career-card-styles";
 import { getCandidatePublicProfile } from "@/server/public-profile/public-profile";
 
-export const metadata = { title: "Career Card — RoleRace" };
+export const metadata = { title: "Career Card — LinkMeU" };
 
 export default async function CandidatePublicProfilePage() {
   const { candidate, profile } = await getCandidatePublicProfile();

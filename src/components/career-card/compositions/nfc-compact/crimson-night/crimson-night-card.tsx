@@ -4,6 +4,7 @@ import type {
   CompactCandidate,
   CompactCompany,
 } from "@/components/career-card/dev/nfc-compact-data";
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import { CrimsonNightCandidate } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-candidate";
 import { CrimsonNightCompany } from "@/components/career-card/compositions/nfc-compact/crimson-night/crimson-night-company";
 import {
@@ -91,18 +92,11 @@ function CrimsonNightFrame({ children }: { children: ReactNode }) {
 function CrimsonNightBrandBar({ shareUrl }: { shareUrl?: string | null }) {
   return (
     <header className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <span className="grid size-9 place-items-center rounded-xl bg-[var(--cn-cta)] text-sm font-black text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_4px_16px_-4px_rgba(185,28,28,0.6)]">
-          R
-        </span>
-        <div>
-          <p className="text-sm font-extrabold leading-tight text-[var(--cn-text)]">
-            RoleRace
-          </p>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--cn-hi)]/70">
-            NFC Career Card
-          </p>
-        </div>
+      <div>
+        <LinkMeuLogo className="h-5" />
+        <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--cn-hi)]/70">
+          NFC Career Card
+        </p>
       </div>
       {shareUrl && <CrimsonNightQr url={shareUrl} />}
     </header>

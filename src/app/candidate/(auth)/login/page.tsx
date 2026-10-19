@@ -3,14 +3,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { CandidateAuthVisual } from "@/components/marketing/candidate-auth-visual";
-import { RoleRaceLogo } from "@/components/marketing/role-race-logo";
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import { getCandidateSession } from "@/server/session";
 
 import { CandidateLoginForm } from "./login-form";
 
 export const metadata: Metadata = {
-  title: "Sign in — RoleRace",
-  description: "Sign in to your RoleRace candidate account.",
+  title: "Sign in — LinkMeU",
+  description: "Sign in to your LinkMeU candidate account.",
 };
 
 export default async function CandidateLoginPage() {
@@ -21,8 +21,8 @@ export default async function CandidateLoginPage() {
   return (
     <main className="grid min-h-svh bg-white lg:grid-cols-2">
       <div className="flex flex-col px-6 py-8 sm:px-12 lg:px-16">
-        <Link href="/" aria-label="RoleRace home">
-          <RoleRaceLogo />
+        <Link href="/" aria-label="LinkMeU home">
+          <LinkMeuLogo />
         </Link>
 
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">
@@ -30,7 +30,7 @@ export default async function CandidateLoginPage() {
             Welcome back
           </span>
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 md:text-4xl">
-            Sign in to your RoleRace account
+            Sign in to your LinkMeU account
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-stone-600">
             Continue building your career with targeted resumes and AI-powered

@@ -373,7 +373,7 @@ describe("CareerCardBuilderPreview", () => {
     expect(html).not.toContain("@qa.tester");
   });
 
-  it("NFC Compact Professional Connect does not render LinkMeU branding", () => {
+  it("NFC Compact Professional Connect renders LinkMeU wordmark branding", () => {
     const html = renderToStaticMarkup(
       createElement(CareerCardBuilderPreview, {
         ...BASE_PROPS,
@@ -384,7 +384,7 @@ describe("CareerCardBuilderPreview", () => {
         },
       }),
     );
-    expect(html).not.toContain("LinkMeU");
+    expect(html).toContain("linkmeu-wordmark.png");
   });
 
   it("NFC Compact Professional Connect does not render fake Project Match", () => {
@@ -933,7 +933,7 @@ describe("CareerCardBuilderPreview", () => {
     expect(html).not.toContain("Verified");
   });
 
-  it("NFC Compact Creative Spotlight does not contain LinkMeU branding", () => {
+  it("NFC Compact Creative Spotlight renders LinkMeU wordmark branding", () => {
     const html = renderToStaticMarkup(
       createElement(CareerCardBuilderPreview, {
         ...BASE_PROPS,
@@ -944,7 +944,7 @@ describe("CareerCardBuilderPreview", () => {
         },
       }),
     );
-    expect(html).not.toContain("LinkMeU");
+    expect(html).toContain("linkmeu-wordmark.png");
   });
 
   it("NFC Compact Creative Spotlight no dead CTA in preview", () => {
@@ -1109,7 +1109,7 @@ describe("CareerCardBuilderPreview", () => {
     expect(html).not.toContain("Verified");
   });
 
-  it("NFC Compact Signature Spotlight does not contain LinkMeU branding", () => {
+  it("NFC Compact Signature Spotlight does not contain platform branding", () => {
     const html = renderToStaticMarkup(
       createElement(CareerCardBuilderPreview, {
         ...BASE_PROPS,
@@ -1120,7 +1120,8 @@ describe("CareerCardBuilderPreview", () => {
         },
       }),
     );
-    expect(html).not.toContain("LinkMeU");
+    expect(html).not.toContain("linkmeu-wordmark");
+    expect(html).not.toContain("RoleRace");
   });
 
   it("NFC Compact Signature Spotlight does not contain Invite to Project", () => {

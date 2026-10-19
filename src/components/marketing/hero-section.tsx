@@ -40,7 +40,7 @@ export function HeroSection() {
           </h1>
 
           <p className="max-w-md text-lg leading-relaxed text-stone-600">
-            RoleRace helps you create tailored, professional resumes using your
+            LinkMeU helps you create tailored, professional resumes using your
             structured career profile — with AI-powered feedback to make every
             application count.
           </p>

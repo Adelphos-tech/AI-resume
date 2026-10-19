@@ -13,6 +13,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { cardStyleTokens } from "@/lib/career-card-theme-styles";
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import { PremiumCareerCard } from "@/components/public-profile/premium-career-card";
 import { CareerCardCoverPhoto } from "@/components/candidate/public-profile/career-card-photo";
 import { CareerCardIdentity } from "@/components/candidate/public-profile/career-card-identity";
@@ -53,11 +54,11 @@ export async function generateMetadata({
       candidate: { select: { firstName: true, lastName: true } },
     },
   });
-  if (!profile?.isPublished) return { title: "RoleRace" };
+  if (!profile?.isPublished) return { title: "LinkMeU" };
   const name =
     `${profile.candidate.firstName} ${profile.candidate.lastName}`.trim();
   return {
-    title: `${name} | RoleRace`,
+    title: `${name} | LinkMeU`,
     description: profile.publicBio?.slice(0, 160) ?? undefined,
   };
 }
@@ -139,17 +140,8 @@ export default async function PublicProfilePage({
     <main className={`min-h-dvh ${t.page}`}>
       {/* brand header */}
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
-        <Link
-          href="/"
-          className={`flex items-center gap-2 text-lg font-bold tracking-tight ${t.strong}`}
-        >
-          <span
-            aria-hidden
-            className={`grid size-8 place-items-center rounded-lg text-sm font-black ${t.footerBrand}`}
-          >
-            R
-          </span>
-          RoleRace
+        <Link href="/" className="flex items-center" aria-label="LinkMeU home">
+          <LinkMeuLogo className="h-6" />
         </Link>
         <p className={`hidden text-xs font-medium sm:block ${t.faint}`}>
           Built for meaningful careers
@@ -526,15 +518,10 @@ export default async function PublicProfilePage({
         <p
           className={`flex items-center gap-2 text-xs font-semibold ${t.footer}`}
         >
-          <span
-            aria-hidden
-            className={`grid size-5 place-items-center rounded text-[10px] font-black ${t.footerBrand}`}
-          >
-            R
-          </span>
-          RoleRace · Built for meaningful careers
+          <LinkMeuLogo className="h-4" />
+          <span aria-hidden>·</span> Built for meaningful careers
         </p>
-        <p className={`text-xs ${t.footer}`}>Built with RoleRace</p>
+        <p className={`text-xs ${t.footer}`}>Built with LinkMeU</p>
       </footer>
     </main>
   );

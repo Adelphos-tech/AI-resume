@@ -88,7 +88,7 @@ export default async function CandidatesPage({
           ) : (
             <p className="text-sm text-muted-foreground">
               No candidates yet. Candidates will appear here when they are added
-              to RoleRace.
+              to LinkMeU.
             </p>
           )}
         </div>

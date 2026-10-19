@@ -76,7 +76,7 @@ export default async function LoginPage() {
           <p className="text-sm text-muted-foreground">Move with clarity.</p>
         </div>
         <p className="relative z-10 text-xs text-muted-foreground">
-          RoleRace internal access
+          LinkMeU internal access
         </p>
         <TrajectoryVisual />
       </aside>
@@ -91,7 +91,7 @@ export default async function LoginPage() {
               Welcome back.
             </h1>
             <p className="text-sm text-muted-foreground">
-              Sign in to continue to your RoleRace workspace.
+              Sign in to continue to your LinkMeU workspace.
             </p>
           </div>
           <LoginForm />

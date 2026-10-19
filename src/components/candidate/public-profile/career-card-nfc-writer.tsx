@@ -387,7 +387,7 @@ export function CareerCardNfcWriter({
           Tap your card to your phone
         </p>
         <p className="mt-2 text-sm leading-relaxed text-emerald-100/70 sm:text-stone-600">
-          Hold the card near the back of your phone while RoleRace checks it.
+          Hold the card near the back of your phone while LinkMeU checks it.
         </p>
         <p
           role="status"
@@ -592,7 +592,7 @@ export function CareerCardNfcWriter({
             Program Physical Card
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-stone-600">
-            Turn a compatible NFC card into your RoleRace Career Card. We’ll
+            Turn a compatible NFC card into your LinkMeU Career Card. We’ll
             write your permanent link to the card.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">

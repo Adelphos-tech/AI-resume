@@ -12,13 +12,13 @@ import { PublicNavbar } from "@/components/marketing/public-navbar";
 import { TemplateShowcase } from "@/components/marketing/template-showcase";
 
 export const metadata: Metadata = {
-  title: "RoleRace — Career-Ready Resumes for Every Opportunity",
+  title: "LinkMeU — Career-Ready Resumes for Every Opportunity",
   description:
-    "RoleRace helps professionals build targeted resumes from a structured career profile, choose professional templates, get AI-powered feedback, and export polished PDF and DOCX resumes.",
+    "LinkMeU helps professionals build targeted resumes from a structured career profile, choose professional templates, get AI-powered feedback, and export polished PDF and DOCX resumes.",
   openGraph: {
-    title: "RoleRace — Career-Ready Resumes for Every Opportunity",
+    title: "LinkMeU — Career-Ready Resumes for Every Opportunity",
     description:
-      "RoleRace helps professionals build targeted resumes from a structured career profile, choose professional templates, get AI-powered feedback, and export polished PDF and DOCX resumes.",
+      "LinkMeU helps professionals build targeted resumes from a structured career profile, choose professional templates, get AI-powered feedback, and export polished PDF and DOCX resumes.",
     type: "website",
   },
 };

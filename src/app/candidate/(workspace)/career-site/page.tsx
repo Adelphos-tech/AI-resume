@@ -9,7 +9,7 @@ import {
 
 import { createCareerSiteAction } from "./actions";
 
-export const metadata = { title: "Career Site — RoleRace" };
+export const metadata = { title: "Career Site — LinkMeU" };
 
 export default async function CandidateCareerSitePage() {
   const result = await getMyCareerSite();

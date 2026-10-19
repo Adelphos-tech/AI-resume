@@ -7,7 +7,7 @@ import { RESUME_TEMPLATES, type ResumeTemplateKey } from "@/lib/resume-schema";
 import { getResumeVariantCore } from "@/server/resume-variants/resume-variants";
 import { requireCandidateSession } from "@/server/session";
 
-export const metadata = { title: "Resume — RoleRace" };
+export const metadata = { title: "Resume — LinkMeU" };
 
 export default async function CandidateResumeDetailPage({
   params,

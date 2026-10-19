@@ -5,7 +5,7 @@ import { ResumeImport } from "@/components/candidate/profile/resume-import";
 import { prisma } from "@/server/db";
 import { requireCandidateSession } from "@/server/session";
 
-export const metadata = { title: "Import resume — RoleRace" };
+export const metadata = { title: "Import resume — LinkMeU" };
 
 export default async function CandidateResumeImportPage() {
   const { candidate } = await requireCandidateSession();

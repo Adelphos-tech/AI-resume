@@ -18,7 +18,7 @@ export function FinalCta() {
           </h2>
           <p className="mx-auto max-w-lg text-lg text-emerald-100/75">
             Turn your experience into targeted, professional resumes with
-            RoleRace.
+            LinkMeU.
           </p>
           <a
             href="/candidate/register"

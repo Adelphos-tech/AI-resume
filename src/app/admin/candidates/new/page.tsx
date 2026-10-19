@@ -17,7 +17,7 @@ export default function NewCandidatePage() {
       <div className="space-y-1">
         <h2 className="text-2xl font-semibold tracking-tight">Add candidate</h2>
         <p className="text-sm text-muted-foreground">
-          Create a new RoleRace candidate engagement.
+          Create a new LinkMeU candidate engagement.
         </p>
       </div>
 

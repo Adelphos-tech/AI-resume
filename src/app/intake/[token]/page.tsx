@@ -1,3 +1,4 @@
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -8,7 +9,7 @@ import { getCandidateIntake } from "@/server/candidates/intake";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Career Intake | RoleRace",
+  title: "Career Intake | LinkMeU",
   robots: { index: false, follow: false },
 };
 
@@ -29,9 +30,7 @@ export default async function IntakePage({
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-12 sm:py-16">
       <header className="space-y-4">
-        <p className="text-sm font-semibold tracking-wide text-primary">
-          RoleRace
-        </p>
+        <LinkMeuLogo className="h-6" />
         <h1 className="text-3xl font-semibold tracking-tight">Career Intake</h1>
         <div className="space-y-2 text-muted-foreground">
           <p>Hi {resolved.firstName},</p>

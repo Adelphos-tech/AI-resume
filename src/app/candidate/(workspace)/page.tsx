@@ -17,7 +17,7 @@ import {
   type CareerProfileStatus,
 } from "@/server/candidates/dashboard";
 
-export const metadata = { title: "Dashboard — RoleRace" };
+export const metadata = { title: "Dashboard — LinkMeU" };
 
 const PROFILE_LABELS: Record<CareerProfileStatus, string> = {
   not_started: "Not started",

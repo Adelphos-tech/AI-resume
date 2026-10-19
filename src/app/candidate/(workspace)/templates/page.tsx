@@ -4,7 +4,7 @@ import Link from "next/link";
 import { TemplateMiniPreview } from "@/components/candidate/templates/template-mini-preview";
 import { RESUME_TEMPLATES } from "@/lib/resume-schema";
 
-export const metadata = { title: "Templates — RoleRace" };
+export const metadata = { title: "Templates — LinkMeU" };
 
 export default function TemplatesPage() {
   const templates = Object.values(RESUME_TEMPLATES);

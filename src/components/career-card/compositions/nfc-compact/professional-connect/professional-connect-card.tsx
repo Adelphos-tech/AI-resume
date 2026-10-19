@@ -6,6 +6,7 @@ import type {
   CompactCandidate,
   CompactCompany,
 } from "@/components/career-card/dev/nfc-compact-data";
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import { ProfessionalConnectCandidate } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-candidate";
 import { ProfessionalConnectCompany } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-company";
 import { ProfessionalConnectSwitch } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-parts";
@@ -83,18 +84,11 @@ function ProfessionalConnectBrandBar({
 }) {
   return (
     <header className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <span className="grid size-9 place-items-center rounded-xl bg-[var(--nfc-cta)] text-sm font-black text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
-          R
-        </span>
-        <div>
-          <p className="text-sm font-extrabold leading-tight text-slate-900">
-            RoleRace
-          </p>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--nfc-strong)]/60">
-            NFC Profile
-          </p>
-        </div>
+      <div>
+        <LinkMeuLogo className="h-5" />
+        <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--nfc-strong)]/60">
+          NFC Profile
+        </p>
       </div>
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">

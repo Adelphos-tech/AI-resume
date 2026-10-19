@@ -140,7 +140,7 @@ export function CreateResumeForm({
               Target
             </h2>
             <p className="mt-1 text-sm text-stone-500">
-              RoleRace creates this resume from your current Career Profile
+              LinkMeU creates this resume from your current Career Profile
               snapshot.
             </p>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">

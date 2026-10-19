@@ -24,7 +24,7 @@ export const CAREER_CARD_ACCENT_COLORS: readonly CareerCardAccentColor[] = [
   {
     id: "emerald",
     label: "Emerald",
-    description: "RoleRace's signature professional green.",
+    description: "LinkMeU's signature professional green.",
     swatchClass: "bg-emerald-600",
   },
   {

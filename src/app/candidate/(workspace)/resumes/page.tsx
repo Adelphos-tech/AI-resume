@@ -15,7 +15,7 @@ import {
 } from "@/lib/resume-schema";
 import { getCandidateResumes } from "@/server/candidates/resumes";
 
-export const metadata = { title: "Resumes — RoleRace" };
+export const metadata = { title: "Resumes — LinkMeU" };
 
 export default async function CandidateResumesPage() {
   const { list, resumeReady } = await getCandidateResumes();

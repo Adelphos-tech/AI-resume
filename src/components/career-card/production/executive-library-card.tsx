@@ -1,3 +1,4 @@
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import type { PublicCareerProfileDTO } from "@/server/public-profile/public-profile";
 import type {
   CardStyleTokens,
@@ -32,17 +33,10 @@ export function ExecutiveLibraryCard({
         <header className="flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2"
-            aria-label="RoleRace"
+            className="flex items-center"
+            aria-label="LinkMeU home"
           >
-            <span
-              className={`grid size-8 place-items-center rounded-lg text-sm font-black ${t.footerBrand}`}
-            >
-              R
-            </span>
-            <span className="text-xs font-semibold text-stone-500">
-              RoleRace
-            </span>
+            <LinkMeuLogo className="h-6" />
           </Link>
         </header>
       </div>
@@ -63,12 +57,7 @@ export function ExecutiveLibraryCard({
         <span
           className={`inline-flex items-center gap-2 text-xs font-semibold ${t.footer}`}
         >
-          <span
-            className={`grid size-5 place-items-center rounded text-[10px] font-black ${t.footerBrand}`}
-          >
-            R
-          </span>
-          Powered by RoleRace
+          Powered by <LinkMeuLogo className="h-4" />
         </span>
         <span className={`text-xs ${t.footer}`}>
           Made to be scanned. Built to be remembered.

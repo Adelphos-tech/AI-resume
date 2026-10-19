@@ -1,6 +1,6 @@
 import { CandidatePlaceholderPage } from "@/components/candidate/placeholder-page";
 
-export const metadata = { title: "Help — RoleRace" };
+export const metadata = { title: "Help — LinkMeU" };
 
 export default function Page() {
   return (

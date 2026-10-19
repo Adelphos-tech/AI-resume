@@ -25,6 +25,7 @@ import { CompactCard } from "@/components/public-profile/compact-card";
 import { ExecutiveLibraryCard } from "@/components/career-card/production/executive-library-card";
 import { CorporateLibraryCard } from "@/components/career-card/production/corporate-library-card";
 import { NfcCompactLibraryCard } from "@/components/career-card/production/nfc-compact-library-card";
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import {
   BlurFade,
   BorderBeam,
@@ -400,17 +401,8 @@ export function PremiumCareerCard({
       <header
         className={`mx-auto flex w-full ${p.contentMax} items-center justify-between px-4 py-4 sm:px-6`}
       >
-        <Link
-          href="/"
-          className={`flex items-center gap-2 text-lg font-bold tracking-tight ${t.strong}`}
-        >
-          <span
-            aria-hidden
-            className={`grid size-8 place-items-center rounded-lg text-sm font-black ${t.footerBrand}`}
-          >
-            R
-          </span>
-          RoleRace
+        <Link href="/" className="flex items-center" aria-label="LinkMeU home">
+          <LinkMeuLogo className="h-6" />
         </Link>
         <span className={`hidden text-xs sm:inline ${t.faint}`}>
           Built for meaningful careers
@@ -574,13 +566,7 @@ export function PremiumCareerCard({
         <span
           className={`inline-flex items-center gap-2 text-xs font-semibold ${t.footer}`}
         >
-          <span
-            aria-hidden
-            className={`grid size-5 place-items-center rounded text-[10px] font-black ${t.footerBrand}`}
-          >
-            R
-          </span>
-          RoleRace
+          <LinkMeuLogo className="h-4" />
         </span>
         <span className={`text-xs ${t.footer}`}>
           Built for meaningful careers

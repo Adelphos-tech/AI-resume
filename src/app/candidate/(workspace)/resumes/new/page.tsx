@@ -5,7 +5,7 @@ import { CreateResumeForm } from "@/components/candidate/resumes/create-form";
 import { RESUME_TEMPLATES } from "@/lib/resume-schema";
 import { getCandidateResumes } from "@/server/candidates/resumes";
 
-export const metadata = { title: "Create Resume — RoleRace" };
+export const metadata = { title: "Create Resume — LinkMeU" };
 
 export default async function NewResumePage({
   searchParams,

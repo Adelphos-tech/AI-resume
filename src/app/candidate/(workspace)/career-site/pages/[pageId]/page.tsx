@@ -19,7 +19,7 @@ import {
   listMyCareerSiteBlocks,
 } from "@/server/career-site/career-site";
 
-export const metadata = { title: "Career Site Page — RoleRace" };
+export const metadata = { title: "Career Site Page — LinkMeU" };
 
 export default async function CareerSitePageDetail({
   params,

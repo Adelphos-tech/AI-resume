@@ -76,7 +76,7 @@ export function AdminShell({
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader className="px-4 py-4">
-          <Link href="/admin" aria-label="RoleRace dashboard">
+          <Link href="/admin" aria-label="LinkMeU dashboard">
             <BrandMark />
           </Link>
         </SidebarHeader>

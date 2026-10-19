@@ -408,14 +408,14 @@ describe("NfcCompactLibraryCard", () => {
     expect(html).not.toContain("Verified");
   });
 
-  it("does not contain LinkMeU branding", () => {
+  it("renders LinkMeU wordmark branding", () => {
     const html = renderToStaticMarkup(
       createElement(NfcCompactLibraryCard, {
         dto: { ...BASE_DTO, nfcCompactSkinId: "professional-connect" },
         slug: "tester",
       }),
     );
-    expect(html).not.toContain("LinkMeU");
+    expect(html).toContain("linkmeu-wordmark.png");
   });
 
   it("does not contain reference candidate names", () => {

@@ -1,3 +1,4 @@
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Resume | RoleRace",
+  title: "Resume | LinkMeU",
   robots: { index: false, follow: false },
 };
 
@@ -32,9 +33,7 @@ export default async function IntakeResumePage({
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-12 sm:py-16">
       <header className="space-y-4">
-        <p className="text-sm font-semibold tracking-wide text-primary">
-          RoleRace
-        </p>
+        <LinkMeuLogo className="h-6" />
         <h1 className="text-3xl font-semibold tracking-tight">Resume</h1>
         <p className="text-muted-foreground">
           Hi {resolved.firstName}, upload your current resume.

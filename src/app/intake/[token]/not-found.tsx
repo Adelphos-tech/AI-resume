@@ -1,11 +1,10 @@
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import Link from "next/link";
 
 export default function IntakeNotFound() {
   return (
     <main className="mx-auto flex min-h-svh w-full max-w-xl flex-col justify-center px-6 py-16">
-      <p className="text-sm font-semibold tracking-wide text-primary">
-        RoleRace
-      </p>
+      <LinkMeuLogo className="h-6" />
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">
         Intake link unavailable
       </h1>
@@ -13,14 +12,14 @@ export default function IntakeNotFound() {
         This link is invalid or no longer available.
       </p>
       <p className="mt-3 text-muted-foreground">
-        Contact the RoleRace team for a new link.
+        Contact the LinkMeU team for a new link.
       </p>
       <p className="mt-8">
         <Link
           href="/"
           className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
         >
-          Return to RoleRace
+          Return to LinkMeU
         </Link>
       </p>
     </main>

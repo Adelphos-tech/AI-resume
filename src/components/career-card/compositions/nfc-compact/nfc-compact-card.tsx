@@ -6,6 +6,7 @@ import type {
   CompactCandidate,
   CompactCompany,
 } from "@/components/career-card/dev/nfc-compact-data";
+import { LinkMeuLogo } from "@/components/marketing/link-meu-logo";
 import { NfcCompactCandidate } from "@/components/career-card/compositions/nfc-compact/nfc-compact-candidate";
 import { NfcCompactCompany } from "@/components/career-card/compositions/nfc-compact/nfc-compact-company";
 import { ProfileSwitch } from "@/components/career-card/compositions/nfc-compact/nfc-compact-parts";
@@ -96,18 +97,11 @@ function NfcCompactBrandBar({
 }) {
   return (
     <header className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <span className="grid size-9 place-items-center rounded-xl bg-[var(--nfc-cta)] text-sm font-black text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
-          R
-        </span>
-        <div>
-          <p className="text-sm font-extrabold leading-tight text-blue-950">
-            RoleRace
-          </p>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--nfc-strong)]/60">
-            NFC Career Card
-          </p>
-        </div>
+      <div>
+        <LinkMeuLogo className="h-5" />
+        <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--nfc-strong)]/60">
+          NFC Career Card
+        </p>
       </div>
       {shareUrl && <NfcCompactQr url={shareUrl} accentStyle={accentStyle} />}
     </header>

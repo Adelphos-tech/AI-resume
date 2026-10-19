@@ -318,7 +318,7 @@ export function IntakeForm({
             Intake submitted
           </h2>
           <p className="text-sm text-muted-foreground">
-            Thank you. Your information has been received by the RoleRace team.
+            Thank you. Your information has been received by the LinkMeU team.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
