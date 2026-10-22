@@ -8,6 +8,11 @@ import {
   DEMO_COMPANY_SPARSE,
 } from "@/components/career-card/dev/nfc-compact-data";
 import { NfcCompactCard } from "@/components/career-card/compositions/nfc-compact/nfc-compact-card";
+import { nfcCompactAccentStyle } from "@/components/career-card/compositions/nfc-compact/nfc-compact-accents";
+import {
+  CAREER_CARD_ACCENT_COLORS,
+  type CareerCardAccentColorId,
+} from "@/lib/career-card-accent-colors";
 
 const btn = (on: boolean) =>
   `rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
@@ -19,6 +24,7 @@ const btn = (on: boolean) =>
 export function NfcCompactLab() {
   const [active, setActive] = useState<"candidate" | "company">("candidate");
   const [density, setDensity] = useState<"rich" | "sparse">("rich");
+  const [accent, setAccent] = useState<CareerCardAccentColorId>("blue");
   return (
     <div className="min-h-dvh bg-stone-100">
       <header className="sticky top-0 z-50 border-b border-stone-200/60 bg-white/90 backdrop-blur">
@@ -29,7 +35,23 @@ export function NfcCompactLab() {
           <span className="text-xs text-stone-400">
             dev-only · dual profile
           </span>
-          <div className="ml-auto flex items-center gap-1.5">
+          <div className="ml-auto flex flex-wrap items-center gap-1.5">
+            {CAREER_CARD_ACCENT_COLORS.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                onClick={() => setAccent(a.id)}
+                aria-label={`${a.label} accent`}
+                className={`flex items-center gap-1.5 ${btn(accent === a.id)}`}
+              >
+                <span
+                  aria-hidden
+                  className={`size-2.5 rounded-full ${a.swatchClass}`}
+                />
+                {a.label}
+              </button>
+            ))}
+            <span className="mx-1 h-4 w-px bg-stone-300" />
             {(["rich", "sparse"] as const).map((v) => (
               <button
                 key={v}
@@ -51,6 +73,7 @@ export function NfcCompactLab() {
             density === "rich" ? DEMO_CANDIDATE_RICH : DEMO_CANDIDATE_SPARSE
           }
           company={density === "rich" ? DEMO_COMPANY_RICH : DEMO_COMPANY_SPARSE}
+          accentStyle={nfcCompactAccentStyle(accent)}
         />
         <p className="mt-10 text-center text-xs text-stone-400">
           Synthetic demo data · development only

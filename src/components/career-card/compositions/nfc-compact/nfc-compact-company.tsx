@@ -18,6 +18,7 @@ import {
   XIcon,
   YouTubeIcon,
 } from "@/components/career-card/primitives/brand-icons";
+import type { CSSProperties } from "react";
 import type { CompactCompany } from "@/components/career-card/dev/nfc-compact-data";
 import {
   CompactActionCard,
@@ -48,10 +49,13 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
     "grid-cols-1 sm:grid-cols-3",
   );
   return (
-    <div className="space-y-3">
+    <div
+      className="pm-fade space-y-3"
+      style={{ animationDelay: "0.14s" } as CSSProperties}
+    >
       {/* company header — logo left, identity + contact */}
       <div className="flex gap-3.5">
-        <div className="shrink-0 self-start rounded-2xl border border-stone-200 bg-white p-1">
+        <div className="shrink-0 self-start rounded-2xl border border-stone-200 bg-white p-1 shadow-[0_8px_20px_-10px_rgba(41,37,36,0.2)]">
           {c.logo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -70,7 +74,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
           )}
         </div>
         <div className="min-w-0">
-          <h1 className="text-2xl font-extrabold tracking-tight text-blue-950">
+          <h1 className="text-2xl leading-tight font-extrabold tracking-tight text-blue-950">
             {c.companyName}
           </h1>
           {c.tagline && (

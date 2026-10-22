@@ -4,6 +4,9 @@ import { useResponsiveClasses } from "@/components/candidate/public-profile/prev
 
 /** Shared pieces for the NFC Compact (Dual Profile) template lab. */
 
+export const COMPACT_CARD_SHADOW =
+  "shadow-[0_1px_2px_rgba(41,37,36,0.05),0_8px_24px_-14px_rgba(41,37,36,0.16)]";
+
 /** Card with icon tile + label + body — matches the reference cards. */
 export function CompactSection({
   icon,
@@ -15,7 +18,9 @@ export function CompactSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-stone-200/70 border-l-[3px] border-l-[var(--nfc-cta)] bg-white p-4">
+    <section
+      className={`rounded-2xl border border-stone-200/70 border-l-[3px] border-l-[var(--nfc-cta)] bg-white p-4 ${COMPACT_CARD_SHADOW}`}
+    >
       <div className="flex items-center gap-2.5">
         <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--nfc-cta)]/10 text-[var(--nfc-strong)]">
           {icon}
@@ -65,7 +70,9 @@ export function CompactMiniCard({
   const items = lines.filter(Boolean) as string[];
   if (!items.length) return null;
   return (
-    <div className="relative min-w-0 rounded-xl border border-stone-200/70 bg-white p-3.5">
+    <div
+      className={`relative min-w-0 rounded-xl border border-stone-200/70 bg-white p-3.5 ${COMPACT_CARD_SHADOW}`}
+    >
       {/* credential corner mark */}
       <span
         aria-hidden
@@ -119,8 +126,11 @@ export function CompactActionCard({
   description: string;
   href?: string | null;
 }) {
-  const cls =
-    "group flex w-full items-center gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 text-left transition hover:border-[var(--nfc-cta)]/40 hover:ring-2 hover:ring-[var(--nfc-cta)]/15";
+  const cls = `group flex w-full items-center gap-3 rounded-2xl border border-stone-200/70 bg-white p-4 text-left ${COMPACT_CARD_SHADOW}${
+    href
+      ? " transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--nfc-cta)]/40 hover:shadow-[0_1px_2px_rgba(41,37,36,0.05),0_14px_32px_-14px_rgba(41,37,36,0.22)] hover:ring-2 hover:ring-[var(--nfc-cta)]/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)] active:translate-y-0"
+      : ""
+  }`;
   const inner = (
     <>
       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--nfc-cta)]/10 text-[var(--nfc-strong)]">
@@ -134,7 +144,7 @@ export function CompactActionCard({
       </div>
       <ChevronRight
         aria-hidden
-        className="size-4 shrink-0 text-[var(--nfc-strong)]/50"
+        className="size-4 shrink-0 text-[var(--nfc-strong)]/50 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-[var(--nfc-cta)]"
       />
     </>
   );
@@ -158,7 +168,8 @@ export function ProfileSwitch({
     <div
       role="tablist"
       aria-label="Profile type"
-      className="mx-auto grid w-full max-w-xs grid-cols-2 rounded-full bg-stone-100 p-1 ring-1 ring-stone-200/60"
+      className="pm-fade mx-auto grid w-full max-w-xs grid-cols-2 rounded-full bg-stone-100 p-1 ring-1 ring-stone-200/60"
+      style={{ animationDelay: "0.1s" }}
     >
       {(["candidate", "company"] as const).map((id) => (
         <button
@@ -166,9 +177,9 @@ export function ProfileSwitch({
           role="tab"
           aria-selected={value === id}
           onClick={() => onChange(id)}
-          className={`rounded-full py-1.5 text-sm font-semibold transition ${
+          className={`rounded-full py-1.5 text-sm font-semibold transition-all duration-200 active:scale-[0.98] ${
             value === id
-              ? "bg-[var(--nfc-cta)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
+              ? "bg-[var(--nfc-cta)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_4px_12px_-4px_var(--nfc-cta)]"
               : "text-stone-500 hover:text-stone-700"
           }`}
         >
@@ -194,7 +205,7 @@ export function SocialTile({
     <a
       href={href}
       aria-label={label}
-      className="grid size-8 place-items-center rounded-full bg-[var(--nfc-cta)] text-white transition hover:bg-[var(--nfc-cta-hover)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)]"
+      className="grid size-8 place-items-center rounded-full bg-[var(--nfc-cta)] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--nfc-cta-hover)] hover:shadow-[0_6px_14px_-6px_var(--nfc-cta)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)] active:translate-y-0 active:scale-95"
     >
       {children}
     </a>

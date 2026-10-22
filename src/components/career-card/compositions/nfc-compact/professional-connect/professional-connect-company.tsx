@@ -18,9 +18,12 @@ import {
   XIcon,
   YouTubeIcon,
 } from "@/components/career-card/primitives/brand-icons";
+import type { CSSProperties } from "react";
 import type { CompactCompany } from "@/components/career-card/dev/nfc-compact-data";
 import {
+  PROFCONN_CARD_SHADOW,
   ProfessionalConnectActionCard,
+  ProfessionalConnectContactRow,
   ProfessionalConnectMiniCard,
   ProfessionalConnectSection,
   ProfessionalConnectSocialTile,
@@ -54,10 +57,15 @@ export function ProfessionalConnectCompany({
     "grid-cols-1 sm:grid-cols-3",
   );
   return (
-    <div className="space-y-4">
+    <div
+      className="pm-fade space-y-5"
+      style={{ "--pm-delay": "0.14s" } as CSSProperties}
+    >
       {/* company header — logo left, identity right */}
       <div className="flex gap-3.5">
-        <div className="shrink-0 self-start rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+        <div
+          className={`shrink-0 self-start rounded-2xl border border-slate-200 bg-white p-1 ${PROFCONN_CARD_SHADOW}`}
+        >
           {c.logo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -75,7 +83,7 @@ export function ProfessionalConnectCompany({
         </div>
         <div className="min-w-0 flex-1">
           <h1
-            className={`font-extrabold tracking-tight text-slate-900 ${nameSize}`}
+            className={`font-extrabold leading-tight tracking-tight text-slate-900 ${nameSize}`}
           >
             {c.companyName}
           </h1>
@@ -92,22 +100,14 @@ export function ProfessionalConnectCompany({
             </p>
           )}
           <div className="mt-2 space-y-1">
-            {(c.publicPhone || c.publicEmail) && (
-              <>
-                {c.publicPhone && (
-                  <p className="flex items-center gap-1.5 text-xs text-slate-600">
-                    <Phone className="size-3 text-slate-400" />
-                    {c.publicPhone}
-                  </p>
-                )}
-                {c.publicEmail && (
-                  <p className="flex items-center gap-1.5 text-xs text-slate-600">
-                    <Mail className="size-3 text-slate-400" />
-                    {c.publicEmail}
-                  </p>
-                )}
-              </>
-            )}
+            <ProfessionalConnectContactRow
+              icon={<Phone />}
+              value={c.publicPhone}
+            />
+            <ProfessionalConnectContactRow
+              icon={<Mail />}
+              value={c.publicEmail}
+            />
           </div>
         </div>
       </div>

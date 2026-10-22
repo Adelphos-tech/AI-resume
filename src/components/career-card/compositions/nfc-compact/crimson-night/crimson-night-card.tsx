@@ -35,7 +35,7 @@ function CrimsonNightFrame({ children }: { children: ReactNode }) {
   return (
     <div
       style={CRIMSON_NIGHT_VARS}
-      className={`relative mx-auto w-full overflow-hidden rounded-[2rem] border border-white/10 bg-[var(--cn-base)] shadow-[0_32px_72px_-24px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.03)] ${maxW}`}
+      className={`pm-fade relative mx-auto w-full overflow-hidden rounded-[2rem] border border-white/10 bg-[var(--cn-base)] shadow-[0_32px_72px_-24px_rgba(0,0,0,0.75),0_0_0_1px_rgba(255,255,255,0.03)] ${maxW}`}
     >
       {/* crimson edge rail */}
       <div
@@ -91,9 +91,12 @@ function CrimsonNightFrame({ children }: { children: ReactNode }) {
 
 function CrimsonNightBrandBar({ shareUrl }: { shareUrl?: string | null }) {
   return (
-    <header className="flex items-center justify-between">
+    <header
+      className="pm-fade flex items-center justify-between"
+      style={{ animationDelay: "0.06s" }}
+    >
       <div>
-        <LinkMeuLogo className="h-6 sm:h-7" />
+        <LinkMeuLogo className="h-6 sm:h-7" variant="dark" />
         <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--cn-hi)]/70">
           NFC Career Card
         </p>
@@ -124,11 +127,11 @@ function CrimsonNightCta({
 }) {
   const label = active === "candidate" ? "Get in Touch" : "Contact Us";
   const cls =
-    "mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--cn-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_10px_24px_-10px_rgba(185,28,28,0.55)] transition hover:bg-[var(--cn-cta-hover)] active:translate-y-px";
+    "pm-fade mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--cn-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_10px_24px_-10px_rgba(185,28,28,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--cn-cta-hover)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_16px_32px_-10px_rgba(185,28,28,0.65)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cn-hi)] active:translate-y-0 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_12px_-6px_rgba(185,28,28,0.45)]";
 
   if (cta === undefined) {
     return (
-      <button type="button" className={cls}>
+      <button type="button" className={cls} style={{ animationDelay: "0.2s" }}>
         <Send className="size-4 -rotate-12" aria-hidden />
         {label}
       </button>
@@ -136,7 +139,7 @@ function CrimsonNightCta({
   }
   if (cta) {
     return (
-      <a href={cta.href} className={cls}>
+      <a href={cta.href} className={cls} style={{ animationDelay: "0.2s" }}>
         <Send className="size-4 -rotate-12" aria-hidden />
         {cta.label}
       </a>

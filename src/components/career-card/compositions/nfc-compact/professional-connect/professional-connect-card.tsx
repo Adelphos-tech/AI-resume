@@ -40,12 +40,17 @@ function ProfessionalConnectFrame({
   return (
     <div
       style={accentStyle}
-      className={`relative mx-auto w-full overflow-hidden rounded-[2rem] border border-slate-200/80 bg-gradient-to-b from-slate-50 to-white shadow-[0_24px_60px_-28px_rgba(30,58,138,0.18)] ${maxW}`}
+      className={`pm-fade relative mx-auto w-full overflow-hidden rounded-[2rem] border border-slate-200/60 bg-gradient-to-b from-slate-50 to-white shadow-[0_32px_80px_-32px_rgba(30,58,138,0.24)] ${maxW}`}
     >
       {/* subtle top accent line */}
       <div
         aria-hidden
         className="pointer-events-none absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent via-[var(--nfc-cta)]/60 to-transparent"
+      />
+      {/* faint accent glow under the header — static depth, no motion */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(75%_100%_at_50%_0%,color-mix(in_srgb,var(--nfc-cta)_6%,transparent),transparent_70%)]"
       />
       {/* decorative bottom wave — CSS-only */}
       <div
@@ -83,7 +88,10 @@ function ProfessionalConnectBrandBar({
   accentStyle?: CSSProperties;
 }) {
   return (
-    <header className="flex items-center justify-between">
+    <header
+      className="pm-fade flex items-center justify-between"
+      style={{ "--pm-delay": "0.06s" } as CSSProperties}
+    >
       <div>
         <LinkMeuLogo className="h-6 sm:h-7" />
         <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--nfc-strong)]/60">
@@ -91,7 +99,7 @@ function ProfessionalConnectBrandBar({
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">
+        <div className="flex items-center gap-1.5 rounded-full bg-[var(--nfc-cta)]/10 px-2.5 py-1 text-[10px] font-semibold text-[var(--nfc-strong)]/80">
           <svg
             viewBox="0 0 24 24"
             className="size-4"
@@ -121,7 +129,7 @@ function ProfessionalConnectCta({
   const isCandidate = active === "candidate";
   const label = isCandidate ? "Get in Touch" : "Contact Us";
   const cls =
-    "mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nfc-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_20px_-10px_var(--nfc-cta)] transition hover:bg-[var(--nfc-cta-hover)] active:translate-y-px";
+    "pm-fade mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nfc-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_20px_-10px_var(--nfc-cta)] transition-all duration-200 [--pm-delay:0.2s] hover:-translate-y-0.5 hover:bg-[var(--nfc-cta-hover)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_14px_28px_-10px_var(--nfc-cta)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)] active:translate-y-0";
 
   if (cta === undefined) {
     return (

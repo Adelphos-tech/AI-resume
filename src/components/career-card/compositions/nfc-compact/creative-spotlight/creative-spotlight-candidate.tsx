@@ -13,6 +13,7 @@ import {
   LinkedInIcon,
   WhatsAppIcon,
 } from "@/components/career-card/primitives/brand-icons";
+import type { CSSProperties } from "react";
 import type { CompactCandidate } from "@/components/career-card/dev/nfc-compact-data";
 import {
   CreativeSpotlightActionCard,
@@ -50,12 +51,20 @@ export function CreativeSpotlightCandidate({
     "grid-cols-1 sm:grid-cols-2",
   );
   return (
-    <div className="space-y-4">
+    <div
+      className="pm-fade space-y-5"
+      style={{ animationDelay: "0.14s" } as CSSProperties}
+    >
       {/* identity header — large portrait, name, headline, location */}
       <div className="flex flex-col items-center gap-3 text-center">
         <div className="relative">
+          {/* soft spotlight halo behind portrait */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -inset-4 rounded-full bg-[radial-gradient(circle_at_50%_45%,color-mix(in_srgb,var(--nfc-cta)_16%,transparent),transparent_70%)]"
+          />
           <div
-            className={`overflow-hidden rounded-full border-4 border-white shadow-lg ring-2 ring-[var(--nfc-cta)]/20 ${portraitSize}`}
+            className={`overflow-hidden rounded-full border-4 border-white shadow-[0_14px_36px_-10px_color-mix(in_srgb,var(--nfc-cta)_38%,transparent)] ring-2 ring-[var(--nfc-cta)]/25 ${portraitSize}`}
           >
             {c.portrait ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -73,7 +82,7 @@ export function CreativeSpotlightCandidate({
         </div>
         <div>
           <h1
-            className={`font-extrabold tracking-tight text-stone-900 ${nameSize}`}
+            className={`font-extrabold leading-tight tracking-tight text-stone-900 ${nameSize}`}
           >
             {c.name}
           </h1>
@@ -202,7 +211,7 @@ export function CreativeSpotlightCandidate({
 
       {/* availability */}
       {c.availability && (
-        <div className="flex items-center justify-center gap-2 rounded-full bg-emerald-50 px-4 py-2">
+        <div className="flex items-center justify-center gap-2 rounded-full bg-emerald-50 px-4 py-2 shadow-[0_4px_14px_-6px_rgba(5,150,105,0.3)]">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/90 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
             <span className="size-1.5 rounded-full bg-white" />
             {c.availability}

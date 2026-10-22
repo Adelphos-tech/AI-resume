@@ -20,6 +20,7 @@ import {
   XIcon,
   YouTubeIcon,
 } from "@/components/career-card/primitives/brand-icons";
+import type { CSSProperties } from "react";
 import type { CompactCompany } from "@/components/career-card/dev/nfc-compact-data";
 import {
   CreativeSpotlightActionCard,
@@ -56,19 +57,27 @@ export function CreativeSpotlightCompany({
     "grid-cols-1 sm:grid-cols-3",
   );
   return (
-    <div className="space-y-4">
+    <div
+      className="pm-fade space-y-5"
+      style={{ animationDelay: "0.14s" } as CSSProperties}
+    >
       {/* company header — logo, name, tagline, contact */}
-      <div className="flex flex-col items-center gap-3 text-center">
+      <div className="relative flex flex-col items-center gap-3 text-center">
+        {/* soft spotlight halo behind logo */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -top-2 left-1/2 h-36 w-56 -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--nfc-cta)_16%,transparent),transparent)]"
+        />
         {c.logo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={c.logo}
             alt={c.companyName}
-            className={`block w-auto rounded-2xl border-4 border-white bg-white object-contain p-1 shadow-lg ring-2 ring-[var(--nfc-cta)]/20 ${logoBox}`}
+            className={`block w-auto rounded-2xl border-4 border-white bg-white object-contain p-1 shadow-[0_14px_36px_-10px_color-mix(in_srgb,var(--nfc-cta)_35%,transparent)] ring-2 ring-[var(--nfc-cta)]/25 ${logoBox}`}
           />
         ) : (
           <div
-            className={`overflow-hidden rounded-2xl border-4 border-white shadow-lg ring-2 ring-[var(--nfc-cta)]/20 ${logoFallback}`}
+            className={`overflow-hidden rounded-2xl border-4 border-white shadow-[0_14px_36px_-10px_color-mix(in_srgb,var(--nfc-cta)_35%,transparent)] ring-2 ring-[var(--nfc-cta)]/25 ${logoFallback}`}
           >
             <span className="grid size-full place-items-center bg-gradient-to-br from-[var(--nfc-cta)] to-[var(--nfc-cta-hover)] text-2xl font-black text-white">
               {c.companyName[0]}
@@ -77,7 +86,7 @@ export function CreativeSpotlightCompany({
         )}
         <div>
           <h1
-            className={`font-extrabold tracking-tight text-stone-900 ${nameSize}`}
+            className={`font-extrabold leading-tight tracking-tight text-stone-900 ${nameSize}`}
           >
             {c.companyName}
           </h1>
@@ -135,18 +144,18 @@ export function CreativeSpotlightCompany({
           {c.publicPhone && (
             <a
               href={`tel:${c.publicPhone}`}
-              className="flex items-center gap-1.5 text-xs text-stone-600 transition hover:text-[var(--nfc-strong)]"
+              className="flex items-center gap-1.5 text-xs text-stone-600 transition hover:text-[var(--nfc-strong)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)]"
             >
-              <Phone className="size-3 text-stone-400" />
+              <Phone className="size-3 text-[var(--nfc-strong)]/60" />
               {c.publicPhone}
             </a>
           )}
           {c.publicEmail && (
             <a
               href={`mailto:${c.publicEmail}`}
-              className="flex items-center gap-1.5 text-xs text-stone-600 transition hover:text-[var(--nfc-strong)]"
+              className="flex items-center gap-1.5 text-xs text-stone-600 transition hover:text-[var(--nfc-strong)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)]"
             >
-              <Mail className="size-3 text-stone-400" />
+              <Mail className="size-3 text-[var(--nfc-strong)]/60" />
               {c.publicEmail}
             </a>
           )}

@@ -15,6 +15,7 @@ import {
   LinkedInIcon,
   WhatsAppIcon,
 } from "@/components/career-card/primitives/brand-icons";
+import type { CSSProperties } from "react";
 import type { CompactCandidate } from "@/components/career-card/dev/nfc-compact-data";
 import {
   CrimsonActionCard,
@@ -48,7 +49,10 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
     "grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-2",
   );
   return (
-    <div className="space-y-4">
+    <div
+      className="pm-fade space-y-4"
+      style={{ animationDelay: "0.14s" } as CSSProperties}
+    >
       {/* cover band — dark atmosphere over the real cover, crimson edge */}
       {c.cover && (
         <div
@@ -98,7 +102,7 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
             className="w-1 shrink-0 self-stretch rounded-full bg-[var(--cn-cta)]/80"
           />
           <div className="min-w-0">
-            <h1 className="text-2xl font-extrabold tracking-tight text-[var(--cn-text)]">
+            <h1 className="text-2xl leading-tight font-extrabold tracking-tight text-[var(--cn-text)]">
               {c.name}
             </h1>
             {c.headline && (
@@ -205,7 +209,7 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
             />
           )}
           {c.availability && (
-            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[var(--cn-elev)] p-4">
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[var(--cn-elev)] p-4 shadow-[0_2px_4px_rgba(0,0,0,0.35),0_14px_30px_-14px_rgba(0,0,0,0.65)]">
               <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--cn-cta)]/15 text-[var(--cn-hi)]">
                 <CheckCircle2 className="size-4" />
               </span>

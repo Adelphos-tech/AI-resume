@@ -40,7 +40,7 @@ function NfcCompactFrame({
   return (
     <div
       style={accentStyle}
-      className={`relative mx-auto w-full overflow-hidden rounded-[2rem] border border-stone-200/80 bg-[#fafaf9] shadow-[0_24px_60px_-28px_rgba(41,37,36,0.28)] ${maxW}`}
+      className={`pm-fade relative mx-auto w-full overflow-hidden rounded-[2rem] border border-stone-200/80 bg-[#fafaf9] shadow-[0_24px_60px_-28px_rgba(41,37,36,0.28)] ${maxW}`}
     >
       {/* credential edge rail + subtle cool tint — pure CSS, non-interactive */}
       <div
@@ -96,7 +96,10 @@ function NfcCompactBrandBar({
   accentStyle?: CSSProperties;
 }) {
   return (
-    <header className="flex items-center justify-between">
+    <header
+      className="pm-fade flex items-center justify-between"
+      style={{ animationDelay: "0.06s" }}
+    >
       <div>
         <LinkMeuLogo className="h-6 sm:h-7" />
         <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--nfc-strong)]/60">
@@ -129,11 +132,11 @@ function NfcCompactCta({
 }) {
   const label = active === "candidate" ? "Get in Touch" : "Contact Us";
   const cls =
-    "mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nfc-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_20px_-10px_var(--nfc-cta)] transition hover:bg-[var(--nfc-cta-hover)] active:translate-y-px";
+    "pm-fade mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nfc-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_20px_-10px_var(--nfc-cta)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--nfc-cta-hover)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_14px_28px_-10px_var(--nfc-cta)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)] active:translate-y-0 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_4px_12px_-6px_var(--nfc-cta)]";
 
   if (cta === undefined) {
     return (
-      <button type="button" className={cls}>
+      <button type="button" className={cls} style={{ animationDelay: "0.2s" }}>
         <Send className="size-4 -rotate-12" aria-hidden />
         {label}
       </button>
@@ -141,7 +144,7 @@ function NfcCompactCta({
   }
   if (cta) {
     return (
-      <a href={cta.href} className={cls}>
+      <a href={cta.href} className={cls} style={{ animationDelay: "0.2s" }}>
         <Send className="size-4 -rotate-12" aria-hidden />
         {cta.label}
       </a>
@@ -155,7 +158,7 @@ function NfcCompactCta({
 /**
  * NFC Compact / Dual Profile template — dev-only lab.
  * Compact, dense, action-oriented professional NFC identity card.
- * Static; no motion; no persistence.
+ * No persistence.
  */
 export function NfcCompactCard({
   candidate,

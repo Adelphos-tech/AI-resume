@@ -15,6 +15,7 @@ import {
   LinkedInIcon,
   WhatsAppIcon,
 } from "@/components/career-card/primitives/brand-icons";
+import type { CSSProperties } from "react";
 import type { CompactCandidate } from "@/components/career-card/dev/nfc-compact-data";
 import {
   CompactActionCard,
@@ -44,10 +45,13 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
     "grid-cols-1 sm:grid-cols-2",
   );
   return (
-    <div className="space-y-3">
+    <div
+      className="pm-fade space-y-3"
+      style={{ animationDelay: "0.14s" } as CSSProperties}
+    >
       {/* identity header — portrait left, compact contact rows */}
       <div className="flex gap-4">
-        <div className="shrink-0 self-start rounded-full border border-stone-200 bg-white p-1">
+        <div className="shrink-0 self-start rounded-full border border-stone-200 bg-white p-1 shadow-[0_8px_20px_-10px_rgba(41,37,36,0.2)]">
           <div
             className={`overflow-hidden rounded-full ring-2 ring-[var(--nfc-cta)]/80 ${portraitSize}`}
           >
@@ -71,7 +75,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
             className="w-1 shrink-0 self-stretch rounded-full bg-[var(--nfc-cta)]/70"
           />
           <div className="min-w-0">
-            <h1 className="text-2xl font-extrabold tracking-tight text-blue-950">
+            <h1 className="text-2xl leading-tight font-extrabold tracking-tight text-blue-950">
               {c.name}
             </h1>
             {c.headline && (
@@ -187,7 +191,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
             />
           )}
           {c.availability && (
-            <div className="flex items-center gap-3 rounded-2xl border border-stone-200/70 bg-stone-50/60 p-4">
+            <div className="flex items-center gap-3 rounded-2xl border border-stone-200/70 bg-stone-50/60 p-4 shadow-[0_1px_2px_rgba(41,37,36,0.05),0_8px_24px_-14px_rgba(41,37,36,0.12)]">
               <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--nfc-cta)]/10 text-[var(--nfc-strong)]">
                 <CheckCircle2 className="size-4" />
               </span>

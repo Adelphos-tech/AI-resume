@@ -466,7 +466,7 @@ export function ModeCinematicCard({
       style={CINEMATIC_ACCENT_VARS[accent]}
     >
       <div className="mx-auto flex max-w-5xl items-center gap-2 px-3 pt-4">
-        <LinkMeuLogo className="h-7" />
+        <LinkMeuLogo className="h-7" variant="dark" />
         <span className="ml-auto rounded-full border border-[color:var(--cc-edge)] bg-[var(--cc-tint)] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--cc-text)]">
           {v.recipe.contextLabel}
         </span>
@@ -509,7 +509,7 @@ export function ModeCinematicCard({
       </div>
       <footer className="mx-auto flex max-w-5xl flex-col items-center gap-2 px-6 pb-8 pt-6">
         <span className="inline-flex items-center gap-2 text-xs font-semibold text-stone-500">
-          Powered by <LinkMeuLogo className="h-4" />
+          Powered by <LinkMeuLogo className="h-4" variant="dark" />
         </span>
         <span className="text-xs text-stone-600">
           Made to be scanned. Built to be remembered.

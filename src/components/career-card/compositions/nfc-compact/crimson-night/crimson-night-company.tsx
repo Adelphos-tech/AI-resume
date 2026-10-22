@@ -18,6 +18,7 @@ import {
   XIcon,
   YouTubeIcon,
 } from "@/components/career-card/primitives/brand-icons";
+import type { CSSProperties } from "react";
 import type { CompactCompany } from "@/components/career-card/dev/nfc-compact-data";
 import {
   CrimsonActionCard,
@@ -51,7 +52,10 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
     "grid-cols-1 sm:grid-cols-3",
   );
   return (
-    <div className="space-y-4">
+    <div
+      className="pm-fade space-y-4"
+      style={{ animationDelay: "0.14s" } as CSSProperties}
+    >
       {/* cover band — shared card cover treatment */}
       {c.cover && (
         <div
@@ -97,7 +101,7 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
         </div>
         <div className="min-w-0">
           <h1
-            className={`font-extrabold tracking-tight text-[var(--cn-text)] ${nameSize}`}
+            className={`font-extrabold leading-tight tracking-tight text-[var(--cn-text)] ${nameSize}`}
           >
             {c.companyName}
           </h1>

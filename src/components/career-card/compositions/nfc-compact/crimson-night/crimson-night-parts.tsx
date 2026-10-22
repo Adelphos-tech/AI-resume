@@ -24,10 +24,13 @@ export const CRIMSON_NIGHT_VARS = {
   "--cn-raise": "#1C1C1F",
   "--cn-text": "#FAFAF9",
   "--cn-muted": "#A1A1AA",
-  "--cn-faint": "#71717A",
+  "--cn-faint": "#8B8B94",
   "--cn-border": "rgba(255,255,255,0.08)",
   "--cn-border-strong": "rgba(255,255,255,0.14)",
 } as CSSProperties;
+
+const CN_CARD_SHADOW =
+  "shadow-[0_2px_4px_rgba(0,0,0,0.35),0_14px_30px_-14px_rgba(0,0,0,0.65)]";
 
 /** Section panel — elevated dark surface with a restrained crimson edge. */
 export function CrimsonSection({
@@ -40,7 +43,9 @@ export function CrimsonSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-white/10 border-l-[3px] border-l-[var(--cn-cta)] bg-[var(--cn-elev)] p-4">
+    <section
+      className={`rounded-2xl border border-white/10 border-l-[3px] border-l-[var(--cn-cta)] bg-[var(--cn-elev)] p-4 ${CN_CARD_SHADOW}`}
+    >
       <div className="flex items-center gap-2.5">
         <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[var(--cn-cta)]/15 text-[var(--cn-hi)]">
           {icon}
@@ -90,7 +95,9 @@ export function CrimsonMiniCard({
   const items = lines.filter(Boolean) as string[];
   if (!items.length) return null;
   return (
-    <div className="relative min-w-0 rounded-xl border border-white/10 bg-[var(--cn-elev)] p-3.5">
+    <div
+      className={`relative min-w-0 rounded-xl border border-white/10 bg-[var(--cn-elev)] p-3.5 ${CN_CARD_SHADOW}`}
+    >
       {/* credential corner mark */}
       <span
         aria-hidden
@@ -142,8 +149,11 @@ export function CrimsonActionCard({
   description: string;
   href?: string | null;
 }) {
-  const cls =
-    "group flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-[var(--cn-elev)] p-4 text-left transition hover:border-[var(--cn-cta)]/40 hover:ring-2 hover:ring-[var(--cn-cta)]/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cn-hi)]";
+  const cls = `group flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-[var(--cn-elev)] p-4 text-left ${CN_CARD_SHADOW}${
+    href
+      ? " transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--cn-cta)]/40 hover:shadow-[0_2px_4px_rgba(0,0,0,0.35),0_18px_36px_-14px_rgba(0,0,0,0.75)] hover:ring-2 hover:ring-[var(--cn-cta)]/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cn-hi)] active:translate-y-0"
+      : ""
+  }`;
   const inner = (
     <>
       <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[var(--cn-cta)]/15 text-[var(--cn-hi)]">
@@ -157,7 +167,7 @@ export function CrimsonActionCard({
       </div>
       <ChevronRight
         aria-hidden
-        className="size-4 shrink-0 text-[var(--cn-faint)] transition group-hover:text-[var(--cn-hi)]"
+        className="size-4 shrink-0 text-[var(--cn-faint)] transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-[var(--cn-hi)]"
       />
     </>
   );
@@ -181,7 +191,8 @@ export function CrimsonSwitch({
     <div
       role="tablist"
       aria-label="Profile type"
-      className="mx-auto grid w-full max-w-xs grid-cols-2 rounded-full bg-[var(--cn-raise)] p-1 ring-1 ring-white/10"
+      className="pm-fade mx-auto grid w-full max-w-xs grid-cols-2 rounded-full bg-[var(--cn-raise)] p-1 ring-1 ring-white/10"
+      style={{ animationDelay: "0.1s" }}
     >
       {(["candidate", "company"] as const).map((id) => (
         <button
@@ -189,9 +200,9 @@ export function CrimsonSwitch({
           role="tab"
           aria-selected={value === id}
           onClick={() => onChange(id)}
-          className={`rounded-full py-1.5 text-sm font-semibold transition ${
+          className={`rounded-full py-1.5 text-sm font-semibold transition-all duration-200 active:scale-[0.98] ${
             value === id
-              ? "bg-[var(--cn-cta)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]"
+              ? "bg-[var(--cn-cta)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_4px_14px_-4px_var(--cn-cta)]"
               : "text-[var(--cn-faint)] hover:text-[var(--cn-muted)]"
           }`}
         >
@@ -220,7 +231,7 @@ export function CrimsonSocialTile({
     <a
       href={href}
       aria-label={label}
-      className="grid size-8 place-items-center rounded-full border border-[var(--cn-border-strong)] bg-[var(--cn-raise)] text-[var(--cn-text)] transition hover:border-[var(--cn-cta)]/60 hover:bg-[var(--cn-cta)]/20 hover:text-[var(--cn-hi)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cn-hi)]"
+      className="grid size-8 place-items-center rounded-full border border-[var(--cn-border-strong)] bg-[var(--cn-raise)] text-[var(--cn-text)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--cn-cta)]/60 hover:bg-[var(--cn-cta)]/20 hover:text-[var(--cn-hi)] hover:shadow-[0_6px_16px_-6px_rgba(185,28,28,0.5)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cn-hi)] active:translate-y-0 active:scale-95"
     >
       {children}
     </a>
@@ -249,7 +260,7 @@ export function CrimsonContactRow({
 /** Skill chip — charcoal chip, small crimson dot, warm-white text. */
 export function CrimsonSkillChip({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[var(--cn-raise)] px-2.5 py-1 text-[11px] font-semibold text-[var(--cn-muted)]">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[var(--cn-raise)] px-2.5 py-1 text-[11px] font-semibold text-[var(--cn-muted)] transition-colors hover:border-[var(--cn-cta)]/40 hover:text-[var(--cn-text)]">
       <span aria-hidden className="size-1.5 rounded-full bg-[var(--cn-cta)]" />
       {label}
     </span>

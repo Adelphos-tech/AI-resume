@@ -24,9 +24,12 @@ import { useResponsiveClasses } from "@/components/candidate/public-profile/prev
 /* ── Signature Spotlight — premium standalone Candidate skin.
    Light, elegant identity-forward layout. No Company switch.          ── */
 
+const SIGNATURE_CARD_SHADOW =
+  "shadow-[0_1px_2px_rgba(0,0,0,0.04),0_10px_28px_-14px_rgba(0,0,0,0.14)]";
+
 function Chip({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700">
+    <span className="inline-flex items-center rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700 transition-colors hover:border-stone-300 hover:bg-stone-100">
       {label}
     </span>
   );
@@ -48,7 +51,7 @@ function SocialTile({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="inline-flex size-10 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-500 shadow-sm transition hover:border-stone-300 hover:text-stone-800"
+      className="inline-flex size-10 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-500 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--nfc-cta)]/40 hover:text-[var(--nfc-cta)] hover:shadow-[0_8px_18px_-8px_rgba(0,0,0,0.22)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)] active:translate-y-0 active:scale-95"
     >
       {children}
     </a>
@@ -71,7 +74,7 @@ function ActionCard({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 rounded-2xl border border-stone-200/80 bg-white p-4 shadow-sm transition hover:shadow-md"
+      className={`group flex items-center gap-3 rounded-2xl border border-stone-200/80 bg-white p-4 transition-all duration-200 ${SIGNATURE_CARD_SHADOW} hover:-translate-y-0.5 hover:shadow-[0_1px_2px_rgba(0,0,0,0.04),0_16px_36px_-14px_rgba(0,0,0,0.2)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)] active:translate-y-0`}
     >
       <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[var(--nfc-cta)]/10 text-[var(--nfc-cta)]">
         {icon}
@@ -82,7 +85,9 @@ function ActionCard({
         </span>
         <span className="block text-xs text-stone-500">{description}</span>
       </span>
-      <span className="text-stone-300">›</span>
+      <span className="text-stone-300 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-[var(--nfc-cta)]">
+        ›
+      </span>
     </a>
   );
 }
@@ -158,7 +163,7 @@ export function SignatureSpotlightCard({
   return (
     <div
       style={accentStyle}
-      className={`relative mx-auto w-full overflow-hidden rounded-[2rem] border border-stone-200/80 bg-white shadow-[0_24px_60px_-28px_rgba(0,0,0,0.08)] ${maxW}`}
+      className={`pm-fade relative mx-auto w-full overflow-hidden rounded-[2rem] border border-stone-200/70 bg-white shadow-[0_24px_60px_-28px_rgba(0,0,0,0.12)] ${maxW}`}
     >
       {/* subtle top accent line */}
       <div
@@ -170,7 +175,10 @@ export function SignatureSpotlightCard({
         className={`relative rounded-3xl bg-white/70 ring-1 ring-stone-100 backdrop-blur-sm ${innerPad}`}
       >
         {/* ── Hero: compact cover + prominent portrait ── */}
-        <div className={`relative rounded-b-3xl ${heroNeg}`}>
+        <div
+          className={`pm-fade relative rounded-b-3xl ${heroNeg}`}
+          style={{ animationDelay: "0.06s" }}
+        >
           <div className="overflow-hidden rounded-b-3xl">
             {c.cover ? (
               <div className={`relative w-full ${coverH}`}>
@@ -199,7 +207,7 @@ export function SignatureSpotlightCard({
           {/* Portrait overlapping cover bottom — outside overflow container */}
           <div className="absolute right-0 bottom-0 left-0 flex justify-center translate-y-1/2">
             <div
-              className={`overflow-hidden rounded-full border-4 border-white shadow-xl ring-2 ring-[var(--nfc-cta)]/20 ${portraitSize}`}
+              className={`overflow-hidden rounded-full border-4 border-white shadow-[0_18px_44px_-14px_rgba(0,0,0,0.28)] ring-2 ring-[var(--nfc-cta)]/20 ${portraitSize}`}
             >
               {c.portrait ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -221,8 +229,10 @@ export function SignatureSpotlightCard({
         <div className={`${spacerH}`} />
 
         {/* ── Identity ── */}
-        <div className="text-center">
-          <h1 className={`font-bold tracking-tight text-stone-900 ${nameSize}`}>
+        <div className="pm-fade text-center" style={{ animationDelay: "0.1s" }}>
+          <h1
+            className={`font-bold leading-tight tracking-tight text-stone-900 ${nameSize}`}
+          >
             {c.name}
           </h1>
 
@@ -245,7 +255,7 @@ export function SignatureSpotlightCard({
 
         {/* ── Bio ── */}
         {c.professionalSummary && (
-          <div className="mt-4">
+          <div className="pm-fade mt-4" style={{ animationDelay: "0.14s" }}>
             <p className="text-center text-sm leading-relaxed text-stone-600">
               {c.professionalSummary}
             </p>
@@ -254,7 +264,10 @@ export function SignatureSpotlightCard({
 
         {/* ── Genres | Languages | Availability (compact row) ── */}
         {(hasGenres || hasLanguages || c.availability) && (
-          <div className="mt-4 rounded-2xl border border-stone-200/80 bg-white p-4 shadow-sm">
+          <div
+            className={`pm-fade mt-4 rounded-2xl border border-stone-200/80 bg-white p-4 ${SIGNATURE_CARD_SHADOW}`}
+            style={{ animationDelay: "0.17s" }}
+          >
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
               {hasGenres && (
                 <div className="flex items-center gap-1.5">
@@ -290,7 +303,10 @@ export function SignatureSpotlightCard({
 
         {/* ── Portfolio + Showreel actions ── */}
         {(c.portfolioUrl || c.showreelUrl) && (
-          <div className={`mt-4 grid gap-3 ${actionGrid}`}>
+          <div
+            className={`pm-fade mt-4 grid gap-3 ${actionGrid}`}
+            style={{ animationDelay: "0.2s" }}
+          >
             {c.portfolioUrl && (
               <ActionCard
                 icon={<MonitorPlay className="size-5" />}
@@ -312,7 +328,10 @@ export function SignatureSpotlightCard({
 
         {/* ── Social links ── */}
         {activeSocials.length > 0 && (
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
+          <div
+            className="pm-fade mt-4 flex flex-wrap justify-center gap-2"
+            style={{ animationDelay: "0.23s" }}
+          >
             {activeSocials.map((s) => (
               <SocialTile key={s.label} href={s.href} label={s.label}>
                 {s.icon}
@@ -323,12 +342,12 @@ export function SignatureSpotlightCard({
 
         {/* ── Primary CTA ── */}
         {primaryCta && (
-          <div className="mt-5">
+          <div className="pm-fade mt-5" style={{ animationDelay: "0.26s" }}>
             <a
               href={primaryCta}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--nfc-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_20px_-10px_var(--nfc-cta)] transition hover:bg-[var(--nfc-cta-hover)] active:translate-y-px"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--nfc-cta)] px-5 py-4 text-sm font-bold tracking-wide text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_20px_-10px_var(--nfc-cta)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--nfc-cta-hover)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_14px_28px_-10px_var(--nfc-cta)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--nfc-cta)] active:translate-y-0 active:shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_4px_12px_-6px_var(--nfc-cta)]"
             >
               {c.showreelUrl === primaryCta && (
                 <Play className="size-4" aria-hidden fill="currentColor" />
