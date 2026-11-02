@@ -23,12 +23,15 @@ import {
   CreativeSpotlightSocialTile,
 } from "./creative-spotlight-parts";
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
+import type { SponsorSlots } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 
 /** Candidate (Celebrity) half of the Creative Spotlight skin. */
 export function CreativeSpotlightCandidate({
   candidate: c,
+  slots,
 }: {
   candidate: CompactCandidate;
+  slots?: SponsorSlots;
 }) {
   const portraitSize = useResponsiveClasses(
     "size-28",
@@ -116,6 +119,7 @@ export function CreativeSpotlightCandidate({
           <Sparkles className="size-4" aria-hidden />
         </CreativeSpotlightSocialTile>
       </div>
+      {slots?.["after-header"]}
 
       {/* professional categories */}
       {c.professionalCategories && c.professionalCategories.length > 0 && (
@@ -156,6 +160,7 @@ export function CreativeSpotlightCandidate({
           </p>
         </CreativeSpotlightSection>
       )}
+      {slots?.["after-bio"]}
 
       {/* mini info cards */}
       <div className={`grid gap-2 ${grid3}`}>
@@ -189,6 +194,8 @@ export function CreativeSpotlightCandidate({
         />
       </div>
 
+      {slots?.["after-content"]}
+
       {/* portfolio + showreel actions */}
       <div className={`grid gap-2 ${grid2}`}>
         {c.portfolioUrl && (
@@ -218,6 +225,7 @@ export function CreativeSpotlightCandidate({
           </span>
         </div>
       )}
+      {slots?.["after-links"]}
     </div>
   );
 }

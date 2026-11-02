@@ -354,6 +354,18 @@ model PublicProfile {
   showWhatsapp        Boolean @default(false)
   featuredResumeVariantId String?
   featuredResumeVariant   ResumeVariant? @relation("FeaturedPublicResume", fields: [featuredResumeVariantId], references: [id], onDelete: SetNull)
+  // Sponsor images — optional sponsor placements (max 2). Opaque storage
+  // keys only, never paths/URLs; destination URLs are validated http(s)
+  // at the domain boundary before persisting.
+  sponsorOneImageKey   String?
+  sponsorOneUrl        String?
+  sponsorTwoImageKey   String?
+  sponsorTwoUrl        String?
+  // Sponsor placement — curated anchor registry id only (never a CSS
+  // value or freeform position). NULL = the established default
+  // "before-footer" position from the sponsor feature's initial release.
+  sponsorOnePlacement  String?
+  sponsorTwoPlacement  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)

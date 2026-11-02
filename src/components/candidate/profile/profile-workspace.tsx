@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, Circle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { MasterCareerProfileData } from "@/lib/master-career-profile-schema";
 
@@ -52,12 +52,36 @@ export function CareerProfileWorkspace({
   profile,
   resumeReady,
   profilePersisted,
+  initialSection,
+  focusEntryId,
+  focusEntryMissing,
 }: {
   profile: MasterCareerProfileData;
   resumeReady: boolean;
   profilePersisted: boolean;
+  initialSection?: SectionKey;
+  focusEntryId?: string;
+  focusEntryMissing?: boolean;
 }) {
-  const [active, setActive] = useState<SectionKey>("basics");
+  const [active, setActive] = useState<SectionKey>(initialSection ?? "basics");
+  const [showMissingNote, setShowMissingNote] = useState(
+    Boolean(focusEntryMissing),
+  );
+
+  // Deep-link focus: scroll the matching source entry into view once and
+  // flash a ring so the user sees exactly which fact the review meant.
+  useEffect(() => {
+    if (!focusEntryId) return;
+    const el = document.getElementById(`mcp-entry-${focusEntryId}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.style.transition = "box-shadow 0.4s ease";
+    el.style.boxShadow = "0 0 0 2px rgb(4 120 87 / 0.55)";
+    const t = window.setTimeout(() => {
+      el.style.boxShadow = "";
+    }, 3200);
+    return () => window.clearTimeout(t);
+  }, [focusEntryId]);
 
   const editors: Record<SectionKey, React.ReactNode> = {
     basics: <BasicsSection basics={profile.basics} />,
@@ -148,7 +172,28 @@ export function CareerProfileWorkspace({
         </ul>
 
         {/* editor panel */}
-        <div className="mt-6 min-w-0 flex-1 lg:mt-0">{editors[active]}</div>
+        <div className="mt-6 min-w-0 flex-1 lg:mt-0">
+          {showMissingNote && (
+            <div
+              role="status"
+              className="mb-4 flex items-start justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm text-amber-900"
+            >
+              <p>
+                The profile entry behind this review finding wasn&apos;t found —
+                it may have been edited or removed since this resume was
+                created.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowMissingNote(false)}
+                className="shrink-0 font-semibold text-amber-800 hover:text-amber-950"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+          {editors[active]}
+        </div>
       </nav>
     </div>
   );

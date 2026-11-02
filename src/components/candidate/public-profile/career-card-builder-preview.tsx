@@ -11,6 +11,7 @@ import { ProfessionalConnectCard } from "@/components/career-card/compositions/n
 import { CreativeSpotlightCard } from "@/components/career-card/compositions/nfc-compact/creative-spotlight/creative-spotlight-card";
 import { SignatureSpotlightCard } from "@/components/career-card/compositions/nfc-compact/signature-spotlight/signature-spotlight-card";
 import { nfcCompactAccentStyle } from "@/components/career-card/compositions/nfc-compact/nfc-compact-accents";
+import type { SponsorItem } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 import type { PublicProfileSettingsState } from "./public-profile-settings";
 import type { CompanyProfileState } from "./company-profile-settings";
 import type {
@@ -28,6 +29,7 @@ export function CareerCardBuilderPreview({
   isPublished,
   companyInitial,
   logoUrl,
+  sponsors,
 }: {
   state: PublicProfileSettingsState | null;
   displayName: string;
@@ -38,6 +40,7 @@ export function CareerCardBuilderPreview({
   isPublished: boolean;
   companyInitial?: CompanyProfileState | null;
   logoUrl?: string | null;
+  sponsors?: SponsorItem[] | null;
 }) {
   if (!state) {
     return (
@@ -58,6 +61,7 @@ export function CareerCardBuilderPreview({
         isPublished={isPublished}
         companyInitial={companyInitial}
         logoUrl={logoUrl}
+        sponsors={sponsors}
       />
     );
   }
@@ -113,6 +117,7 @@ function NfcCompactPreview({
   isPublished,
   companyInitial,
   logoUrl,
+  sponsors,
 }: {
   state: PublicProfileSettingsState;
   displayName: string;
@@ -122,6 +127,7 @@ function NfcCompactPreview({
   isPublished: boolean;
   companyInitial?: CompanyProfileState | null;
   logoUrl?: string | null;
+  sponsors?: SponsorItem[] | null;
 }) {
   const [active, setActive] = useState<"candidate" | "company">("candidate");
 
@@ -181,6 +187,7 @@ function NfcCompactPreview({
         onSwitch={setActive}
         accentStyle={accentStyle}
         cta={null}
+        sponsors={sponsors}
       />
       {!isPublished && (
         <div className="mt-3 flex justify-center">

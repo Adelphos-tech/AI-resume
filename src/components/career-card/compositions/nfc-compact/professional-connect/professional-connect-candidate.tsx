@@ -24,12 +24,15 @@ import {
   ProfessionalConnectSocialTile,
 } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-parts";
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
+import type { SponsorSlots } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 
 /** Candidate half of the Professional Connect skin. */
 export function ProfessionalConnectCandidate({
   candidate: c,
+  slots,
 }: {
   candidate: CompactCandidate;
+  slots?: SponsorSlots;
 }) {
   const portraitSize = useResponsiveClasses(
     "size-20",
@@ -113,6 +116,7 @@ export function ProfessionalConnectCandidate({
           <Globe className="size-4" aria-hidden />
         </ProfessionalConnectSocialTile>
       </div>
+      {slots?.["after-header"]}
 
       {c.professionalSummary && (
         <ProfessionalConnectSection
@@ -124,6 +128,7 @@ export function ProfessionalConnectCandidate({
           </p>
         </ProfessionalConnectSection>
       )}
+      {slots?.["after-bio"]}
 
       {c.skills.length > 0 && (
         <div className="px-0.5">
@@ -181,6 +186,8 @@ export function ProfessionalConnectCandidate({
         />
       </div>
 
+      {slots?.["after-content"]}
+
       {/* portfolio + availability pair */}
       {(c.portfolioAvailable || c.availability) && (
         <div className={`grid gap-2 ${grid2}`}>
@@ -212,6 +219,7 @@ export function ProfessionalConnectCandidate({
           )}
         </div>
       )}
+      {slots?.["after-links"]}
     </div>
   );
 }

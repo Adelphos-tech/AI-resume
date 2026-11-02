@@ -3,6 +3,13 @@ import type {
   CompactCandidate,
   CompactCompany,
 } from "@/components/career-card/dev/nfc-compact-data";
+import {
+  buildSponsorSlots,
+  footerSponsors,
+  SponsorSection,
+  type SponsorItem,
+  type SponsorSlots,
+} from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 
 export type DualProfileActive = "candidate" | "company";
 
@@ -18,10 +25,18 @@ export interface DualProfileSkin {
     value: DualProfileActive;
     onChange: (v: DualProfileActive) => void;
   }>;
-  /** Candidate side content. */
-  CandidateContent: React.FC<{ candidate: CompactCandidate }>;
-  /** Company side content. */
-  CompanyContent: React.FC<{ company: CompactCompany }>;
+  /** Candidate side content; optional sponsor slots render at safe flow
+   *  anchors inside it. */
+  CandidateContent: React.FC<{
+    candidate: CompactCandidate;
+    slots?: SponsorSlots;
+  }>;
+  /** Company side content; optional sponsor slots render at safe flow
+   *  anchors inside it. */
+  CompanyContent: React.FC<{
+    company: CompactCompany;
+    slots?: SponsorSlots;
+  }>;
   /** Bottom CTA action. Receives the active side so labels can vary. */
   Cta: React.FC<{
     active: DualProfileActive;
@@ -36,6 +51,11 @@ export interface DualProfileTemplateShellProps {
   onSwitch: (v: DualProfileActive) => void;
   cta?: { href: string; label: string } | null;
   shareUrl?: string | null;
+  /** Optional sponsor strip — rendered inside the card just above the
+   *  CTA; hidden entirely when empty. Shared across all dual skins. */
+  sponsors?: SponsorItem[] | null;
+  /** Surface variant for the sponsor strip (dark skins pass "dark"). */
+  sponsorVariant?: "light" | "dark";
   skin: DualProfileSkin;
 }
 
@@ -51,6 +71,8 @@ export function DualProfileTemplateShell({
   onSwitch,
   cta,
   shareUrl,
+  sponsors,
+  sponsorVariant = "light",
   skin: {
     Frame,
     BrandBar,
@@ -60,6 +82,7 @@ export function DualProfileTemplateShell({
     Cta,
   },
 }: DualProfileTemplateShellProps) {
+  const slots = buildSponsorSlots(sponsors, sponsorVariant);
   return (
     <Frame>
       <BrandBar shareUrl={shareUrl} />
@@ -70,11 +93,15 @@ export function DualProfileTemplateShell({
       )}
       <div className="mt-5">
         {active === "company" && company ? (
-          <CompanyContent company={company} />
+          <CompanyContent company={company} slots={slots} />
         ) : (
-          <CandidateContent candidate={candidate} />
+          <CandidateContent candidate={candidate} slots={slots} />
         )}
       </div>
+      <SponsorSection
+        sponsors={footerSponsors(sponsors)}
+        variant={sponsorVariant}
+      />
       <Cta active={active} cta={cta} />
     </Frame>
   );

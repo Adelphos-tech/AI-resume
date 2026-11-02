@@ -15,6 +15,7 @@ import {
   type DualProfileActive,
   type DualProfileSkin,
 } from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
+import type { SponsorItem } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /* ── Creative Spotlight skin pieces ── */
@@ -162,6 +163,7 @@ export function CreativeSpotlightCard({
   cta,
   accentStyle,
   shareUrl,
+  sponsors,
 }: {
   candidate: CompactCandidate;
   company?: CompactCompany | null;
@@ -170,6 +172,8 @@ export function CreativeSpotlightCard({
   accentStyle?: CSSProperties;
   shareUrl?: string | null;
   cta?: { href: string; label: string } | null;
+  /** Optional sponsor strip above the CTA — hidden when empty. */
+  sponsors?: SponsorItem[] | null;
 }) {
   const skin: DualProfileSkin = {
     Frame: ({ children }) => (
@@ -196,6 +200,7 @@ export function CreativeSpotlightCard({
       onSwitch={onSwitch}
       cta={cta}
       shareUrl={shareUrl}
+      sponsors={sponsors}
       skin={skin}
     />
   );

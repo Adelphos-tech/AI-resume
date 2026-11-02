@@ -30,6 +30,7 @@ const BASE_DTO: PublicCareerProfileDTO = {
   portfolioUrl: null,
   showreelUrl: null,
   links: { linkedin: null, github: null, website: null },
+  sponsors: [],
   featuredResume: null,
   experience: [],
   education: [],

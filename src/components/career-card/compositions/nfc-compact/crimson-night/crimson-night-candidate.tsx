@@ -17,6 +17,7 @@ import {
 } from "@/components/career-card/primitives/brand-icons";
 import type { CSSProperties } from "react";
 import type { CompactCandidate } from "@/components/career-card/dev/nfc-compact-data";
+import type { SponsorSlots } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 import {
   CrimsonActionCard,
   CrimsonContactRow,
@@ -32,7 +33,13 @@ import { useResponsiveClasses } from "@/components/candidate/public-profile/prev
  * Crimson Night — candidate half. Identical information architecture to
  * Career Passport Light; only the visual system differs.
  */
-export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
+export function CrimsonNightCandidate({
+  c,
+  slots,
+}: {
+  c: CompactCandidate;
+  slots?: SponsorSlots;
+}) {
   const portraitSize = useResponsiveClasses(
     "size-20",
     "size-24",
@@ -138,6 +145,7 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
           <Globe className="size-4" aria-hidden />
         </CrimsonSocialTile>
       </div>
+      {slots?.["after-header"]}
 
       {c.professionalSummary && (
         <CrimsonSection
@@ -149,6 +157,7 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
           </p>
         </CrimsonSection>
       )}
+      {slots?.["after-bio"]}
 
       {c.skills.length > 0 && (
         <div className="px-1">
@@ -197,6 +206,8 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
         />
       </div>
 
+      {slots?.["after-content"]}
+
       {/* portfolio + availability pair */}
       {(c.portfolioAvailable || c.availability) && (
         <div className={`grid ${grid2}`}>
@@ -226,6 +237,7 @@ export function CrimsonNightCandidate({ c }: { c: CompactCandidate }) {
           )}
         </div>
       )}
+      {slots?.["after-links"]}
     </div>
   );
 }

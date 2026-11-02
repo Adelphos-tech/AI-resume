@@ -19,6 +19,14 @@ import {
   WhatsAppIcon,
 } from "@/components/career-card/primitives/brand-icons";
 import type { DualProfileActive } from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
+import {
+  SponsorSection,
+  type SponsorItem,
+} from "@/components/career-card/compositions/nfc-compact/sponsor-section";
+import {
+  resolveSponsorPlacement,
+  type SponsorPlacement,
+} from "@/lib/sponsor-placements";
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /* ── Signature Spotlight — premium standalone Candidate skin.
@@ -95,6 +103,7 @@ function ActionCard({
 export function SignatureSpotlightCard({
   candidate: c,
   accentStyle,
+  sponsors,
 }: {
   candidate: CompactCandidate;
   company?: CompactCompany | null;
@@ -102,6 +111,8 @@ export function SignatureSpotlightCard({
   onSwitch?: (v: DualProfileActive) => void;
   accentStyle?: CSSProperties;
   cta?: { href: string; label: string } | null;
+  /** Optional sponsor strip above the CTA — hidden when empty. */
+  sponsors?: SponsorItem[] | null;
 }) {
   const maxW = useResponsiveClasses(
     "max-w-[390px]",
@@ -159,6 +170,16 @@ export function SignatureSpotlightCard({
 
   const primaryCta =
     c.showreelUrl ?? c.portfolioUrl ?? c.website ?? c.linkedin ?? null;
+
+  /** Sponsors resolved per anchor — same placement rules as the shared
+   *  dual-profile skins; each SponsorSection self-hides when empty. */
+  const sponsorAt = (p: SponsorPlacement) => (
+    <SponsorSection
+      sponsors={(sponsors ?? []).filter(
+        (s) => resolveSponsorPlacement(s.placement) === p,
+      )}
+    />
+  );
 
   return (
     <div
@@ -252,6 +273,7 @@ export function SignatureSpotlightCard({
             )}
           </div>
         </div>
+        {sponsorAt("after-header")}
 
         {/* ── Bio ── */}
         {c.professionalSummary && (
@@ -261,6 +283,8 @@ export function SignatureSpotlightCard({
             </p>
           </div>
         )}
+
+        {sponsorAt("after-bio")}
 
         {/* ── Genres | Languages | Availability (compact row) ── */}
         {(hasGenres || hasLanguages || c.availability) && (
@@ -301,6 +325,8 @@ export function SignatureSpotlightCard({
           </div>
         )}
 
+        {sponsorAt("after-content")}
+
         {/* ── Portfolio + Showreel actions ── */}
         {(c.portfolioUrl || c.showreelUrl) && (
           <div
@@ -339,6 +365,9 @@ export function SignatureSpotlightCard({
             ))}
           </div>
         )}
+
+        {sponsorAt("after-links")}
+        {sponsorAt("before-footer")}
 
         {/* ── Primary CTA ── */}
         {primaryCta && (

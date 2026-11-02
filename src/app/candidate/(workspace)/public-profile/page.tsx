@@ -3,6 +3,7 @@ import { type CompanyProfileState } from "@/components/candidate/public-profile/
 import { prisma } from "@/server/db";
 import { parsePhoneNumberFromString } from "libphonenumber-js/min";
 import { resolveNfcCompactSkin } from "@/lib/nfc-compact-skins";
+import { resolveSponsorPlacement } from "@/lib/sponsor-placements";
 
 import { env } from "@/server/env";
 import { resolveCareerCardTheme } from "@/lib/career-card-themes";
@@ -83,6 +84,14 @@ export default async function CandidatePublicProfilePage() {
         linkedinUrl: profile.linkedinUrl ?? "",
         githubUrl: profile.githubUrl ?? "",
         websiteUrl: profile.websiteUrl ?? "",
+        sponsorOneUrl: profile.sponsorOneUrl ?? "",
+        sponsorTwoUrl: profile.sponsorTwoUrl ?? "",
+        sponsorOnePlacement: resolveSponsorPlacement(
+          profile.sponsorOnePlacement,
+        ),
+        sponsorTwoPlacement: resolveSponsorPlacement(
+          profile.sponsorTwoPlacement,
+        ),
         whatsappNumber: profile.whatsappNumber
           ? (parsePhoneNumberFromString(
               profile.whatsappNumber,
@@ -146,6 +155,12 @@ export default async function CandidatePublicProfilePage() {
         profile && company?.companyLogoKey
           ? `/u/${profile.slug}/company-logo`
           : null
+      }
+      sponsorOneImageUrl={
+        profile?.sponsorOneImageKey ? `/u/${profile.slug}/sponsor/1` : null
+      }
+      sponsorTwoImageUrl={
+        profile?.sponsorTwoImageKey ? `/u/${profile.slug}/sponsor/2` : null
       }
     />
   );

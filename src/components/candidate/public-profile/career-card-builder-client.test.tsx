@@ -14,6 +14,10 @@ const DEFAULT_STATE: PublicProfileSettingsState = {
   linkedinUrl: "",
   githubUrl: "",
   websiteUrl: "",
+  sponsorOneUrl: "",
+  sponsorTwoUrl: "",
+  sponsorOnePlacement: "before-footer",
+  sponsorTwoPlacement: "before-footer",
   whatsappNumber: "",
   whatsappCountry: "",
   showWhatsapp: false,
@@ -51,6 +55,8 @@ const DEFAULT_PROPS = {
   coverPosition: { focalX: 0.5, focalY: 0.5, zoom: 1 },
   companyInitial: null,
   logoUrl: null as string | null,
+  sponsorOneImageUrl: null as string | null,
+  sponsorTwoImageUrl: null as string | null,
 };
 
 describe("CareerCardBuilderPageClient", () => {

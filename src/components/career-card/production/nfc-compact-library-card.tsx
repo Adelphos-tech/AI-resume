@@ -12,6 +12,17 @@ import { ProfessionalConnectCard } from "@/components/career-card/compositions/n
 import { CreativeSpotlightCard } from "@/components/career-card/compositions/nfc-compact/creative-spotlight/creative-spotlight-card";
 import { SignatureSpotlightCard } from "@/components/career-card/compositions/nfc-compact/signature-spotlight/signature-spotlight-card";
 import { nfcCompactAccentStyle } from "@/components/career-card/compositions/nfc-compact/nfc-compact-accents";
+import {
+  SaveContactDock,
+  type SaveContactAction,
+} from "@/components/career-card/save-contact-dock";
+import {
+  candidateVCard,
+  companyVCard,
+  hasCandidateContact,
+  hasCompanyContact,
+  vcardFilename,
+} from "@/lib/vcard";
 import { completedYearsOfExperience } from "@/components/career-card/adapters/public-profile-to-career-card";
 import type { CompanyProfileDTO } from "@/server/public-profile/company-profile";
 import type { PublicCareerProfileDTO } from "@/server/public-profile/public-profile";
@@ -39,12 +50,19 @@ export function NfcCompactLibraryCard({
     active === "company" && company
       ? companyCta(company)
       : candidateCta(candidate);
+  // Persistent Save Contact — vCard built only from public-safe DTO data;
+  // hidden entirely when no meaningful authorized contact channel exists.
+  const contact =
+    active === "company" && company
+      ? companyContact(company, dto.shareUrl)
+      : candidateContact(candidate, dto.shareUrl);
+  const accent = nfcCompactAccentStyle(dto.accentColorId);
   // Crimson Night skin — same data, same /n/<token> identity, dark premium
   // surface system. Accent stays independent (Passport honors it; Crimson
   // keeps its approved crimson identity).
   if (dto.nfcCompactSkinId === "crimson-night") {
     return (
-      <main className="min-h-dvh bg-stone-950 px-3 py-6 sm:py-10">
+      <main className="min-h-dvh bg-stone-950 px-3 py-6 pb-24 sm:py-10 sm:pb-24">
         <CrimsonNightCard
           candidate={candidate}
           company={company}
@@ -52,22 +70,30 @@ export function NfcCompactLibraryCard({
           onSwitch={setActive}
           cta={cta}
           shareUrl={dto.shareUrl}
+          sponsors={dto.sponsors}
         />
+        <SaveContactDock contact={contact} variant="dark" />
       </main>
     );
   }
   // Professional Connect — investor-style polished dual-profile skin.
   if (dto.nfcCompactSkinId === "professional-connect") {
     return (
-      <main className="min-h-dvh bg-slate-50 px-3 py-6 sm:py-10">
+      <main className="min-h-dvh bg-slate-50 px-3 py-6 pb-24 sm:py-10 sm:pb-24">
         <ProfessionalConnectCard
           candidate={candidate}
           company={company}
           active={active}
           onSwitch={setActive}
           cta={cta}
-          accentStyle={nfcCompactAccentStyle(dto.accentColorId)}
+          accentStyle={accent}
           shareUrl={dto.shareUrl}
+          sponsors={dto.sponsors}
+        />
+        <SaveContactDock
+          contact={contact}
+          variant="light"
+          accentStyle={accent}
         />
       </main>
     );
@@ -75,15 +101,21 @@ export function NfcCompactLibraryCard({
   // Creative Spotlight — Celebrity and Production Company dual-profile skin.
   if (dto.nfcCompactSkinId === "creative-spotlight") {
     return (
-      <main className="min-h-dvh bg-stone-50 px-3 py-6 sm:py-10">
+      <main className="min-h-dvh bg-stone-50 px-3 py-6 pb-24 sm:py-10 sm:pb-24">
         <CreativeSpotlightCard
           candidate={candidate}
           company={company}
           active={active}
           onSwitch={setActive}
           cta={cta}
-          accentStyle={nfcCompactAccentStyle(dto.accentColorId)}
+          accentStyle={accent}
           shareUrl={dto.shareUrl}
+          sponsors={dto.sponsors}
+        />
+        <SaveContactDock
+          contact={contact}
+          variant="light"
+          accentStyle={accent}
         />
       </main>
     );
@@ -91,25 +123,33 @@ export function NfcCompactLibraryCard({
   // Signature Spotlight — premium standalone Candidate spotlight.
   if (dto.nfcCompactSkinId === "signature-spotlight") {
     return (
-      <main className="min-h-dvh bg-stone-50 px-3 py-6 sm:py-10">
+      <main className="min-h-dvh bg-stone-50 px-3 py-6 pb-24 sm:py-10 sm:pb-24">
         <SignatureSpotlightCard
           candidate={candidate}
-          accentStyle={nfcCompactAccentStyle(dto.accentColorId)}
+          accentStyle={accent}
+          sponsors={dto.sponsors}
+        />
+        <SaveContactDock
+          contact={contact}
+          variant="light"
+          accentStyle={accent}
         />
       </main>
     );
   }
   return (
-    <main className="min-h-dvh bg-stone-100 px-3 py-6 sm:py-10">
+    <main className="min-h-dvh bg-stone-100 px-3 py-6 pb-24 sm:py-10 sm:pb-24">
       <NfcCompactCard
         candidate={candidate}
         company={company}
         active={active}
         onSwitch={setActive}
         cta={cta}
-        accentStyle={nfcCompactAccentStyle(dto.accentColorId)}
+        accentStyle={accent}
         shareUrl={dto.shareUrl}
+        sponsors={dto.sponsors}
       />
+      <SaveContactDock contact={contact} variant="light" accentStyle={accent} />
     </main>
   );
 }
@@ -128,6 +168,7 @@ function toCompactCandidate(
     headline: dto.headline ?? "",
     currentRole: current?.position,
     currentCompany: current?.company ?? undefined,
+    location: dto.location,
     portrait: dto.profilePhotoUrl ?? undefined,
     cover: dto.coverPhotoUrl,
     coverFocalX: dto.coverPhotoPosition.focalX,
@@ -217,6 +258,29 @@ function candidateCta(
   }
   const href = c.linkedin ?? c.website ?? c.portfolioHref ?? null;
   return href ? { href, label: "Get in Touch" } : null;
+}
+
+function candidateContact(
+  c: CompactCandidate,
+  shareUrl: string | null,
+): SaveContactAction | null {
+  if (!hasCandidateContact(c, shareUrl)) return null;
+  return {
+    filename: vcardFilename(c.name),
+    build: () =>
+      candidateVCard(c, { shareUrl, origin: window.location.origin }),
+  };
+}
+
+function companyContact(
+  c: CompactCompany,
+  shareUrl: string | null,
+): SaveContactAction | null {
+  if (!hasCompanyContact(c, shareUrl)) return null;
+  return {
+    filename: vcardFilename(c.companyName),
+    build: () => companyVCard(c, { shareUrl, origin: window.location.origin }),
+  };
 }
 
 function companyCta(c: CompactCompany): { href: string; label: string } | null {

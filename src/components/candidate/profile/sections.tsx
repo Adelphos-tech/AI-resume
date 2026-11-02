@@ -214,14 +214,20 @@ export function BasicsSection({
 function EntryCard({
   title,
   onRemove,
+  entryId,
   children,
 }: {
   title: string;
   onRemove: () => void;
+  /** Canonical MCP entry UUID — enables deep-link focus from AI Review. */
+  entryId?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className={ENTRY_CLS}>
+    <div
+      id={entryId ? `mcp-entry-${entryId}` : undefined}
+      className={ENTRY_CLS}
+    >
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold text-stone-800">{title}</p>
         <button
@@ -363,6 +369,7 @@ export function WorkSection({
             key={f._key}
             title={f.position || f.company || `Role ${i + 1}`}
             onRemove={() => remove(i)}
+            entryId={f.id}
           >
             <input type="hidden" {...register(`work.${i}.id`)} />
             <div className="grid gap-3 sm:grid-cols-2">
@@ -509,6 +516,7 @@ export function EducationSection({
             key={f._key}
             title={f.degree || f.institution || `Education ${i + 1}`}
             onRemove={() => remove(i)}
+            entryId={f.id}
           >
             <input type="hidden" {...register(`education.${i}.id`)} />
             <div className="grid gap-3 sm:grid-cols-2">
@@ -626,6 +634,7 @@ export function SkillsSection({
             key={f._key}
             title={f.name || `Skill group ${i + 1}`}
             onRemove={() => remove(i)}
+            entryId={f.id}
           >
             <input type="hidden" {...register(`skills.${i}.id`)} />
             <Field label="Group name" id={`skills.${i}.name`}>
@@ -761,6 +770,7 @@ export function ProjectsSection({
             key={f._key}
             title={f.name || `Project ${i + 1}`}
             onRemove={() => remove(i)}
+            entryId={f.id}
           >
             <input type="hidden" {...register(`projects.${i}.id`)} />
             <div className="grid gap-3 sm:grid-cols-2">
@@ -879,6 +889,7 @@ export function CertificationsSection({
             key={f._key}
             title={f.name || `Certification ${i + 1}`}
             onRemove={() => remove(i)}
+            entryId={f.id}
           >
             <input type="hidden" {...register(`certifications.${i}.id`)} />
             <div className="grid gap-3 sm:grid-cols-2">
@@ -980,6 +991,7 @@ export function LanguagesSection({
             key={f._key}
             title={f.language || `Language ${i + 1}`}
             onRemove={() => remove(i)}
+            entryId={f.id}
           >
             <input type="hidden" {...register(`languages.${i}.id`)} />
             <div className="grid gap-3 sm:grid-cols-2">

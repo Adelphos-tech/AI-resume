@@ -29,12 +29,15 @@ import {
   CreativeSpotlightSocialTile,
 } from "./creative-spotlight-parts";
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
+import type { SponsorSlots } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 
 /** Company (Production Company) half of the Creative Spotlight skin. */
 export function CreativeSpotlightCompany({
   company: c,
+  slots,
 }: {
   company: CompactCompany;
+  slots?: SponsorSlots;
 }) {
   const logoBox = useResponsiveClasses(
     "h-24 max-w-48",
@@ -161,6 +164,7 @@ export function CreativeSpotlightCompany({
           )}
         </div>
       )}
+      {slots?.["after-header"]}
 
       {/* about */}
       {c.about && (
@@ -171,6 +175,7 @@ export function CreativeSpotlightCompany({
           <p className="text-xs leading-relaxed text-stone-600">{c.about}</p>
         </CreativeSpotlightSection>
       )}
+      {slots?.["after-bio"]}
 
       {/* mini info cards */}
       <div className={`grid gap-2 ${grid3}`}>
@@ -205,6 +210,8 @@ export function CreativeSpotlightCompany({
         />
       </div>
 
+      {slots?.["after-content"]}
+
       {/* open roles */}
       {c.hiringOpen && (
         <CreativeSpotlightActionCard
@@ -227,6 +234,7 @@ export function CreativeSpotlightCompany({
           href={c.companyProfileUrl}
         />
       )}
+      {slots?.["after-links"]}
     </div>
   );
 }

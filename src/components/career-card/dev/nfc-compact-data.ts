@@ -18,6 +18,8 @@ export type CompactCandidate = {
   headline: string;
   currentRole?: string;
   currentCompany?: string;
+  /** Public location label (e.g. "Dubai, UAE") — used by Save Contact. */
+  location?: string | null;
   portrait?: string;
   /** Optional cover art — object-cover with focal position/zoom. */
   cover?: string | null;

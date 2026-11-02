@@ -54,6 +54,9 @@ export const aiResumeReviewSchema = z.strictObject({
 
 export type AiResumeReview = z.infer<typeof aiResumeReviewSchema>;
 
+/** Max characters accepted for the optional job-description input. */
+export const JOB_DESCRIPTION_MAX = 8000;
+
 /**
  * Strict JSON Schema mirror of the contract for Groq Structured Outputs.
  * additionalProperties: false on every object, all properties required,

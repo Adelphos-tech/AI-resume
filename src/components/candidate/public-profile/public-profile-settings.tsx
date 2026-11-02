@@ -32,6 +32,7 @@ import type { BuilderStep } from "@/components/candidate/public-profile/career-c
 import { CareerCardIdentitySettings } from "@/components/candidate/public-profile/career-card-identity-settings";
 import { CareerCardPhotoSettings } from "@/components/candidate/public-profile/career-card-photo-settings";
 import { CareerCardDesignSettings } from "@/components/candidate/public-profile/career-card-design-settings";
+import { SponsorImagesSettings } from "@/components/candidate/public-profile/sponsor-images-settings";
 import { CareerCardLinksSettings } from "@/components/candidate/public-profile/career-card-links-settings";
 
 type VariantOption = {
@@ -51,6 +52,10 @@ export type PublicProfileSettingsState = {
   linkedinUrl: string;
   githubUrl: string;
   websiteUrl: string;
+  sponsorOneUrl: string;
+  sponsorTwoUrl: string;
+  sponsorOnePlacement: string;
+  sponsorTwoPlacement: string;
   whatsappNumber: string;
   whatsappCountry: string;
   showWhatsapp: boolean;
@@ -108,6 +113,9 @@ export function PublicProfileSettings({
   onCoverUrlChange,
   onPhotoPositionChange,
   onCoverPositionChange,
+  sponsorOneImageUrl = null,
+  sponsorTwoImageUrl = null,
+  onSponsorImageChange = () => {},
 }: {
   slug: string | null;
   isPublished: boolean;
@@ -148,6 +156,12 @@ export function PublicProfileSettings({
   onPhotoPositionChange?: (pos: PhotoPosition) => void;
   /** Optional callback when a cover-photo position/zoom is saved. */
   onCoverPositionChange?: (pos: PhotoPosition) => void;
+  /** Current sponsor media URLs ("/u/<slug>/sponsor/<n>") or null. */
+  sponsorOneImageUrl?: string | null;
+  sponsorTwoImageUrl?: string | null;
+  /** Callback when a sponsor image is uploaded/replaced/removed — the
+   * media persists immediately, outside the global save cycle. */
+  onSponsorImageChange?: (slot: 1 | 2, url: string | null) => void;
 }) {
   const [slugValue, setSlugValue] = useState(slug ?? "");
   const [internalForm, setInternalForm] = useState<PublicProfileSettingsState>(
@@ -161,6 +175,10 @@ export function PublicProfileSettings({
       linkedinUrl: "",
       githubUrl: "",
       websiteUrl: "",
+      sponsorOneUrl: "",
+      sponsorTwoUrl: "",
+      sponsorOnePlacement: "before-footer",
+      sponsorTwoPlacement: "before-footer",
       whatsappNumber: "",
       whatsappCountry: "",
       showWhatsapp: false,
@@ -557,6 +575,29 @@ export function PublicProfileSettings({
             setRecoBusy={setRecoBusy}
             recoErr={recoErr}
             setRecoErr={setRecoErr}
+          />
+        </div>
+      </section>
+
+      {/* sponsors */}
+      <section
+        aria-labelledby="pp-sponsors"
+        className={`rounded-2xl border border-stone-200 bg-white p-6 ${activeStep === "design" ? "block" : "hidden"}`}
+      >
+        <h2 id="pp-sponsors" className="text-base font-semibold text-stone-900">
+          Sponsor Images
+        </h2>
+        <p className="mt-1 text-sm leading-relaxed text-stone-500">
+          Show up to two sponsor images on your public Career Card. Images
+          update immediately; links save with Save Changes.
+        </p>
+        <div className="mt-5">
+          <SponsorImagesSettings
+            form={form}
+            setForm={setForm}
+            sponsorOneImageUrl={sponsorOneImageUrl}
+            sponsorTwoImageUrl={sponsorTwoImageUrl}
+            onSponsorImageChange={onSponsorImageChange}
           />
         </div>
       </section>

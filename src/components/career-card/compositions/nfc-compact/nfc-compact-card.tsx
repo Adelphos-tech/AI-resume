@@ -16,6 +16,10 @@ import {
   type DualProfileActive,
   type DualProfileSkin,
 } from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
+import type {
+  SponsorItem,
+  SponsorSlots,
+} from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /* ── Career Passport skin pieces ── */
@@ -113,14 +117,22 @@ function NfcCompactBrandBar({
 
 function NfcCompactCandidateAdapter({
   candidate,
+  slots,
 }: {
   candidate: CompactCandidate;
+  slots?: SponsorSlots;
 }) {
-  return <NfcCompactCandidate c={candidate} />;
+  return <NfcCompactCandidate c={candidate} slots={slots} />;
 }
 
-function NfcCompactCompanyAdapter({ company }: { company: CompactCompany }) {
-  return <NfcCompactCompany c={company} />;
+function NfcCompactCompanyAdapter({
+  company,
+  slots,
+}: {
+  company: CompactCompany;
+  slots?: SponsorSlots;
+}) {
+  return <NfcCompactCompany c={company} slots={slots} />;
 }
 
 function NfcCompactCta({
@@ -168,6 +180,7 @@ export function NfcCompactCard({
   cta,
   accentStyle,
   shareUrl,
+  sponsors,
 }: {
   candidate: CompactCandidate;
   /** Absent → Candidate-only card; the segmented switch is not rendered. */
@@ -190,6 +203,8 @@ export function NfcCompactCard({
    * original static lab button (dev lab only).
    */
   cta?: { href: string; label: string } | null;
+  /** Optional sponsor strip above the CTA — hidden when empty. */
+  sponsors?: SponsorItem[] | null;
 }) {
   const skin: DualProfileSkin = {
     Frame: ({ children }) => (
@@ -212,6 +227,7 @@ export function NfcCompactCard({
       onSwitch={onSwitch}
       cta={cta}
       shareUrl={shareUrl}
+      sponsors={sponsors}
       skin={skin}
     />
   );

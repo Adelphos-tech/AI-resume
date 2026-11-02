@@ -19,6 +19,10 @@ import {
   type CompanyProfileState,
 } from "./company-profile-settings";
 import { useUnsavedChangesGuard } from "./use-unsaved-changes-guard";
+import {
+  resolveSponsorPlacement,
+  type SponsorPlacement,
+} from "@/lib/sponsor-placements";
 
 type VariantOption = {
   id: string;
@@ -47,6 +51,10 @@ const DEFAULT_STATE: PublicProfileSettingsState = {
   linkedinUrl: "",
   githubUrl: "",
   websiteUrl: "",
+  sponsorOneUrl: "",
+  sponsorTwoUrl: "",
+  sponsorOnePlacement: "before-footer",
+  sponsorTwoPlacement: "before-footer",
   whatsappNumber: "",
   whatsappCountry: "",
   showWhatsapp: false,
@@ -79,6 +87,8 @@ export function CareerCardBuilderPageClient({
   coverPosition: initialCoverPosition,
   companyInitial,
   logoUrl,
+  sponsorOneImageUrl: initialSponsorOneImageUrl,
+  sponsorTwoImageUrl: initialSponsorTwoImageUrl,
 }: {
   initialState: PublicProfileSettingsState | null;
   slug: string | null;
@@ -95,6 +105,8 @@ export function CareerCardBuilderPageClient({
   coverPosition: PhotoPosition;
   companyInitial: CompanyProfileState | null;
   logoUrl: string | null;
+  sponsorOneImageUrl: string | null;
+  sponsorTwoImageUrl: string | null;
 }) {
   const [liveState, setLiveState] = useState<PublicProfileSettingsState>(
     initialState ?? DEFAULT_STATE,
@@ -161,6 +173,10 @@ export function CareerCardBuilderPageClient({
           linkedinUrl: profileSnapshot.linkedinUrl,
           githubUrl: profileSnapshot.githubUrl,
           websiteUrl: profileSnapshot.websiteUrl,
+          sponsorOneUrl: profileSnapshot.sponsorOneUrl,
+          sponsorTwoUrl: profileSnapshot.sponsorTwoUrl,
+          sponsorOnePlacement: profileSnapshot.sponsorOnePlacement,
+          sponsorTwoPlacement: profileSnapshot.sponsorTwoPlacement,
           whatsappNumber: profileSnapshot.whatsappNumber,
           whatsappCountry: profileSnapshot.whatsappCountry,
           showWhatsapp: profileSnapshot.showWhatsapp,
@@ -213,6 +229,15 @@ export function CareerCardBuilderPageClient({
   const [coverUrl, setCoverUrl] = useState<string | null>(initialCoverUrl);
   const [liveLogoUrl, setLiveLogoUrl] = useState<string | null>(logoUrl);
   const [logoVersion, setLogoVersion] = useState(0);
+  // Sponsor media — persists immediately via dedicated routes (same
+  // semantics as photo/logo); version bump busts the preview cache.
+  const [sponsorOneUrl, setSponsorOneUrl] = useState<string | null>(
+    initialSponsorOneImageUrl,
+  );
+  const [sponsorTwoUrl, setSponsorTwoUrl] = useState<string | null>(
+    initialSponsorTwoImageUrl,
+  );
+  const [sponsorVersion, setSponsorVersion] = useState(0);
   const [photoPosition, setPhotoPosition] =
     useState<PhotoPosition>(initialPhotoPosition);
   const [coverPosition, setCoverPosition] =
@@ -223,6 +248,14 @@ export function CareerCardBuilderPageClient({
   const effectivePhotoUrl = buildEffectiveImageUrl(photoUrl, photoVersion);
   const effectiveCoverUrl = buildEffectiveImageUrl(coverUrl, coverVersion);
   const effectiveLogoUrl = buildEffectiveImageUrl(liveLogoUrl, logoVersion);
+  const effectiveSponsorOneUrl = buildEffectiveImageUrl(
+    sponsorOneUrl,
+    sponsorVersion,
+  );
+  const effectiveSponsorTwoUrl = buildEffectiveImageUrl(
+    sponsorTwoUrl,
+    sponsorVersion,
+  );
 
   const preview = (
     <CareerCardBuilderPreview
@@ -235,6 +268,26 @@ export function CareerCardBuilderPageClient({
       isPublished={isPublished}
       companyInitial={companyInitial}
       logoUrl={effectiveLogoUrl}
+      sponsors={[
+        {
+          imageUrl: effectiveSponsorOneUrl,
+          url: liveState.sponsorOneUrl.trim() || null,
+          placement: resolveSponsorPlacement(liveState.sponsorOnePlacement),
+        },
+        {
+          imageUrl: effectiveSponsorTwoUrl,
+          url: liveState.sponsorTwoUrl.trim() || null,
+          placement: resolveSponsorPlacement(liveState.sponsorTwoPlacement),
+        },
+      ].filter(
+        (
+          s,
+        ): s is {
+          imageUrl: string;
+          url: string | null;
+          placement: SponsorPlacement;
+        } => Boolean(s.imageUrl),
+      )}
     />
   );
 
@@ -264,6 +317,13 @@ export function CareerCardBuilderPageClient({
     },
     onPhotoPositionChange: setPhotoPosition,
     onCoverPositionChange: setCoverPosition,
+    sponsorOneImageUrl: effectiveSponsorOneUrl,
+    sponsorTwoImageUrl: effectiveSponsorTwoUrl,
+    onSponsorImageChange: (_slot: 1 | 2, url: string | null) => {
+      if (_slot === 1) setSponsorOneUrl(url);
+      else setSponsorTwoUrl(url);
+      setSponsorVersion((v) => v + 1);
+    },
   };
 
   return (

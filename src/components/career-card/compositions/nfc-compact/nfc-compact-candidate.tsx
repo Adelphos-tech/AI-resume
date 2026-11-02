@@ -17,6 +17,7 @@ import {
 } from "@/components/career-card/primitives/brand-icons";
 import type { CSSProperties } from "react";
 import type { CompactCandidate } from "@/components/career-card/dev/nfc-compact-data";
+import type { SponsorSlots } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 import {
   CompactActionCard,
   CompactMiniCard,
@@ -28,7 +29,13 @@ import {
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /** Candidate half of the NFC Compact / Dual Profile template. */
-export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
+export function NfcCompactCandidate({
+  c,
+  slots,
+}: {
+  c: CompactCandidate;
+  slots?: SponsorSlots;
+}) {
   const portraitSize = useResponsiveClasses(
     "size-20",
     "size-24",
@@ -111,6 +118,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
           <Globe className="size-4" aria-hidden />
         </SocialTile>
       </div>
+      {slots?.["after-header"]}
 
       {c.professionalSummary && (
         <CompactSection
@@ -122,6 +130,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
           </p>
         </CompactSection>
       )}
+      {slots?.["after-bio"]}
 
       {c.skills.length > 0 && (
         <div className="px-1">
@@ -179,6 +188,8 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
         />
       </div>
 
+      {slots?.["after-content"]}
+
       {/* portfolio + availability pair */}
       {(c.portfolioAvailable || c.availability) && (
         <div className={`grid gap-2 ${grid2}`}>
@@ -208,6 +219,7 @@ export function NfcCompactCandidate({ c }: { c: CompactCandidate }) {
           )}
         </div>
       )}
+      {slots?.["after-links"]}
     </div>
   );
 }

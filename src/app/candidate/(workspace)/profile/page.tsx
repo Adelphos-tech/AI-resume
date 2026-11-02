@@ -3,6 +3,10 @@ import Link from "next/link";
 
 import { CareerProfileWorkspace } from "@/components/candidate/profile/profile-workspace";
 import {
+  PROFILE_SECTION_KEYS,
+  type ProfileSectionKey,
+} from "@/lib/ai-review-edit-target";
+import {
   createInitialMasterCareerProfileFromCandidate,
   resumeReadyMasterCareerProfileSchema,
 } from "@/lib/master-career-profile-schema";
@@ -11,7 +15,20 @@ import { getCandidateProfile } from "@/server/candidates/career-profile";
 
 export const metadata = { title: "Career Profile — LinkMeU" };
 
-export default async function CandidateProfilePage() {
+const ENTRY_SECTIONS = [
+  "work",
+  "education",
+  "skills",
+  "projects",
+  "certifications",
+  "languages",
+] as const;
+
+export default async function CandidateProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { candidate, result } = await getCandidateProfile();
 
   if (!result.success) {
@@ -47,6 +64,30 @@ export default async function CandidateProfilePage() {
   const resumeReady =
     resumeReadyMasterCareerProfileSchema.safeParse(profile).success;
 
+  // Optional deep link (e.g. from an AI Review finding): open a specific
+  // section and focus the canonical source entry. Values are validated
+  // against the profile actually loaded for this session's candidate.
+  const params = await searchParams;
+  const rawSection = Array.isArray(params.section)
+    ? params.section[0]
+    : params.section;
+  const rawEntry = Array.isArray(params.entry) ? params.entry[0] : params.entry;
+  const initialSection = PROFILE_SECTION_KEYS.includes(
+    rawSection as ProfileSectionKey,
+  )
+    ? (rawSection as ProfileSectionKey)
+    : undefined;
+  const entrySection = ENTRY_SECTIONS.find((s) => s === initialSection);
+  const focusEntryId =
+    initialSection && entrySection && rawEntry ? rawEntry : undefined;
+  const focusEntryMissing = Boolean(
+    focusEntryId &&
+    entrySection &&
+    !(profile[entrySection] as { id: string }[]).some(
+      (e) => e.id === focusEntryId,
+    ),
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-stone-200 bg-white px-5 py-4">
@@ -67,6 +108,9 @@ export default async function CandidateProfilePage() {
         profile={profile}
         resumeReady={resumeReady}
         profilePersisted={result.profile !== null}
+        initialSection={initialSection}
+        focusEntryId={focusEntryMissing ? undefined : focusEntryId}
+        focusEntryMissing={focusEntryMissing}
       />
     </div>
   );

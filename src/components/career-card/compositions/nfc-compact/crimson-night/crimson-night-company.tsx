@@ -20,6 +20,7 @@ import {
 } from "@/components/career-card/primitives/brand-icons";
 import type { CSSProperties } from "react";
 import type { CompactCompany } from "@/components/career-card/dev/nfc-compact-data";
+import type { SponsorSlots } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 import {
   CrimsonActionCard,
   CrimsonContactRow,
@@ -30,7 +31,13 @@ import {
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /** Crimson Night — company half. Same IA as Career Passport Light. */
-export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
+export function CrimsonNightCompany({
+  c,
+  slots,
+}: {
+  c: CompactCompany;
+  slots?: SponsorSlots;
+}) {
   const logoBox = useResponsiveClasses(
     "h-20 max-w-36",
     "h-24 max-w-40",
@@ -151,6 +158,7 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
           <TikTokIcon />
         </CrimsonSocialTile>
       </div>
+      {slots?.["after-header"]}
 
       {c.about && (
         <CrimsonSection
@@ -162,6 +170,7 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
           </p>
         </CrimsonSection>
       )}
+      {slots?.["after-bio"]}
 
       {/* three company mini cards */}
       <div className={`grid gap-2 ${grid3}`}>
@@ -196,6 +205,8 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
         />
       </div>
 
+      {slots?.["after-content"]}
+
       {c.hiringOpen && (
         <CrimsonActionCard
           icon={<UserRoundPlus className="size-4" />}
@@ -215,6 +226,7 @@ export function CrimsonNightCompany({ c }: { c: CompactCompany }) {
           href={c.companyProfileUrl}
         />
       )}
+      {slots?.["after-links"]}
     </div>
   );
 }

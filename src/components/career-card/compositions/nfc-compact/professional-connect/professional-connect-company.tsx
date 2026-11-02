@@ -29,12 +29,15 @@ import {
   ProfessionalConnectSocialTile,
 } from "@/components/career-card/compositions/nfc-compact/professional-connect/professional-connect-parts";
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
+import type { SponsorSlots } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 
 /** Company half of the Professional Connect skin. */
 export function ProfessionalConnectCompany({
   company: c,
+  slots,
 }: {
   company: CompactCompany;
+  slots?: SponsorSlots;
 }) {
   const logoBox = useResponsiveClasses(
     "h-20 max-w-36",
@@ -147,6 +150,7 @@ export function ProfessionalConnectCompany({
           <TikTokIcon />
         </ProfessionalConnectSocialTile>
       </div>
+      {slots?.["after-header"]}
 
       {c.about && (
         <ProfessionalConnectSection
@@ -156,6 +160,7 @@ export function ProfessionalConnectCompany({
           <p className="text-xs leading-relaxed text-slate-600">{c.about}</p>
         </ProfessionalConnectSection>
       )}
+      {slots?.["after-bio"]}
 
       {/* three company mini cards */}
       <div className={`grid gap-2 ${grid3}`}>
@@ -190,6 +195,8 @@ export function ProfessionalConnectCompany({
         />
       </div>
 
+      {slots?.["after-content"]}
+
       {c.hiringOpen && (
         <ProfessionalConnectActionCard
           icon={<UserRoundPlus className="size-4" />}
@@ -209,6 +216,7 @@ export function ProfessionalConnectCompany({
           href={c.companyProfileUrl}
         />
       )}
+      {slots?.["after-links"]}
     </div>
   );
 }

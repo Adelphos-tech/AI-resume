@@ -20,6 +20,7 @@ import {
 } from "@/components/career-card/primitives/brand-icons";
 import type { CSSProperties } from "react";
 import type { CompactCompany } from "@/components/career-card/dev/nfc-compact-data";
+import type { SponsorSlots } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 import {
   CompactActionCard,
   CompactMiniCard,
@@ -30,7 +31,13 @@ import {
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /** Company half of the NFC Compact / Dual Profile template. */
-export function NfcCompactCompany({ c }: { c: CompactCompany }) {
+export function NfcCompactCompany({
+  c,
+  slots,
+}: {
+  c: CompactCompany;
+  slots?: SponsorSlots;
+}) {
   // Logo frame keeps the image's natural aspect ratio — horizontal wordmarks
   // get real horizontal space instead of letterboxing inside a small square.
   const logoBox = useResponsiveClasses(
@@ -123,6 +130,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
           <TikTokIcon />
         </SocialTile>
       </div>
+      {slots?.["after-header"]}
 
       {c.about && (
         <CompactSection
@@ -132,6 +140,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
           <p className="text-xs leading-relaxed text-slate-600">{c.about}</p>
         </CompactSection>
       )}
+      {slots?.["after-bio"]}
 
       {/* three company mini cards */}
       <div className={`grid gap-2 ${grid3}`}>
@@ -166,6 +175,8 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
         />
       </div>
 
+      {slots?.["after-content"]}
+
       {c.hiringOpen && (
         <CompactActionCard
           icon={<UserRoundPlus className="size-4" />}
@@ -185,6 +196,7 @@ export function NfcCompactCompany({ c }: { c: CompactCompany }) {
           href={c.companyProfileUrl}
         />
       )}
+      {slots?.["after-links"]}
     </div>
   );
 }

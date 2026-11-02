@@ -16,6 +16,7 @@ import {
   type DualProfileActive,
   type DualProfileSkin,
 } from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
+import type { SponsorItem } from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /* ── Professional Connect skin pieces ── */
@@ -169,6 +170,7 @@ export function ProfessionalConnectCard({
   cta,
   accentStyle,
   shareUrl,
+  sponsors,
 }: {
   candidate: CompactCandidate;
   /** Absent → Candidate-only card; the segmented switch is not rendered. */
@@ -191,6 +193,8 @@ export function ProfessionalConnectCard({
    * original static lab button (dev lab only).
    */
   cta?: { href: string; label: string } | null;
+  /** Optional sponsor strip above the CTA — hidden when empty. */
+  sponsors?: SponsorItem[] | null;
 }) {
   const skin: DualProfileSkin = {
     Frame: ({ children }) => (
@@ -215,6 +219,7 @@ export function ProfessionalConnectCard({
       onSwitch={onSwitch}
       cta={cta}
       shareUrl={shareUrl}
+      sponsors={sponsors}
       skin={skin}
     />
   );

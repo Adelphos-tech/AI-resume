@@ -17,6 +17,10 @@ import {
   type DualProfileActive,
   type DualProfileSkin,
 } from "@/components/career-card/compositions/nfc-compact/dual-profile-shell";
+import type {
+  SponsorItem,
+  SponsorSlots,
+} from "@/components/career-card/compositions/nfc-compact/sponsor-section";
 import { useResponsiveClasses } from "@/components/candidate/public-profile/preview-mode-context";
 
 /* ── Crimson Night skin pieces ── */
@@ -108,14 +112,22 @@ function CrimsonNightBrandBar({ shareUrl }: { shareUrl?: string | null }) {
 
 function CrimsonNightCandidateAdapter({
   candidate,
+  slots,
 }: {
   candidate: CompactCandidate;
+  slots?: SponsorSlots;
 }) {
-  return <CrimsonNightCandidate c={candidate} />;
+  return <CrimsonNightCandidate c={candidate} slots={slots} />;
 }
 
-function CrimsonNightCompanyAdapter({ company }: { company: CompactCompany }) {
-  return <CrimsonNightCompany c={company} />;
+function CrimsonNightCompanyAdapter({
+  company,
+  slots,
+}: {
+  company: CompactCompany;
+  slots?: SponsorSlots;
+}) {
+  return <CrimsonNightCompany c={company} slots={slots} />;
 }
 
 function CrimsonNightCta({
@@ -164,6 +176,7 @@ export function CrimsonNightCard({
   onSwitch,
   cta,
   shareUrl,
+  sponsors,
 }: {
   candidate: CompactCandidate;
   company?: CompactCompany | null;
@@ -171,6 +184,8 @@ export function CrimsonNightCard({
   onSwitch: (v: DualProfileActive) => void;
   cta?: { href: string; label: string } | null;
   shareUrl?: string | null;
+  /** Optional sponsor strip above the CTA — hidden when empty. */
+  sponsors?: SponsorItem[] | null;
 }) {
   const skin: DualProfileSkin = {
     Frame: CrimsonNightFrame,
@@ -189,6 +204,8 @@ export function CrimsonNightCard({
       onSwitch={onSwitch}
       cta={cta}
       shareUrl={shareUrl}
+      sponsors={sponsors}
+      sponsorVariant="dark"
       skin={skin}
     />
   );

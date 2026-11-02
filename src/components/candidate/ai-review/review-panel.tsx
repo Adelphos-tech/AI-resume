@@ -2,19 +2,27 @@
 
 import {
   AlertCircle,
+  Check,
   CheckCircle2,
   ChevronDown,
   CircleDot,
+  Copy,
   Crosshair,
+  ExternalLink,
   Lightbulb,
   Sparkles,
 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 
 import { candidateReviewResumeAction } from "@/app/candidate/(workspace)/ai-review/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { AiResumeReview } from "@/server/ai/resume-review-schema";
+import { resolveProfileEditTarget } from "@/lib/ai-review-edit-target";
+import {
+  JOB_DESCRIPTION_MAX,
+  type AiResumeReview,
+} from "@/server/ai/resume-review-schema";
 
 import type { QuoteStatus } from "@/components/candidate/ai-review/review-workspace";
 
@@ -50,6 +58,7 @@ type PanelBus = {
   missingBlock: boolean;
   quoteStatus: QuoteStatus;
   onLocate: (blockId: string, quote: string) => void;
+  blockExists: (blockId: string) => boolean;
 };
 
 function QuoteNotice({ bus }: { bus: PanelBus }) {
@@ -84,6 +93,41 @@ function QuoteNotice({ bus }: { bus: PanelBus }) {
   return null;
 }
 
+function CopyGuidanceButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      aria-label="Copy guidance"
+      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-stone-500 hover:bg-stone-100 hover:text-stone-700 focus-visible:outline-2 focus-visible:outline-emerald-600"
+    >
+      {copied ? (
+        <Check className="size-3.5 text-emerald-600" aria-hidden />
+      ) : (
+        <Copy className="size-3.5" aria-hidden />
+      )}
+      {copied ? "Copied" : "Copy guidance"}
+    </button>
+  );
+}
+
 function FindingCard({
   f,
   index,
@@ -99,6 +143,7 @@ function FindingCard({
 }) {
   const weak = f.status === "weak";
   const active = bus.activeBlockId === f.blockId;
+  const editTarget = resolveProfileEditTarget(f.blockId);
   const [userOpen, setUserOpen] = useState(defaultOpen);
   // Selected findings always render expanded; otherwise the
   // candidate's toggle (or the section default) decides.
@@ -140,16 +185,23 @@ function FindingCard({
           <span className="text-xs font-medium text-stone-500 capitalize">
             {f.dimension.replaceAll("_", " ")}
           </span>
-          <button
-            type="button"
-            aria-pressed={active}
-            aria-label={`View finding in resume: ${f.dimension.replaceAll("_", " ")}`}
-            onClick={() => bus.onLocate(f.blockId, f.quote)}
-            className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600"
-          >
-            <Crosshair className="size-3.5" aria-hidden />
-            {active ? "Viewing in resume" : "View in resume"}
-          </button>
+          {bus.blockExists(f.blockId) ? (
+            <button
+              type="button"
+              aria-pressed={active}
+              aria-label={`View finding in resume: ${f.dimension.replaceAll("_", " ")}`}
+              onClick={() => bus.onLocate(f.blockId, f.quote)}
+              className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600"
+            >
+              <Crosshair className="size-3.5" aria-hidden />
+              {active ? "Viewing in resume" : "View in resume"}
+            </button>
+          ) : (
+            <span className="ml-auto inline-flex items-center gap-1 px-2 py-1 text-xs text-stone-400">
+              <Crosshair className="size-3.5" aria-hidden />
+              Not shown in preview
+            </span>
+          )}
           <button
             type="button"
             aria-expanded={open}
@@ -172,13 +224,16 @@ function FindingCard({
         {open && (
           <div id={detailsId}>
             {active && <QuoteNotice bus={bus} />}
-            <blockquote className="mt-3 rounded-md border-l-2 border-emerald-600/40 bg-stone-50 py-1.5 pl-3 text-sm leading-relaxed text-stone-600 italic">
+            <p className="mt-3 text-xs font-semibold tracking-wide text-stone-500 uppercase">
+              What we found
+            </p>
+            <blockquote className="mt-1.5 rounded-md border-l-2 border-emerald-600/40 bg-stone-50 py-1.5 pl-3 text-sm leading-relaxed text-stone-600 italic">
               {f.quote}
             </blockquote>
             <div className="mt-4 grid gap-4 border-t border-stone-100 pt-4 sm:grid-cols-2">
               <div>
                 <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
-                  {weak ? "Why this matters" : "Why this works"}
+                  Why it matters
                 </p>
                 <p className="mt-1.5 text-[15px] leading-relaxed text-stone-800">
                   {f.reason}
@@ -187,7 +242,7 @@ function FindingCard({
               {f.guidance ? (
                 <div>
                   <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
-                    {weak ? "How to improve" : "How to make it even stronger"}
+                    How to improve
                   </p>
                   <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
                     {f.guidance}
@@ -195,6 +250,24 @@ function FindingCard({
                 </div>
               ) : null}
             </div>
+            {(editTarget || f.guidance) && (
+              <div className="mt-3 flex flex-wrap items-center gap-x-1 gap-y-2 border-t border-stone-100 pt-3">
+                {editTarget && (
+                  <Link
+                    href={editTarget.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Opens in a new tab so your review stays here"
+                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600"
+                  >
+                    <ExternalLink className="size-3.5" aria-hidden />
+                    Edit Career Profile
+                    <span className="sr-only"> (opens in a new tab)</span>
+                  </Link>
+                )}
+                {f.guidance && <CopyGuidanceButton text={f.guidance} />}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -282,6 +355,7 @@ export function CandidateAiReviewPanel({
   activeBlockId,
   missingBlock,
   quoteStatus,
+  blockExists,
   onLocate,
   onNewResult,
   onReviewReady,
@@ -293,6 +367,7 @@ export function CandidateAiReviewPanel({
   activeBlockId: string | null;
   missingBlock: boolean;
   quoteStatus: QuoteStatus;
+  blockExists: (blockId: string) => boolean;
   onLocate: (blockId: string, quote: string) => void;
   onNewResult: () => void;
   onReviewReady: (review: AiResumeReview) => void;
@@ -302,6 +377,9 @@ export function CandidateAiReviewPanel({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const [dimFilter, setDimFilter] = useState<string>("");
+  const [jdText, setJdText] = useState("");
+  const [jdUsed, setJdUsed] = useState(false);
   const selectedRef = useRef<HTMLLIElement>(null);
 
   function onReview() {
@@ -309,13 +387,19 @@ export function CandidateAiReviewPanel({
     setError(null);
     setReview(null);
     setOpenSections({});
+    setDimFilter("");
     onNewResult();
     onPendingChange(true);
+    const jd = jdText.trim();
     startTransition(async () => {
       try {
-        const result = await candidateReviewResumeAction({ variantId });
+        const result = await candidateReviewResumeAction({
+          variantId,
+          jobDescription: jd || undefined,
+        });
         if (result.success) {
           setReview(result.review);
+          setJdUsed(Boolean(jd));
           onReviewReady(result.review);
           // Default: first meaningful group open — usually What's working.
           const working = result.review.findings.some(
@@ -350,24 +434,44 @@ export function CandidateAiReviewPanel({
     });
   }, [activeBlockId]);
 
-  const working = review?.findings.filter((f) => f.status !== "weak") ?? [];
-  const weak = review?.findings.filter((f) => f.status === "weak") ?? [];
+  const dimensionsPresent = review
+    ? [...new Set(review.findings.map((f) => f.dimension))]
+    : [];
+  const visibleFindings =
+    review && dimFilter
+      ? review.findings.filter((f) => f.dimension === dimFilter)
+      : (review?.findings ?? []);
+  const working = visibleFindings.filter((f) => f.status !== "weak");
+  const weak = visibleFindings.filter((f) => f.status === "weak");
   const gaps = review?.gaps ?? [];
   // Recommendations derive from the review's own guidance text — weak
   // findings first, then gaps — deduped and unchanged.
+  // Recommendations derive from the review's own guidance text — weak
+  // findings first, then gaps — deduped and unchanged. Based on ALL weak
+  // findings regardless of the dimension filter (guidance isn't
+  // dimension-typed for gaps).
   const recommendations = review
     ? [
         ...new Set(
-          [...weak.map((f) => f.guidance), ...gaps.map((g) => g.guidance)]
+          [
+            ...review.findings
+              .filter((f) => f.status === "weak")
+              .map((f) => f.guidance),
+            ...gaps.map((g) => g.guidance),
+          ]
             .filter((g): g is string => Boolean(g?.trim()))
             .map((g) => g.trim()),
         ),
       ]
     : [];
 
-  const takeawaysPositive = working.slice(0, 3);
+  const takeawaysPositive = (review?.findings ?? [])
+    .filter((f) => f.status !== "weak")
+    .slice(0, 3);
   const takeawaysImprove = [
-    ...weak.map((f) => ({ key: `f-${f.blockId}`, text: f.reason })),
+    ...(review?.findings ?? [])
+      .filter((f) => f.status === "weak")
+      .map((f) => ({ key: `f-${f.blockId}`, text: f.reason })),
     ...gaps.map((g, i) => ({ key: `g-${i}`, text: g.reason })),
   ].slice(0, 3);
 
@@ -414,23 +518,43 @@ export function CandidateAiReviewPanel({
     });
   }
 
-  const bus: PanelBus = { activeBlockId, missingBlock, quoteStatus, onLocate };
+  const bus: PanelBus = {
+    activeBlockId,
+    missingBlock,
+    quoteStatus,
+    onLocate,
+    blockExists,
+  };
 
   return (
     <div className="rounded-2xl border border-stone-200 bg-white p-5 md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-semibold text-stone-900">AI Review</h2>
         {review && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={onReview}
-            disabled={isPending}
-          >
-            <Sparkles className="size-4" aria-hidden />
-            {isPending ? "Reviewing…" : "Run new review"}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setReview(null);
+                setError(null);
+                onNewResult();
+              }}
+            >
+              Edit inputs
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onReview}
+              disabled={isPending}
+            >
+              <Sparkles className="size-4" aria-hidden />
+              {isPending ? "Reviewing…" : "Run new review"}
+            </Button>
+          </div>
         )}
       </div>
 
@@ -458,7 +582,7 @@ export function CandidateAiReviewPanel({
         </div>
       )}
 
-      {!review && !isPending && !error && (
+      {!review && !isPending && (
         <div className="mt-4 space-y-5">
           <p className="text-[15px] leading-relaxed text-stone-600">
             Review this saved resume against:{" "}
@@ -483,6 +607,43 @@ export function CandidateAiReviewPanel({
             </ul>
           </div>
           <div>
+            <label
+              htmlFor="job-description-input"
+              className="text-sm font-semibold text-stone-900"
+            >
+              Job description{" "}
+              <span className="font-normal text-stone-500">(optional)</span>
+            </label>
+            <textarea
+              id="job-description-input"
+              value={jdText}
+              onChange={(e) => setJdText(e.target.value)}
+              maxLength={JOB_DESCRIPTION_MAX}
+              rows={6}
+              placeholder="Paste the job posting here…"
+              className="mt-1.5 w-full rounded-xl border border-stone-200 bg-white px-3.5 py-2.5 text-sm leading-relaxed text-stone-800 placeholder:text-stone-400 focus-visible:outline-2 focus-visible:outline-emerald-600"
+            />
+            <div className="mt-1.5 flex items-start justify-between gap-3">
+              <p className="text-xs leading-relaxed text-stone-500">
+                Paste a real job posting to review against its stated
+                requirements — not just your target role.
+              </p>
+              <p className="shrink-0 text-xs text-stone-400 tabular-nums">
+                {jdText.length}/{JOB_DESCRIPTION_MAX}
+              </p>
+            </div>
+          </div>
+          {error && (
+            <p role="alert" className="text-sm text-red-600">
+              {error}
+            </p>
+          )}
+          <div>
+            <p className="mb-2 text-xs font-semibold text-stone-500">
+              {jdText.trim()
+                ? "Review against your job description"
+                : "Review for your target role"}
+            </p>
             <Button
               type="button"
               onClick={onReview}
@@ -500,31 +661,12 @@ export function CandidateAiReviewPanel({
         </div>
       )}
 
-      {error && !isPending && (
-        <div className="mt-4 space-y-3">
-          <p role="alert" className="text-sm text-red-600">
-            {error}
-          </p>
-          {!review && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={onReview}
-              disabled={isPending}
-            >
-              {isPending ? "Reviewing…" : "Try again"}
-            </Button>
-          )}
-        </div>
-      )}
-
       {review && (
         <div className="mt-5">
           {/* overview + key takeaways */}
           <section
             aria-labelledby="review-overview"
-            className="grid gap-4 rounded-xl border border-emerald-600/20 bg-emerald-50/40 p-5 lg:grid-cols-[3fr_2fr]"
+            className="grid gap-4 rounded-xl border border-emerald-600/20 bg-emerald-50/40 p-5 xl:grid-cols-[3fr_2fr]"
           >
             <div>
               <p
@@ -536,8 +678,17 @@ export function CandidateAiReviewPanel({
               <p className="mt-2 text-lg font-bold tracking-tight text-stone-900">
                 {OVERALL_LABELS[review.overall.status]}
               </p>
+              <p className="mt-1.5 text-xs font-semibold text-stone-500">
+                Reviewed against: {targetRole} · {targetCountry}
+                {jdUsed ? " · your job description" : ""}
+              </p>
               <p className="mt-2 text-[15px] leading-relaxed text-stone-700">
                 {review.overall.summary}
+              </p>
+              <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs font-semibold text-stone-500">
+                <span>{review.findings.length} findings</span>
+                <span>{gaps.length} gaps</span>
+                <span>{recommendations.length} recommendations</span>
               </p>
             </div>
             <div className="rounded-lg border border-emerald-600/15 bg-white/80 p-4">
@@ -600,6 +751,36 @@ export function CandidateAiReviewPanel({
             </nav>
           )}
 
+          {/* dimension filter — only real dimensions present in results */}
+          {dimensionsPresent.length > 1 && (
+            <div className="mt-4 flex items-center gap-2">
+              <label
+                htmlFor="finding-dimension-filter"
+                className="text-xs font-semibold text-stone-500"
+              >
+                Filter by dimension
+              </label>
+              <select
+                id="finding-dimension-filter"
+                value={dimFilter}
+                onChange={(e) => setDimFilter(e.target.value)}
+                className="rounded-lg border border-stone-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-stone-700 capitalize focus-visible:outline-2 focus-visible:outline-emerald-600"
+              >
+                <option value="">All dimensions</option>
+                {dimensionsPresent.map((d) => (
+                  <option key={d} value={d}>
+                    {d.replaceAll("_", " ")}
+                  </option>
+                ))}
+              </select>
+              {dimFilter && (
+                <span className="text-xs text-stone-400">
+                  {visibleFindings.length} of {review.findings.length} findings
+                </span>
+              )}
+            </div>
+          )}
+
           <div className="mt-5 space-y-4">
             {working.length > 0 && (
               <SectionAccordion
@@ -660,7 +841,7 @@ export function CandidateAiReviewPanel({
                 id="sec-gaps"
                 icon={<CircleDot className="size-5" aria-hidden />}
                 title="Missing evidence"
-                description="Useful signals or evidence not found in this saved resume."
+                description="Signals this resume doesn't show — not proof you lack them."
                 count={gaps.length}
                 countLabel={gaps.length === 1 ? "gap" : "gaps"}
                 accent="slate"
@@ -681,14 +862,27 @@ export function CandidateAiReviewPanel({
                       />
                       {g.category.replaceAll("_", " ")}
                     </p>
-                    <p className="mt-2 text-[15px] leading-relaxed text-stone-800">
-                      {g.reason}
-                    </p>
-                    {g.guidance && (
-                      <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
-                        {g.guidance}
-                      </p>
-                    )}
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      <div>
+                        <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
+                          Why it matters
+                        </p>
+                        <p className="mt-1.5 text-[15px] leading-relaxed text-stone-800">
+                          {g.reason}
+                        </p>
+                      </div>
+                      {g.guidance && (
+                        <div>
+                          <p className="text-xs font-semibold tracking-wide text-stone-500 uppercase">
+                            What you could add
+                          </p>
+                          <p className="mt-1.5 text-[15px] leading-relaxed text-stone-600">
+                            {g.guidance}
+                          </p>
+                          <CopyGuidanceButton text={g.guidance} />
+                        </div>
+                      )}
+                    </div>
                   </li>
                 ))}
               </SectionAccordion>

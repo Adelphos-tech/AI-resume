@@ -13,9 +13,10 @@ const IMPROVE_HIGHLIGHT_NAME = "rolerace-review-improve";
 export type QuoteStatus = "none" | "unsupported" | "not-found" | "ok";
 
 /** Client-local preview zoom — layout-based, so annotations stay aligned. */
-const ZOOM_MIN = 0.75;
+const ZOOM_MIN = 0.6;
 const ZOOM_DEFAULT = 1;
-const ZOOM_MAX = 1.25;
+const ZOOM_MAX = 1.75;
+const ZOOM_STEP = 0.15;
 
 type Annotation = {
   key: string;
@@ -254,7 +255,27 @@ export function ReviewWorkspace({
   useEffect(() => clearDom, [clearDom]);
 
   return (
-    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+    <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+      {/* Below lg the panes stack — this switcher jumps between them. */}
+      <nav
+        aria-label="Review workspace sections"
+        className="sticky top-2 z-20 flex justify-center lg:hidden"
+      >
+        <div className="inline-flex rounded-full border border-stone-200 bg-white/95 p-1 shadow-sm backdrop-blur-sm">
+          <a
+            href="#ai-review-pane"
+            className="rounded-full px-4 py-1.5 text-xs font-semibold text-stone-700 hover:bg-emerald-50 hover:text-emerald-800 focus-visible:outline-2 focus-visible:outline-emerald-600"
+          >
+            AI review
+          </a>
+          <a
+            href="#resume-pane"
+            className="rounded-full px-4 py-1.5 text-xs font-semibold text-stone-700 hover:bg-emerald-50 hover:text-emerald-800 focus-visible:outline-2 focus-visible:outline-emerald-600"
+          >
+            Resume
+          </a>
+        </div>
+      </nav>
       {/* ::highlight() is paint-only and not understood by the CSS
           bundler — kept as a runtime style tag scoped to this page. */}
       <style>{`
@@ -280,7 +301,11 @@ export function ReviewWorkspace({
           text-underline-offset: 2px;
         }
       `}</style>
-      <section aria-label="AI review">
+      <section
+        id="ai-review-pane"
+        aria-label="AI review"
+        className="min-w-0 scroll-mt-20"
+      >
         <CandidateAiReviewPanel
           variantId={variantId}
           targetRole={targetRole}
@@ -288,6 +313,9 @@ export function ReviewWorkspace({
           activeBlockId={active?.blockId ?? null}
           missingBlock={missingBlock}
           quoteStatus={quoteStatus}
+          blockExists={(id) =>
+            !!rootRef.current && !!findBlock(rootRef.current, id)
+          }
           onLocate={locate}
           onNewResult={reset}
           onReviewReady={buildAnnotations}
@@ -296,14 +324,19 @@ export function ReviewWorkspace({
       </section>
 
       {/* Resume pane — second in DOM so mobile/screen-reader order puts
-          review content first; xl+ places it in the left grid column. */}
-      <div className="xl:col-start-1 xl:row-start-1 xl:sticky xl:top-6">
+          review content first; lg+ places it in the wider left column,
+          sticky with its own scroll so the document never stretches the
+          whole page. */}
+      <div
+        className="min-w-0 scroll-mt-20 lg:col-start-1 lg:row-start-1 lg:sticky lg:top-6"
+        id="resume-pane"
+      >
         <section
           ref={previewRef}
           aria-label="Resume preview"
           className="rounded-2xl border border-stone-200 bg-stone-100/70 p-4 md:p-5"
         >
-          <div className="overflow-x-auto">
+          <div className="overflow-auto lg:max-h-[calc(100dvh-11rem)]">
             <div
               ref={rootRef}
               style={{ width: `${Math.round(zoom * 100)}%` }}
@@ -354,19 +387,32 @@ export function ReviewWorkspace({
                 type="button"
                 aria-label="Zoom out"
                 disabled={zoom <= ZOOM_MIN}
-                onClick={() => setZoom(ZOOM_MIN)}
+                onClick={() =>
+                  setZoom((z) =>
+                    Math.max(ZOOM_MIN, +(z - ZOOM_STEP).toFixed(2)),
+                  )
+                }
                 className="rounded-md p-1.5 text-stone-500 hover:bg-stone-200/60 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-emerald-600"
               >
                 <ZoomOut className="size-3.5" aria-hidden />
               </button>
-              <span className="min-w-9 text-center text-xs font-semibold text-stone-600">
+              <button
+                type="button"
+                aria-label="Reset zoom to 100 percent"
+                onClick={() => setZoom(ZOOM_DEFAULT)}
+                className="min-w-9 rounded-md px-1 py-0.5 text-center text-xs font-semibold text-stone-600 hover:bg-stone-200/60 focus-visible:outline-2 focus-visible:outline-emerald-600"
+              >
                 {Math.round(zoom * 100)}%
-              </span>
+              </button>
               <button
                 type="button"
                 aria-label="Zoom in"
                 disabled={zoom >= ZOOM_MAX}
-                onClick={() => setZoom(ZOOM_MAX)}
+                onClick={() =>
+                  setZoom((z) =>
+                    Math.min(ZOOM_MAX, +(z + ZOOM_STEP).toFixed(2)),
+                  )
+                }
                 className="rounded-md p-1.5 text-stone-500 hover:bg-stone-200/60 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-emerald-600"
               >
                 <ZoomIn className="size-3.5" aria-hidden />

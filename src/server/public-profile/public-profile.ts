@@ -222,6 +222,11 @@ import {
 } from "@/server/public-profile/company-profile";
 
 import { nullableUrl } from "@/server/public-profile/url";
+import {
+  isSponsorPlacement,
+  resolveSponsorPlacement,
+  type SponsorPlacement,
+} from "@/lib/sponsor-placements";
 
 export const publicProfileSettingsSchema = z.strictObject({
   publicHeadline: z
@@ -253,6 +258,22 @@ export const publicProfileSettingsSchema = z.strictObject({
   linkedinUrl: nullableUrl(2048),
   githubUrl: nullableUrl(2048),
   websiteUrl: nullableUrl(2048),
+  // Optional sponsor destination links — http(s) only via nullableUrl;
+  // images themselves are managed by the dedicated upload route.
+  sponsorOneUrl: nullableUrl(2048),
+  sponsorTwoUrl: nullableUrl(2048),
+  // Optional sponsor placement — curated anchor registry ids only;
+  // blank/normalizes to NULL (the established default position).
+  sponsorOnePlacement: z
+    .string()
+    .trim()
+    .refine((v) => v === "" || isSponsorPlacement(v))
+    .transform((v) => (v === "" ? null : v)),
+  sponsorTwoPlacement: z
+    .string()
+    .trim()
+    .refine((v) => v === "" || isSponsorPlacement(v))
+    .transform((v) => (v === "" ? null : v)),
   // Private settings metadata: selected ISO country + raw national
   // input. Server normalizes to canonical E.164 before persisting.
   whatsappCountry: z.string().trim().toUpperCase().max(2),
@@ -391,6 +412,15 @@ export type PublicCareerProfileDTO = {
     github: string | null;
     website: string | null;
   };
+  /**
+   * Sponsor placements (max 2) — only entries with an uploaded image are
+   * exposed; keys are resolved to authorized media URLs, never leaked.
+   */
+  sponsors: {
+    imageUrl: string;
+    url: string | null;
+    placement: SponsorPlacement;
+  }[];
   featuredResume: {
     name: string;
     targetRole: string;
@@ -480,6 +510,12 @@ export function buildPublicProfileDTO(
     linkedinUrl: string | null;
     githubUrl: string | null;
     websiteUrl: string | null;
+    sponsorOneImageKey: string | null;
+    sponsorOneUrl: string | null;
+    sponsorTwoImageKey: string | null;
+    sponsorTwoUrl: string | null;
+    sponsorOnePlacement: string | null;
+    sponsorTwoPlacement: string | null;
     showExperience: boolean;
     showEducation: boolean;
     showSkills: boolean;
@@ -567,6 +603,30 @@ export function buildPublicProfileDTO(
       github: profile.githubUrl,
       website: profile.websiteUrl,
     },
+    sponsors: [
+      profile.sponsorOneImageKey
+        ? {
+            imageUrl: `/u/${profile.slug}/sponsor/1`,
+            url: profile.sponsorOneUrl,
+            placement: resolveSponsorPlacement(profile.sponsorOnePlacement),
+          }
+        : null,
+      profile.sponsorTwoImageKey
+        ? {
+            imageUrl: `/u/${profile.slug}/sponsor/2`,
+            url: profile.sponsorTwoUrl,
+            placement: resolveSponsorPlacement(profile.sponsorTwoPlacement),
+          }
+        : null,
+    ].filter(
+      (
+        s,
+      ): s is {
+        imageUrl: string;
+        url: string | null;
+        placement: SponsorPlacement;
+      } => s !== null,
+    ),
     featuredResume: profile.featuredResumeVariant
       ? {
           name: profile.featuredResumeVariant.name,
